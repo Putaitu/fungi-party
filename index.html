@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Printer Game prototype</title>
+	<link rel="stylesheet" href="./app.css">
+  </head>
+  <body class="game">
+	<div class="info">
+		<div class="current-score"></div>
+	</div>
+	<div class="workspace">
+		<div class="current-color" data-color="0,0,0"></div>
+	</div>
+	<div class="output">
+		<table class="current-target">
+			<tr>
+				<td data-color="0.8,0,0.8"></td>
+				<td data-color="0.6,0.2,0.5"></td>
+			</tr>
+			<tr>
+				<td data-color="0.4,0.3,0.4"></td>
+				<td data-color="0.2,0.3,0.7"></td>
+			</tr>			
+		</table>
+	</div>
+	<div class="buttons">
+		<button class="input-r">R</button>
+		<button class="input-g">G</button>
+		<button class="input-b">B</button>
+		<button class="input-submit">Submit</button>		
+	</div>
+	<script src="./app.js"></script>
+  </body>
+  
+</html>
