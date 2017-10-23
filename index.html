@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Printer Game</title>
+
+    <style>
+        html, body, canvas {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+        }
+    </style>
+  </head>
+  <body>
+	<script src="./src/Engine/Core.js"></script>
+	<script src="./src/Engine/Time.js"></script>
+	<script src="./src/Engine/Graphics.js"></script>
+	<script src="./src/Engine/Stage.js"></script>
+	<script src="./src/Engine/Entity.js"></script>
+	
+	<script src="./src/Engine/Components/Component.js"></script>
+	<script src="./src/Engine/Components/GeometrySprite.js"></script>
+	
+    <script src="./src/Engine/Actors/Actor.js"></script>
+
+    <script>
+        Engine.Core.on('init', () => {
+            let test = new Engine.Actors.Actor({
+                position: { x: 20, y: 20 }
+            });
+
+            test.addComponent(new Engine.Components.GeometrySprite({
+                color: '#ffa200'
+            }));
+        });
+    </script>
+  </body>
+</html>
