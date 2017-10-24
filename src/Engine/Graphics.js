@@ -77,18 +77,38 @@ class Graphics {
         this.ctx.arc(x, y, radius, 0, 2 * Math.PI);
         this.ctx.fillStyle = fillColor;
         this.ctx.strokeStyle = strokeColor;
-        this.ctx.fill();
+        this.ctx.fill();//what if no fill?
     }
 
     /**
-     * TODO: Draw a rectangle
+     * Draw a rectangle
+     * @param {Number} x
+     * @param {Number} y
+     * @param {Number} width
+     * @param {Number} height
+	 * @param {Number} strokeWidth
+     * @param {String} strokeColor
+     * @param {String} fillColor
+
      */
-    static drawRectangle() {}
+    static drawRectangle(x, y, width, height, strokeWidth, strokeColor, fillColor) {
+		this.ctx.beginPath();
+		this.ctx.rect(x, y, width, height);
+		this.ctx.fillStyle = fillColor;
+		this.ctx.lineWidth = strokeWidth;
+		this.strokeStyle = strokeColor;
+		this.ctx.stroke(); //what if no stroke?
+		this.ctx.fill(); //what if no fill?
+	}
     
     /**
      * TODO: Draw a line
      */
-    static drawLine() {}
+    static drawLine() {
+		//ctx.beginPath();
+		//ctx.lineTo(300,150);
+		//ctx.stroke();
+	}
 }
 
 Engine.Graphics = Graphics;

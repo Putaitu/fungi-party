@@ -37,6 +37,18 @@ class GeometrySprite extends Engine.Components.Component {
                     this.fillColor,
                     this.strokeColor
                 );
+			
+			case 'rectangle' :
+				Engine.Graphics.drawRectangle (
+                    this.actor.position.x + this.position.x,
+                    this.actor.position.y + this.position.y,
+                    this.width,
+					this.height,
+					this.strokeWidth,
+					this.strokeColor,
+                    this.fillColor
+				) ;
+				
                 break;
         }
     }
