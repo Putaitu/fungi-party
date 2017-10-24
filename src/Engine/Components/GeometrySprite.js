@@ -8,26 +8,21 @@ class GeometrySprite extends Engine.Components.Component {
      * Constructor
      */
     constructor(config) {
-        // Set defaults
-        if(!config.radius) {
-            config.radius = 10;
-        }
-
-        if(!config.fillColor) {
-            config.fillColor = '#000000';
-        }
-
-        if(!config.type) {
-            config.type = 'circle';
-        }
-        
-        config.canUpdate = true;
-        config.canDraw = true;
-
-        // Apply config
         super(config);
     }
-    
+   
+    /**
+     * Defaults
+     */
+    defaults() {
+        super.defaults();
+
+        this.radius = 10;
+        this.fillColor = '#000000';
+        this.strokeColor = '#000000';
+        this.type = 'circle';
+    }
+
     /**
      * Draw
      */
@@ -36,10 +31,11 @@ class GeometrySprite extends Engine.Components.Component {
         switch(this.type) {
             case 'circle':
                 Engine.Graphics.drawCircle(
-                    this.position.x,
-                    this.position.y,
+                    this.actor.position.x + this.position.x,
+                    this.actor.position.y + this.position.y,
                     this.radius,
-                    this.color
+                    this.fillColor,
+                    this.strokeColor
                 );
                 break;
         }

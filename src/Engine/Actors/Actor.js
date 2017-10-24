@@ -8,28 +8,21 @@ class Actor extends Engine.Entity {
      * Constructor
      */
     constructor(config) {
-        // Set defaults
-        if(typeof config.canUpdate === 'undefined') {
-            config.canUpdate = true;
-        }
-        
-        if(typeof config.canDraw === 'undefined') {
-            config.canDraw = true;
-        }
-        
-        if(!config.position) {
-            config.position = { x: 0, y: 0 };
-        }
-
-        if(!config.components) {
-            config.components = [];
-        }
-
         // Apply config
         super(config);
 
         // Add to stage
         Engine.Stage.addActor(this);
+    }
+
+    /**
+     * Defaults
+     */
+    defaults() {
+        this.canUpdate = true;
+        this.canDraw = true;
+        this.position = { x: 0, y: 0 };
+        this.components = [];
     }
 
     /**
@@ -51,15 +44,11 @@ class Actor extends Engine.Entity {
      * Draw
      */
     draw() {
-        Engine.Graphics.moveTo(this.position.x, this.position.y);
-
         for(let i in this.components) {
             if(!this.components[i].canDraw) { continue; }
 
             this.components[i].draw();
         }
-
-        Engine.Graphics.moveTo(0, 0);
     }
 
     /**

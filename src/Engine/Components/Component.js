@@ -8,25 +8,17 @@ class Component extends Engine.Entity {
      * Constructor
      */
     constructor(config) {
-        // Set defaults
-        if(typeof config.canUpdate === 'undefined') {
-            config.canUpdate = true;
-        }
-        
-        if(typeof config.canDraw === 'undefined') {
-            config.canDraw = true;
-        }
-
-        if(typeof config.isActive === 'undefined') {
-            config.isActive = true;
-        }
-
-        if(!config.position) {
-            config.position = { x: 0, y: 0 };
-        }
-
-        // Apply config
         super(config);
+    }
+
+    /**
+     * Defaults
+     */
+    defaults() {
+        this.canUpdate = true;
+        this.canDraw = true;
+        this.isActive = true;
+        this.position = { x: 0, y: 0 };
     }
 
     /**

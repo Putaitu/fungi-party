@@ -6,11 +6,9 @@
     <title>Printer Game</title>
 
     <style>
-        html, body, canvas {
+        html, body {
             margin: 0;
             padding: 0;
-            height: 100%;
-            width: 100%;
         }
     </style>
   </head>
@@ -29,11 +27,14 @@
     <script>
         Engine.Core.on('init', () => {
             let test = new Engine.Actors.Actor({
-                position: { x: 20, y: 20 }
+                position: { x: 200, y: 200 }
             });
 
             test.addComponent(new Engine.Components.GeometrySprite({
-                color: '#ffa200'
+                fillColor: '#ffa200',
+                strokeColor: '#0033ff',
+                type: 'circle',
+                radius: 100
             }));
         });
     </script>

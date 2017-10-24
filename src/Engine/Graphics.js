@@ -11,6 +11,12 @@ class Graphics {
         this.canvas = document.createElement('canvas');
         this.ctx = this.canvas.getContext('2d');
 
+        this.screenWidth = window.innerWidth;
+        this.screenHeight = window.innerHeight;
+
+        this.canvas.width = this.screenWidth;
+        this.canvas.height = this.screenHeight;
+
         document.body.appendChild(this.canvas);
 
         this.draw();
@@ -39,8 +45,22 @@ class Graphics {
      * @param {Number} x
      * @param {Number} y
      */
-    static moveTo(x, y) {
+    static translate(x, y) {
         this.ctx.moveTo(x, y);
+    }
+
+    /**
+     * Pushes the draw state
+     */
+    static push() {
+        this.ctx.save();
+    }
+
+    /**
+     * Pops the draw state
+     */
+    static pop() {
+        this.ctx.restore();
     }
 
     /**
@@ -49,12 +69,14 @@ class Graphics {
      * @param {Number} x
      * @param {Number} y
      * @param {Number} radius
-     * @param {String} color
+     * @param {String} fillColor
+     * @param {String} strokeColor
      */
-    static drawCircle(x, y, radius, color) {
+    static drawCircle(x, y, radius, fillColor, strokeColor) {
         this.ctx.beginPath();
         this.ctx.arc(x, y, radius, 0, 2 * Math.PI);
-        this.ctx.fillStyle = color;
+        this.ctx.fillStyle = fillColor;
+        this.ctx.strokeStyle = strokeColor;
         this.ctx.fill();
     }
 
