@@ -31,8 +31,8 @@ class GeometrySprite extends Engine.Components.Component {
         switch(this.type) {
             case 'circle':
                 Engine.Graphics.drawCircle(
-                    this.actor.position.x + this.position.x - this.pivot.x * this.radius,
-                    this.actor.position.y + this.position.y - this.pivot.y * this.radius,
+                    this.actor.position.x + this.position.x + this.radius - this.pivot.x * (this.radius * 2),
+                    this.actor.position.y + this.position.y + this.radius - this.pivot.y * (this.radius * 2),
                     this.radius,
 					this.strokeWidth,
                     this.strokeColor,
