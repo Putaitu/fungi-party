@@ -69,15 +69,24 @@ class Graphics {
      * @param {Number} x
      * @param {Number} y
      * @param {Number} radius
-     * @param {String} fillColor
+     * @param {Number} strokeWidth
      * @param {String} strokeColor
+     * @param {String} fillColor
      */
-    static drawCircle(x, y, radius, fillColor, strokeColor) {
+    static drawCircle(x, y, radius, strokeWidth, strokeColor, fillColor) {
         this.ctx.beginPath();
         this.ctx.arc(x, y, radius, 0, 2 * Math.PI);
-        this.ctx.fillStyle = fillColor;
-        this.ctx.strokeStyle = strokeColor;
-        this.ctx.fill();//what if no fill?
+		this.ctx.lineWidth = strokeWidth;
+		
+		if(fillColor) {
+			this.ctx.fillStyle = fillColor;
+			this.ctx.fill();
+		}
+		
+		if(strokeColor) {
+			this.ctx.strokeStyle = strokeColor;
+			this.ctx.stroke();
+		}
     }
 
     /**
@@ -94,20 +103,33 @@ class Graphics {
     static drawRectangle(x, y, width, height, strokeWidth, strokeColor, fillColor) {
 		this.ctx.beginPath();
 		this.ctx.rect(x, y, width, height);
-		this.ctx.fillStyle = fillColor;
 		this.ctx.lineWidth = strokeWidth;
-		this.strokeStyle = strokeColor;
-		this.ctx.stroke(); //what if no stroke?
-		this.ctx.fill(); //what if no fill?
+		
+		if(fillColor) {
+			this.ctx.fillStyle = fillColor;
+			this.ctx.fill();
+		}
+		
+		if(strokeColor) {
+			this.ctx.strokeStyle = strokeColor;
+			this.ctx.stroke();
+		}
 	}
     
     /**
-     * TODO: Draw a line
+     * Draw a line
+     * @param {Number} moveX How much to move on x-axis
+     * @param {Number} moveY How much to move on y-axis
+	 * @param {Number} strokeWidth
+     * @param {String} strokeColor
      */
-    static drawLine() {
-		//ctx.beginPath();
-		//ctx.lineTo(300,150);
-		//ctx.stroke();
+    static drawLine(x, y, moveX, moveY, strokeWidth, strokeColor) {
+		this.ctx.beginPath();
+		this.ctx.moveTo(x, y);
+		this.ctx.lineTo(x + moveX, y + moveY);
+		this.ctx.lineWidth = strokeWidth;
+		this.ctx.strokeStyle = strokeColor;
+		this.ctx.stroke();
 	}
 }
 

@@ -21,32 +21,43 @@ class GeometrySprite extends Engine.Components.Component {
         this.fillColor = '#000000';
         this.strokeColor = '#000000';
         this.type = 'circle';
+		this.pivot = { x: 0.5, y: 0.5 };
     }
 
     /**
      * Draw
      */
     draw() {
-        // TODO: Cases for rectangles and lines
         switch(this.type) {
             case 'circle':
                 Engine.Graphics.drawCircle(
-                    this.actor.position.x + this.position.x,
-                    this.actor.position.y + this.position.y,
+                    this.actor.position.x + this.position.x - this.pivot.x * this.radius,
+                    this.actor.position.y + this.position.y - this.pivot.y * this.radius,
                     this.radius,
-                    this.fillColor,
-                    this.strokeColor
+					this.strokeWidth,
+                    this.strokeColor,
+					this.fillColor
                 );
 			
 			case 'rectangle' :
 				Engine.Graphics.drawRectangle (
-                    this.actor.position.x + this.position.x,
-                    this.actor.position.y + this.position.y,
+                    this.actor.position.x + this.position.x - this.pivot.x * this.width,
+                    this.actor.position.y + this.position.y - this.pivot.y * this.height,
                     this.width,
 					this.height,
-					this.strokeWidth,
+                    this.strokeWidth,
 					this.strokeColor,
-                    this.fillColor
+					this.fillColor
+				) ;
+				
+			case 'line' :
+				Engine.Graphics.drawLine (
+                    this.actor.position.x + this.position.x,
+                    this.actor.position.y + this.position.y,
+                    this.moveX,
+					this.moveY,
+					this.strokeWidth,
+					this.strokeColor
 				) ;
 				
                 break;

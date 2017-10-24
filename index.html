@@ -31,21 +31,31 @@
             });
 
             test.addComponent(new Engine.Components.GeometrySprite({
-                fillColor: '#ffa200',
-                strokeColor: '#0033ff',
                 type: 'circle',
+				fillColor: '#ffa200',
+                strokeColor: '#0033ff',
+				strokeWidth: 2,
                 radius: 100
             }));
 			
-			translate(400, 400);
 			test.addComponent(new Engine.Components.GeometrySprite({
-                fillColor: 'red',
-                strokeColor: 'black',
-				strokewidth: '6',
+				fillColor: '#ff0000',
+                strokeColor: '#ff00ff',
                 type: 'rectangle',
-                width: 500,
-				height: 500,
+				strokeWidth: 6,
+                width: 200,
+				height: 200,
             }));
+			
+			test.addComponent(new Engine.Components.GeometrySprite({
+                position: { x: 400, y: 0 },
+				strokeColor: '#00ff00',
+				strokeWidth: 10,
+                type: 'line',
+                moveX: 200,
+				moveY: 0,
+            }));
+			
         });
     </script>
   </body>
