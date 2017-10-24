@@ -17,6 +17,8 @@ class Graphics {
         this.canvas.width = this.screenWidth;
         this.canvas.height = this.screenHeight;
 
+		this.backgroundColor = '#cccccc';
+		
         document.body.appendChild(this.canvas);
 
         this.draw();
@@ -26,7 +28,8 @@ class Graphics {
      * The draw loop
      */
     static draw() {
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+		this.ctx.fillStyle = this.backgroundColor;
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
         for(let i in Engine.Stage.actors) {
             if(!Engine.Stage.actors[i].canDraw) { continue; }

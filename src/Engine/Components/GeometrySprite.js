@@ -19,7 +19,6 @@ class GeometrySprite extends Engine.Components.Component {
 
         this.radius = 10;
         this.fillColor = '#000000';
-        this.strokeColor = '#000000';
         this.type = 'circle';
 		this.pivot = { x: 0.5, y: 0.5 };
     }
