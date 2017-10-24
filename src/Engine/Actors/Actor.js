@@ -29,6 +29,8 @@ class Actor extends Engine.Entity {
      * Adds a components
      *
      * @param {Component} component
+     *
+     * @returns {Component} Component
      */
     addComponent(component) {
         if(component instanceof Engine.Components.Component === false) {
@@ -38,6 +40,42 @@ class Actor extends Engine.Entity {
         component.actor = this;
 
         this.components.push(component);
+
+        return component;
+    }
+
+    /**
+     * Gets a component
+     *
+     * @param {Component} type
+     *
+     * @returns {Component} Component
+     */
+    getComponent(type) {
+        for(let i in this.components) {
+            if(this.components[i] instanceof type) {
+                return this.components[i];
+            }
+        }
+    }
+    
+    /**
+     * Gets a list of components
+     *
+     * @param {Component} type
+     *
+     * @returns {Array} Components
+     */
+    getComponents(type) {
+        let result = [];
+
+        for(let i in this.components) {
+            if(typeof type === 'undefined' || this.components[i] instanceof type) {
+                result.add(this.components[i]);
+            }
+        }
+
+        return result;
     }
 
     /**
@@ -48,6 +86,11 @@ class Actor extends Engine.Entity {
             if(!this.components[i].canDraw) { continue; }
 
             this.components[i].draw();
+        }
+
+        // Debug
+        if(Engine.Settings.useDebug === true) {
+            Engine.Graphics.drawCircle(this.position.x, this.position.y, 10, 0, null, '#ff0000');
         }
     }
 

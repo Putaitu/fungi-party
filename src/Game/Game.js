@@ -21,5 +21,4 @@ Engine.Core.on('init', () => {
 			color: Engine.Math.Color.getRandom()
 		});
 	}
-
 });

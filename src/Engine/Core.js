@@ -9,6 +9,7 @@ class Core {
      */
     static init() {
         Engine.Time.init();
+        Engine.Input.init();
         Engine.Graphics.init();
         Engine.Stage.init();
 
