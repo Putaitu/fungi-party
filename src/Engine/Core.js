@@ -44,7 +44,10 @@ class Core {
     }
 }
 
-window.Engine = { Core: Core };
+window.Engine = {
+	Core: Core,
+	Math: {}
+};
 
 document.addEventListener('DOMContentLoaded', () => {
     Engine.Core.init();
