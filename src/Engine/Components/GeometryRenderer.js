@@ -3,7 +3,7 @@
 /**
  * A component for drawing simple geometry
  */
-class GeometrySprite extends Engine.Components.Component {
+class GeometryRenderer extends Engine.Components.Component {
     /**
      * Constructor
      */
@@ -65,4 +65,4 @@ class GeometrySprite extends Engine.Components.Component {
     }
 }
 
-Engine.Components.GeometrySprite = GeometrySprite;
+Engine.Components.GeometryRenderer = GeometryRenderer;
