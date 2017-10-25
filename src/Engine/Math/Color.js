@@ -3,31 +3,48 @@
 /**
  * A class for performing color operations
  */
-class Color extends Engine.Entity {
+class Color {
 	/**
-	 * Defaults
+	 * Constructor
 	 */
-	defaults() {
-		this.r = 0;
-		this.g = 0;
-		this.b = 0;
+	constructor(r, g, b) {
+		this.r = r || 0;
+		this.g = g || 0;
+		this.b = b || 0;
 	}
-	
+
+    /**
+     * Compares to another colour
+     *
+     * @param {Color} color
+     *
+     * @returns {Number} Difference
+     */
+    compare(color) {
+        let diff = 0;
+
+        diff += Math.abs(this.r - color.r);
+        diff += Math.abs(this.g - color.g);
+        diff += Math.abs(this.b - color.b);
+
+        return diff;
+    }
+
 	/**
 	 * Gets a random color
      *
-     * @param {Number} nearest
+     * @param {Number} divisableBy
 	 *
 	 * @returns {Color} Color
 	 */
-	static getRandom(nearest = 1) {
-        let dec = 1 / nearest;
+	static getRandom(divisableBy = 1) {
+        let dec = 1 / divisableBy;
 
-		return new Color({
-			r: parseFloat((Math.round(Math.random() * dec) / dec).toFixed(1)),
-			g: parseFloat((Math.round(Math.random() * dec) / dec).toFixed(1)),
-			b: parseFloat((Math.round(Math.random() * dec) / dec).toFixed(1))
-		});
+		return new Color(
+			parseFloat((Math.round(Math.random() * dec) / dec).toFixed(1)),
+			parseFloat((Math.round(Math.random() * dec) / dec).toFixed(1)),
+			parseFloat((Math.round(Math.random() * dec) / dec).toFixed(1))
+		);
 	}
 	
 	/**

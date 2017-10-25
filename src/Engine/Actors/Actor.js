@@ -127,6 +127,13 @@ class Actor extends Engine.Entity {
     }
 
     /**
+     * Destroys this actor
+     */
+    destroy() {
+        Engine.Stage.removeActor(this);
+    }
+
+    /**
      * Update
      */
     update() {

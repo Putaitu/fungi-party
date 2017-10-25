@@ -11,8 +11,8 @@ class Graphics {
         this.canvas = document.createElement('canvas');
         this.ctx = this.canvas.getContext('2d');
 
-        this.screenWidth = window.innerWidth;
-        this.screenHeight = window.innerHeight;
+        this.screenWidth = Engine.Settings.screenWidth || window.innerWidth;
+        this.screenHeight = Engine.Settings.screenHeight || window.innerHeight;
 
         this.canvas.style.display = 'block';
         this.canvas.width = this.screenWidth;
@@ -21,6 +21,14 @@ class Graphics {
 		this.backgroundColor = '#cccccc';
 		
         document.body.appendChild(this.canvas);
+
+        document.body.style.width = '100vw';
+        document.body.style.height = '100vh';
+        document.body.style.margin = 0;
+        document.body.style.display = 'flex';
+        document.body.style.alignItems = 'center';
+        document.body.style.justifyContent = 'center';
+        document.body.style.backgroundColor = '#333333';
 
         this.draw();
     }

@@ -38,6 +38,36 @@ class Stage {
 
         return null;
     }
+    
+    /**
+     * Removes an actor
+     *
+     * @param {Actor} actor
+     */
+    static removeActor(actor) {
+        for(let i = this.actors.length - 1; i > 0; i--) {
+            if(this.actors[i] === actor) {
+                delete this.actors[i];
+            }
+        }
+    }
+        
+    /**
+     * Gets a list of actors
+     *
+     * @param {Actor} type
+     */
+    static getActors(type) {
+        let actors = [];
+
+        for(let i in this.actors) {
+            if(!type || this.actors[i] instanceof type) {
+                actors.push(this.actors[i]);
+            }
+        }
+
+        return actors;
+    }
 }
 
 Engine.Stage = Stage;
