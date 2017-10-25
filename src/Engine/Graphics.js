@@ -14,6 +14,7 @@ class Graphics {
         this.screenWidth = window.innerWidth;
         this.screenHeight = window.innerHeight;
 
+        this.canvas.style.display = 'block';
         this.canvas.width = this.screenWidth;
         this.canvas.height = this.screenHeight;
 

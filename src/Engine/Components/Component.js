@@ -18,7 +18,7 @@ class Component extends Engine.Entity {
         this.canUpdate = true;
         this.canDraw = true;
         this.isActive = true;
-        this.position = { x: 0, y: 0 };
+        this.offset = { x: 0, y: 0 };
     }
 
     /**

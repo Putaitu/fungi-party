@@ -10,15 +10,17 @@ class Time {
     static init() {
         this.deltaTime = 0;
         this.startTime = Date.now();
+        this.lastTimeStamp = 0;
         
-        this.update(this.startTime);
+        this.update(0);
     }
     
     /**
      * The update loop
      */
     static update(timestamp) {
-        this.deltaTime = timestamp - this.startTime;
+        this.deltaTime = (timestamp - this.lastTimeStamp) * 0.01;
+        this.lastTimeStamp = timestamp;
         
         for(let i in Engine.Stage.actors) {
             if(!Engine.Stage.actors[i].canUpdate) { continue; }

@@ -15,14 +15,18 @@ class Color extends Engine.Entity {
 	
 	/**
 	 * Gets a random color
+     *
+     * @param {Number} nearest
 	 *
 	 * @returns {Color} Color
 	 */
-	static getRandom() {
+	static getRandom(nearest = 1) {
+        let dec = 1 / nearest;
+
 		return new Color({
-			r: parseFloat((Math.round(Math.random() * 2) / 2).toFixed(1)),
-			g: parseFloat((Math.round(Math.random() * 2) / 2).toFixed(1)),
-			b: parseFloat((Math.round(Math.random() * 2) / 2).toFixed(1))
+			r: parseFloat((Math.round(Math.random() * dec) / dec).toFixed(1)),
+			g: parseFloat((Math.round(Math.random() * dec) / dec).toFixed(1)),
+			b: parseFloat((Math.round(Math.random() * dec) / dec).toFixed(1))
 		});
 	}
 	

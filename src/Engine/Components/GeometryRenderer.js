@@ -30,8 +30,8 @@ class GeometryRenderer extends Engine.Components.Component {
         switch(this.type) {
             case 'circle':
                 Engine.Graphics.drawCircle(
-                    this.actor.position.x + this.position.x + this.radius - this.pivot.x * (this.radius * 2),
-                    this.actor.position.y + this.position.y + this.radius - this.pivot.y * (this.radius * 2),
+                    this.actor.transform.position.x + this.offset.x + this.radius - this.pivot.x * (this.radius * 2),
+                    this.actor.transform.position.y + this.offset.y + this.radius - this.pivot.y * (this.radius * 2),
                     this.radius,
 					this.strokeWidth,
                     this.strokeColor,
@@ -40,8 +40,8 @@ class GeometryRenderer extends Engine.Components.Component {
 			
 			case 'rectangle' :
 				Engine.Graphics.drawRectangle (
-                    this.actor.position.x + this.position.x - this.pivot.x * this.width,
-                    this.actor.position.y + this.position.y - this.pivot.y * this.height,
+                    this.actor.transform.position.x + this.offset.x - this.pivot.x * this.width,
+                    this.actor.transform.position.y + this.offset.y - this.pivot.y * this.height,
                     this.width,
 					this.height,
                     this.strokeWidth,
@@ -51,8 +51,8 @@ class GeometryRenderer extends Engine.Components.Component {
 				
 			case 'line' :
 				Engine.Graphics.drawLine (
-                    this.actor.position.x + this.position.x,
-                    this.actor.position.y + this.position.y,
+                    this.actor.transform.position.x + this.offset.x,
+                    this.actor.transform.position.y + this.offset.y,
                     this.moveX,
 					this.moveY,
 					this.strokeWidth,

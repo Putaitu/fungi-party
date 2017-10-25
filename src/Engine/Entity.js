@@ -10,6 +10,8 @@ class Entity {
     constructor(config) {
         this.defaults();
 
+        if(!config) { return; }
+
         for(let k in config) {
             this[k] = config[k];
         }

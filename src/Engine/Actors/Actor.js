@@ -21,20 +21,48 @@ class Actor extends Engine.Entity {
     defaults() {
         this.canUpdate = true;
         this.canDraw = true;
-        this.position = { x: 0, y: 0 };
         this.components = [];
+
+        this.addComponent(Engine.Components.Transform);
     }
 
     /**
      * Adds a components
      *
-     * @param {Component} component
+     * @param {Component|String} component
+     * @param {Object} config
      *
      * @returns {Component} Component
      */
-    addComponent(component) {
+    addComponent(component, config) {
+        if(typeof component === 'function') {
+            component = new component(config);
+        }
+
+        if(typeof component === 'string') {
+            component = new Engine.Components[component](config);
+        }
+
         if(component instanceof Engine.Components.Component === false) {
             throw new TypeError('Not a component', component);
+        }
+
+        // Special case: Transform
+        if(component instanceof Engine.Components.Transform) {
+            if(this.transform) {
+                throw new Error('Only one Transform component per Actor is allowed');
+            }
+
+            this.transform = component;
+        }
+        
+        // Special case: GeometryRenderer
+        if(component instanceof Engine.Components.GeometryRenderer) {
+            if(this.geometryRenderer) {
+                throw new Error('Only one GeometryRenderer component per Actor is allowed');
+            }
+
+            this.geometryRenderer = component;
         }
 
         component.actor = this;
@@ -47,11 +75,15 @@ class Actor extends Engine.Entity {
     /**
      * Gets a component
      *
-     * @param {Component} type
+     * @param {Component|String} type
      *
      * @returns {Component} Component
      */
     getComponent(type) {
+        if(typeof type === 'string') {
+            type = Engine.Components[type];
+        }
+
         for(let i in this.components) {
             if(this.components[i] instanceof type) {
                 return this.components[i];
@@ -90,7 +122,7 @@ class Actor extends Engine.Entity {
 
         // Debug
         if(Engine.Settings.useDebug === true) {
-            Engine.Graphics.drawCircle(this.position.x, this.position.y, 10, 0, null, '#ff0000');
+            Engine.Graphics.drawCircle(this.transform.position.x, this.transform.position.y, 10, 0, null, '#ff0000');
         }
     }
 

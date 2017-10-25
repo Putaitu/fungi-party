@@ -23,6 +23,21 @@ class Stage {
 
         this.actors.push(actor);
     }
+
+    /**
+     * Gets an actor
+     *
+     * @param {Actor} type
+     */
+    static getActor(type) {
+        for(let i in this.actors) {
+            if(this.actors[i] instanceof type) {
+                return this.actors[i];
+            }
+        }
+
+        return null;
+    }
 }
 
 Engine.Stage = Stage;
