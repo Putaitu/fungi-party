@@ -21,6 +21,15 @@ class Entity {
      * Defaults
      */
     defaults() {}
+
+    /**
+     * Creates a clone of this Entity
+     *
+     * @returns {Entity} Clone
+     */
+    clone() {
+        return Object.assign({}, this);
+    }
 }
 
 Engine.Entity = Entity;

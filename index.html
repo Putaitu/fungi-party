@@ -4,9 +4,8 @@
     <meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
     <title>Printer Game</title>
-  </head>
-  <body>
-	<script src="./src/Engine/Core.js"></script>
+	
+    <script src="./src/Engine/Core.js"></script>
 	<script src="./src/Engine/Settings.js"></script>
 	<script src="./src/Engine/Time.js"></script>
 	<script src="./src/Engine/Input.js"></script>
@@ -23,6 +22,16 @@
     <script src="./src/Engine/Actors/Actor.js"></script>
     <script src="./src/Engine/Actors/Pawn.js"></script>
 
-    <script src="./src/Game/Game.js"></script>
+    <script>
+        Engine.Core.load('Common');
+
+        if(location.hash) {
+            let gameNumber = location.hash.replace('#', '');
+            
+            Engine.Core.load('Game' + gameNumber);
+        }
+    </script>
+  </head>
+  <body>
   </body>
 </html>

@@ -22,8 +22,41 @@ class Actor extends Engine.Entity {
         this.canUpdate = true;
         this.canDraw = true;
         this.components = [];
+        this.children = [];
+        this.parent = null;
 
         this.addComponent(Engine.Components.Transform);
+    }
+
+    /**
+     * Gets the global transform
+     *
+     * @returns {Transform} Global transform
+     */
+    getGlobalTransform() {
+        let result = this.transform.clone();
+        let parent = this.parent;
+
+        while(parent) {
+            result = Engine.Components.Transform.add(result, parent.transform);
+
+            parent = parent.parent;
+        }
+
+        return result;
+    }
+
+    /**
+     * Adds a child
+     *
+     * @param {Actor} actor
+     */
+    addChild(actor) {
+        if(!actor || actor instanceof Actor === false) { return; }
+
+        actor.parent = this;
+
+        this.children.push(actor);
     }
 
     /**
@@ -117,7 +150,11 @@ class Actor extends Engine.Entity {
         for(let i in this.components) {
             if(!this.components[i].canDraw) { continue; }
 
+            Engine.Graphics.translate(this.components[i].offset.x, this.components[i].offset.y);
+
             this.components[i].draw();
+            
+            Engine.Graphics.translate(-this.components[i].offset.x, -this.components[i].offset.y);
         }
 
         // Debug

@@ -43,7 +43,17 @@ class Graphics {
         for(let i in Engine.Stage.actors) {
             if(!Engine.Stage.actors[i].canDraw) { continue; }
 
+            let transform = Engine.Stage.actors[i].getGlobalTransform();
+
+            this.translate(transform.position.x, transform.position.y);
+            //this.scale(transform.scale.x, transform.scale.y);
+            this.rotate(transform.rotate);
+
             Engine.Stage.actors[i].draw();
+           
+            this.rotate(-transform.rotate);
+            //this.scale(Math.pow(transform.scale.x, -1), Math.pow(transform.scale.y, -1));
+            this.translate(-transform.position.x, -transform.position.y);
         }
 
         window.requestAnimationFrame(() => {
@@ -58,7 +68,26 @@ class Graphics {
      * @param {Number} y
      */
     static translate(x, y) {
-        this.ctx.moveTo(x, y);
+        this.ctx.translate(x, y);
+    }
+    
+    /**
+     * Rotate
+     *
+     * @param {Number} degrees
+     */
+    static rotate(degrees) {
+        this.ctx.rotate(degrees * Math.PI / 180);
+    }
+    
+    /**
+     * Scale
+     *
+     * @param {Number} x
+     * @param {Number} y
+     */
+    static scale(x, y) {
+        this.ctx.scale(x, y);
     }
 
     /**
@@ -82,8 +111,8 @@ class Graphics {
      * @param {Number} y
      * @param {Number} radius
      * @param {Number} strokeWidth
-     * @param {String} strokeColor
-     * @param {String} fillColor
+     * @param {Color} strokeColor
+     * @param {Color} fillColor
      */
     static drawCircle(x, y, radius, strokeWidth, strokeColor, fillColor) {
         this.ctx.beginPath();
@@ -91,56 +120,57 @@ class Graphics {
 		this.ctx.lineWidth = strokeWidth;
 		
 		if(fillColor) {
-			this.ctx.fillStyle = fillColor;
+			this.ctx.fillStyle = fillColor.toHex();
 			this.ctx.fill();
 		}
 		
 		if(strokeColor) {
-			this.ctx.strokeStyle = strokeColor;
+			this.ctx.strokeStyle = strokeColor.toHex();
 			this.ctx.stroke();
 		}
     }
 
     /**
      * Draw a rectangle
+     *
      * @param {Number} x
      * @param {Number} y
      * @param {Number} width
      * @param {Number} height
 	 * @param {Number} strokeWidth
-     * @param {String} strokeColor
-     * @param {String} fillColor
-
+     * @param {Color} strokeColor
+     * @param {Color} fillColor
      */
     static drawRectangle(x, y, width, height, strokeWidth, strokeColor, fillColor) {
 		this.ctx.beginPath();
 		this.ctx.rect(x, y, width, height);
 		this.ctx.lineWidth = strokeWidth;
-		
+
 		if(fillColor) {
-			this.ctx.fillStyle = fillColor;
+			this.ctx.fillStyle = fillColor.toHex();
 			this.ctx.fill();
 		}
 		
 		if(strokeColor) {
-			this.ctx.strokeStyle = strokeColor;
+			this.ctx.strokeStyle = strokeColor.toHex();
 			this.ctx.stroke();
 		}
 	}
     
     /**
      * Draw a line
+     *
      * @param {Number} moveX How much to move on x-axis
      * @param {Number} moveY How much to move on y-axis
 	 * @param {Number} strokeWidth
-     * @param {String} strokeColor
+     * @param {Color} strokeColor
      */
     static drawLine(x, y, moveX, moveY, strokeWidth, strokeColor) {
 		this.ctx.beginPath();
 		this.ctx.moveTo(x, y);
 		this.ctx.lineTo(x + moveX, y + moveY);
 		this.ctx.lineWidth = strokeWidth;
-		this.ctx.strokeStyle = strokeColor;
+		this.ctx.strokeStyle = strokeColor ? strokeColor.toHex() : '#000000';
 		this.ctx.stroke();
 	}
 }

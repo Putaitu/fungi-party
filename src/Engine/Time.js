@@ -19,7 +19,7 @@ class Time {
      * The update loop
      */
     static update(timestamp) {
-        this.deltaTime = (timestamp - this.lastTimeStamp) * 0.01;
+        this.deltaTime = (timestamp - this.lastTimeStamp) * 0.001;
         this.lastTimeStamp = timestamp;
         
         for(let i in Engine.Stage.actors) {

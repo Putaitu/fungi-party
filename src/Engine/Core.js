@@ -42,6 +42,30 @@ class Core {
             this.events[type][i]();
         }
     }
+
+    /**
+     * Loads a script
+     *
+     * @param {String} path
+     */
+    static load(path) {
+        if(typeof path !== 'string') {
+            Engine.Debug.error('Parameter "path" must be of type "string"');
+        }
+
+        // Append .js if not present
+        if(path.indexOf('.js') < 0) {
+            path += '.js';
+        }
+
+        // Append root dir
+        path = './src/Game/' + path;
+
+        let script = document.createElement('script');
+        script.src = path;
+
+        document.head.appendChild(script);
+    }
 }
 
 window.Engine = {
