@@ -13,7 +13,7 @@ Game.Actors.Fish = class Fish extends Engine.Actors.Pawn {
         this.addComponent('GeometryRenderer', {
             type: 'circle',
             radius: UNIT / 4,
-            fillColor: '#ffaa00'
+            fillColor: new Engine.Math.Color(1, 0.8, 0)
         });
     }
 

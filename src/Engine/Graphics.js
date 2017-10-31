@@ -18,8 +18,8 @@ class Graphics {
         this.canvas.width = this.screenWidth;
         this.canvas.height = this.screenHeight;
 
-		this.backgroundColor = '#cccccc';
-		
+        this.backgroundColor = '#cccccc';
+        
         document.body.appendChild(this.canvas);
 
         document.body.style.width = '100vw';
@@ -37,7 +37,7 @@ class Graphics {
      * The draw loop
      */
     static draw() {
-		this.ctx.fillStyle = this.backgroundColor;
+        this.ctx.fillStyle = this.backgroundColor;
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
         for(let i in Engine.Stage.actors) {
@@ -117,17 +117,17 @@ class Graphics {
     static drawCircle(x, y, radius, strokeWidth, strokeColor, fillColor) {
         this.ctx.beginPath();
         this.ctx.arc(x, y, radius, 0, 2 * Math.PI);
-		this.ctx.lineWidth = strokeWidth;
-		
-		if(fillColor) {
-			this.ctx.fillStyle = fillColor.toHex();
-			this.ctx.fill();
-		}
-		
-		if(strokeColor) {
-			this.ctx.strokeStyle = strokeColor.toHex();
-			this.ctx.stroke();
-		}
+        this.ctx.lineWidth = strokeWidth;
+        
+        if(fillColor) {
+            this.ctx.fillStyle = fillColor.toHex();
+            this.ctx.fill();
+        }
+        
+        if(strokeColor) {
+            this.ctx.strokeStyle = strokeColor.toHex();
+            this.ctx.stroke();
+        }
     }
 
     /**
@@ -137,42 +137,42 @@ class Graphics {
      * @param {Number} y
      * @param {Number} width
      * @param {Number} height
-	 * @param {Number} strokeWidth
+     * @param {Number} strokeWidth
      * @param {Color} strokeColor
      * @param {Color} fillColor
      */
     static drawRectangle(x, y, width, height, strokeWidth, strokeColor, fillColor) {
-		this.ctx.beginPath();
-		this.ctx.rect(x, y, width, height);
-		this.ctx.lineWidth = strokeWidth;
+        this.ctx.beginPath();
+        this.ctx.rect(x, y, width, height);
+        this.ctx.lineWidth = strokeWidth;
 
-		if(fillColor) {
-			this.ctx.fillStyle = fillColor.toHex();
-			this.ctx.fill();
-		}
-		
-		if(strokeColor) {
-			this.ctx.strokeStyle = strokeColor.toHex();
-			this.ctx.stroke();
-		}
-	}
+        if(fillColor) {
+            this.ctx.fillStyle = fillColor.toHex();
+            this.ctx.fill();
+        }
+        
+        if(strokeColor) {
+            this.ctx.strokeStyle = strokeColor.toHex();
+            this.ctx.stroke();
+        }
+    }
     
     /**
      * Draw a line
      *
      * @param {Number} moveX How much to move on x-axis
      * @param {Number} moveY How much to move on y-axis
-	 * @param {Number} strokeWidth
+     * @param {Number} strokeWidth
      * @param {Color} strokeColor
      */
     static drawLine(x, y, moveX, moveY, strokeWidth, strokeColor) {
-		this.ctx.beginPath();
-		this.ctx.moveTo(x, y);
-		this.ctx.lineTo(x + moveX, y + moveY);
-		this.ctx.lineWidth = strokeWidth;
-		this.ctx.strokeStyle = strokeColor ? strokeColor.toHex() : '#000000';
-		this.ctx.stroke();
-	}
+        this.ctx.beginPath();
+        this.ctx.moveTo(x, y);
+        this.ctx.lineTo(x + moveX, y + moveY);
+        this.ctx.lineWidth = strokeWidth;
+        this.ctx.strokeStyle = strokeColor ? strokeColor.toHex() : '#000000';
+        this.ctx.stroke();
+    }
 }
 
 Engine.Graphics = Graphics;
