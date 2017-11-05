@@ -1,20 +1,113 @@
 'use strict';
 
 /**
- * A fish!
+ * The player grid
  */
-Game.Actors.Fish = class Fish extends Engine.Actors.Pawn {
+Game.Actors.PlayerGrid = class PlayerGrid extends Game.Actors.Grid {
     /**
      * Constructor
      */
     constructor(config) {
         super(config);
+    
+        // Build blank tiles
+        for(let y = 0; y < this.size; y++) {
+            for(let x = 0; x < this.size; x++) {
+                let tile = new Game.Actors.ColorTile({
+                    color: new Engine.Math.Color(0, 0, 0)
+                });
+                
+                tile.transform.position.x = UNIT * x - UNIT;
+                tile.transform.position.y = UNIT * y - UNIT;
 
-        this.addComponent('GeometryRenderer', {
-            type: 'circle',
-            radius: UNIT / 4,
-            fillColor: new Engine.Math.Color(1, 0.8, 0)
-        });
+                this.addChild(tile);
+            }
+        }
+
+        // Place grid
+        this.transform.position.x = UNIT * 2;
+        this.transform.position.y = Engine.Graphics.screenHeight / 2;
+
+        // Update tiles
+        this.updateTiles();
+
+        // Init input
+        Engine.Input.on('keydown', Engine.Input.KEY.W, (e) => { this.move('y', -1); });
+        Engine.Input.on('keydown', Engine.Input.KEY.A, (e) => { this.move('x', -1); });
+        Engine.Input.on('keydown', Engine.Input.KEY.S, (e) => { this.move('y', 1); });
+        Engine.Input.on('keydown', Engine.Input.KEY.D, (e) => { this.move('x', 1); });
+        Engine.Input.on('keydown', Engine.Input.KEY.SPACE, (e) => { this.pickColor(); });
+    }
+
+    /**
+     * Move current tile along axis
+     *
+     * @param {String} axis
+     * @param {Number} amount
+     */
+    move(axis, amount) {
+        let newTile = this.currentTile;
+
+        if(axis === 'y') {
+            newTile = this.currentTile + amount * this.size;
+        }
+        
+        if(axis === 'x') {
+            let mod = this.currentTile % this.size;
+
+            // Prevent going too far left
+            if(amount < 0 && mod === 0) { return; }
+            
+            // Prevent going too far right
+            if(amount > 0 && mod === 2) { return; }
+
+            newTile = this.currentTile + amount;
+        }
+
+        let minIndex = 0;
+        let maxIndex = Math.pow(this.size, 2) - 1;
+
+        if(newTile < minIndex || newTile > maxIndex) { return; }
+
+        this.currentTile = newTile;
+
+        this.updateTiles();
+
+    }
+
+    /**
+     * Picks the current color from the queue and applies it to the current tile
+     */
+    pickColor() {
+        // Get the current tile
+        let currentTile = this.children[this.currentTile];
+
+        if(currentTile.isCorrect === false) { return; }
+   
+        // Get colour from queue
+        let queue = Engine.Stage.getActor(Game.Actors.Queue);
+        let queueColor = queue.popColor();
+        
+        // Add the new colour to the old colour
+        let oldColor = currentTile.getColor();
+        let newColor = Engine.Math.Color.add(oldColor, queueColor);
+
+        // Apply the mixed colour
+        currentTile.setColor(newColor);
+
+        // Compare to the target colour
+        let targetGrid = Engine.Stage.getActor(Game.Actors.TargetGrid);
+
+        let targetTile = targetGrid.children[this.currentTile];
+
+        let isIncorrect =
+            currentTile.color.r > targetTile.color.r || 
+            currentTile.color.g > targetTile.color.g || 
+            currentTile.color.b > targetTile.color.b;
+
+        if(isIncorrect) {
+            currentTile.setCorrect(false);
+        }
     }
 
     /**
@@ -23,158 +116,23 @@ Game.Actors.Fish = class Fish extends Engine.Actors.Pawn {
     defaults() {
         super.defaults();
 
-        this.direction = 1;
-        this.movementSpeed = 300;
-        this.currentTile = 1;
+        this.size = 3;
+        this.currentTile = 0;
     }
 
     /**
-     * Update
+     * Updates tiles
      */
-    update() {
-        // If close to the tile limit or the right sides of the screen, change direction
-        if(this.transform.position.x > Engine.Graphics.screenWidth - this.geometryRenderer.radius) {
-            this.direction = -1;
-        } else if(this.transform.position.x < (this.currentTile * UNIT) + this.geometryRenderer.radius) {
-            this.direction = 1;
+    updateTiles() {
+        for(let i = 0; i < this.children.length; i++) {
+            this.children[i].setStrokeColor(i === this.currentTile ? new Color(1, 1, 1) : null); 
         }
-            
-        // Move in the given direction on the X axis
-        this.move(this.direction, 0);
     }
 }
 
-/**
- * The player
- */
-Game.Actors.Player = class Player extends Engine.Actors.Pawn {
-    /**
-     * Constructor
-     */
-    constructor(config) {
-        super(config);
+// Initialise the grids
+let targetGrid = new Game.Actors.TargetGrid();
+let playerGrid = new Game.Actors.PlayerGrid();
 
-        this.color = new Engine.Math.Color(0, 0, 0);
-
-        this.setCurrentTile(0);
-
-        this.addComponent('GeometryRenderer', {
-            type: 'rectangle',
-            width: UNIT * 0.5,
-            height: UNIT * 0.5,
-            fillColor: this.color
-        });
-
-        // Set up input
-        Engine.Input.on('keydown', Engine.Input.KEY.Q, (e) => {
-            this.incrementColorComponent('r', 0.5);  
-        });
-        
-        Engine.Input.on('keydown', Engine.Input.KEY.W, (e) => {
-            this.incrementColorComponent('g', 0.5);  
-        });
-        
-        Engine.Input.on('keydown', Engine.Input.KEY.E, (e) => {
-            this.incrementColorComponent('b', 0.5);  
-        });
-        
-        Engine.Input.on('keydown', Engine.Input.KEY.R, (e) => {
-            this.resetColor();
-        });
-    }
-
-    /**
-     * Resets the color
-     */
-    resetColor() {
-        this.color.r = 0;
-        this.color.g = 0;
-        this.color.b = 0;
-        
-        // Update the GeometryRenderer component
-        this.getComponent('GeometryRenderer').fillColor = this.color;
-    }
-
-    /**
-     * Updates a colour component
-     *
-     * @param {String} component
-     * @param {Number} increment
-     */
-    incrementColorComponent(component, increment) {
-        // Increment the component
-        this.color[component] += increment;
-
-        // If the value is higher than 1, reset to 0
-        if(this.color[component] > 1) {
-            this.color[component] = 0;
-        }
-        
-        // Update the GemoetryRenderer component
-        this.getComponent('GeometryRenderer').fillColor = this.color;
-
-        // Check if the colour matches the tile
-        let tile = Engine.Stage.getActors(Game.Actors.Tile)[this.currentTile];
-
-        if(!tile) {
-            throw new Error('Tile at position "' + this.currentTile + '" does not exist');
-        }
-
-        // If the colur matches the tile, increment the current tile and kill the fish
-        if(tile.color.compare(this.color) === 0) {
-            let fish = Engine.Stage.getActors(Game.Actors.Fish);
-
-            for(let i in fish) {
-                if(fish[i].currentTile === this.currentTile) {
-                    fish[i].destroy();
-                }
-            }
-            
-            this.setCurrentTile(this.currentTile + 1);
-        }
-    }
-
-    /**
-     * Sets the current tile
-     *
-     * @param {Number} currentTile
-     */
-    setCurrentTile(tile) {
-        this.currentTile = tile;
-
-        this.transform.position.x = this.currentTile * UNIT + UNIT * 0.5;
-    }
-}
-
-// --------------------
-// Generate tiles
-// --------------------
-for (let i = 0; i < 10; i++) {  
-    let tile = new Game.Actors.ColorTile({
-        color: Engine.Math.Color.getRandom(0.5)
-    });
-
-    // Place each tile to fill out the scene space (offset by half its width/height)
-    tile.transform.position.x = i * UNIT + UNIT * 0.5;
-    tile.transform.position.y = Engine.Graphics.screenHeight - UNIT * 0.5;
-}
-
-// --------------------
-// Create fish
-// --------------------
-for(let i = 0; i < 10; i++) {
-    let fish = new Game.Actors.Fish({
-        currentTile: i
-    });
-
-    // Start at 100x100 position
-    fish.transform.position.y = UNIT + i * (UNIT * 0.5);
-    fish.transform.position.x = UNIT * 10;
-}
-
-// --------------------
-// Place player
-// --------------------
-let player = new Game.Actors.Player();
-
-player.transform.position.y = Engine.Graphics.screenHeight - UNIT * 1.25;
+// Initialise the queue
+let queue = new Game.Actors.Queue;

@@ -105,7 +105,37 @@ class Graphics {
     }
 
     /**
-     * Draw a circle
+     * Draws text
+     *
+     * @param {Number} x
+     * @param {Number} y
+     * @param {String} text
+     * @param {String} xAlign
+     * @param {String} yAlign
+     * @param {Number} size
+     * @param {String} font
+     * @param {Color} strokeColor
+     * @param {Color} fillColor
+     */
+    static drawText(x, y, text, xAlign, yAlign, size, font, strokeColor, fillColor) {
+        this.ctx.font = size + 'px ' + font;
+
+        this.ctx.textAlign = xAlign;
+        this.ctx.textBaseline = yAlign;
+
+        if(strokeColor) {
+            this.ctx.strokeStyle = strokeColor.toHex();
+            this.ctx.strokeText(text, x, y)
+        }
+        
+        if(fillColor) {
+            this.ctx.fillStyle = fillColor.toHex();
+            this.ctx.fillText(text, x, y)
+        }
+    }
+
+    /**
+     * Draws a circle
      *
      * @param {Number} x
      * @param {Number} y

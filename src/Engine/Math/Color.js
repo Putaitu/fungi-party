@@ -22,6 +22,26 @@ class Color {
     }
 
     /**
+     * Returns negative colour
+     *
+     * @returns {Color} Negative
+     */
+    getNegative() {
+        return new Color(1 - this.r, 1 - this.g, 1- this.b);
+    }
+
+    /**
+     * Returns true if this colour equals the other
+     *
+     * @param {Color} color
+     *
+     * @returns {Boolean} Is equal
+     */
+    equals(color) {
+        return this.compare(color) === 0;
+    }
+        
+    /**
      * Compares to another colour
      *
      * @param {Color} color

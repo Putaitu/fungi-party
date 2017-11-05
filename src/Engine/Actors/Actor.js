@@ -80,22 +80,14 @@ class Actor extends Engine.Entity {
             throw new TypeError('Not a component', component);
         }
 
-        // Special case: Transform
-        if(component instanceof Engine.Components.Transform) {
-            if(this.transform) {
-                throw new Error('Only one Transform component per Actor is allowed');
-            }
-
-            this.transform = component;
-        }
+        // Assign component name as shortcut..
+        let name = component.constructor.name;
         
-        // Special case: GeometryRenderer
-        if(component instanceof Engine.Components.GeometryRenderer) {
-            if(this.geometryRenderer) {
-                throw new Error('Only one GeometryRenderer component per Actor is allowed');
-            }
+        name = name.substring(0, 1).toLowerCase() + name.substring(1);
 
-            this.geometryRenderer = component;
+        // ...but only if it hasn't been already
+        if(!this[name]) {
+            this[name] = component;
         }
 
         component.actor = this;
