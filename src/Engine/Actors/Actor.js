@@ -22,10 +22,38 @@ class Actor extends Engine.Entity {
         this.canUpdate = true;
         this.canDraw = true;
         this.components = [];
+        this.events = {};
         this.children = [];
         this.parent = null;
 
         this.addComponent(Engine.Components.Transform);
+    }
+
+    /**
+     * Adds an event handler
+     *
+     * @param {String} event
+     * @param {Function} handler
+     */
+    on(event, handler) {
+        if(!this.events[event]) {
+            this.events[event] = [];
+        }
+
+        this.events[event].push(handler);
+    }
+
+    /**
+     * Triggers an event
+     *
+     * @param {String} event
+     */
+    trigger(event) {
+        if(!this.events[event]) { return; }
+
+        for(let i in this.events[event]) {
+            this.events[event][i]();
+        }
     }
 
     /**

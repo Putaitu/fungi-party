@@ -16,7 +16,7 @@ Game.Actors.PlayerGrid = class PlayerGrid extends Game.Actors.Grid {
                 let tile = new Game.Actors.ColorTile({
                     color: new Engine.Math.Color(0, 0, 0)
                 });
-                
+            
                 tile.transform.position.x = UNIT * x - UNIT;
                 tile.transform.position.y = UNIT * y - UNIT;
 
@@ -37,6 +37,45 @@ Game.Actors.PlayerGrid = class PlayerGrid extends Game.Actors.Grid {
         Engine.Input.on('keydown', Engine.Input.KEY.S, (e) => { this.move('y', 1); });
         Engine.Input.on('keydown', Engine.Input.KEY.D, (e) => { this.move('x', 1); });
         Engine.Input.on('keydown', Engine.Input.KEY.SPACE, (e) => { this.pickColor(); });
+        Engine.Input.on('click', Engine.Input.BUTTON.LEFT_MOUSE, (e) => { this.onClick(e); });
+
+        // Place button
+        this.discardButton = new Engine.UI.Button({
+            x: this.transform.position.x,
+            y: this.transform.position.y + UNIT * 2,
+            width: UNIT,
+            height: UNIT / 2,
+            text: '⌫',
+            onClick: () => {
+                let queue = Engine.Stage.getActor(Game.Actors.Queue);
+                
+                queue.popTile();
+            }
+        });
+    }
+
+    /**
+     * Add tile
+     *
+     * @param {ColorTile} tile
+     */
+    addChild(tile) {
+        let index = this.children.length;
+
+        super.addChild(tile);
+
+        tile.on('click', () => {
+            this.currentTile = index;
+            this.pickColor();
+        });
+    }
+
+        
+    /**
+     * Event: Click
+     */
+    onClick(e) {
+        
     }
 
     /**
@@ -66,10 +105,16 @@ Game.Actors.PlayerGrid = class PlayerGrid extends Game.Actors.Grid {
 
         let minIndex = 0;
         let maxIndex = Math.pow(this.size, 2) - 1;
+        
+        // If we're at the top, stop players from going up
+        if(newTile < minIndex) { return; }
 
-        if(newTile < minIndex || newTile > maxIndex) { return; }
+        // If we're on the bottom row and press down once more, focus the discard button
+        this.discardButton.setFocus(newTile > maxIndex);
 
-        this.currentTile = newTile;
+        if(newTile <= maxIndex + this.size) {
+            this.currentTile = newTile;
+        }
 
         this.updateTiles();
 
@@ -78,27 +123,28 @@ Game.Actors.PlayerGrid = class PlayerGrid extends Game.Actors.Grid {
     /**
      * Picks the current color from the queue and applies it to the current tile
      */
-    pickColor() {
-        // Get the current tile
+    pickColor() { 
+        // Check if we're above the max index, in which case the discard button is focused
+        let maxIndex = Math.pow(this.size, 2) - 1;
+        
+        if(this.currentTile > maxIndex) { return; }
+        
+        // Get current tile
         let currentTile = this.children[this.currentTile];
-
-        if(currentTile.isCorrect === false) { return; }
-   
+        
         // Get colour from queue
         let queue = Engine.Stage.getActor(Game.Actors.Queue);
-        let queueColor = queue.popColor();
+        let queueTile = queue.popTile();
         
-        // Add the new colour to the old colour
-        let oldColor = currentTile.getColor();
-        let newColor = Engine.Math.Color.add(oldColor, queueColor);
-
-        // Apply the mixed colour
-        currentTile.setColor(newColor);
+        // Trigger on picked event
+        queueTile.onPicked(this);
 
         // Compare to the target colour
         let targetGrid = Engine.Stage.getActor(Game.Actors.TargetGrid);
 
-        let targetTile = targetGrid.children[this.currentTile];
+        let targetTile = targetGrid.children[playerGrid.currentTile];
+
+        let isCorrect = currentTile.color.equals(targetTile.color);
 
         let isIncorrect =
             currentTile.color.r > targetTile.color.r || 
@@ -107,6 +153,10 @@ Game.Actors.PlayerGrid = class PlayerGrid extends Game.Actors.Grid {
 
         if(isIncorrect) {
             currentTile.setCorrect(false);
+        } else if(isCorrect) {
+            currentTile.setCorrect(true);
+        } else {
+            currentTile.setCorrect(undefined);
         }
     }
 

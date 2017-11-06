@@ -21,7 +21,10 @@ class Graphics {
         this.backgroundColor = '#cccccc';
         
         document.body.appendChild(this.canvas);
+        
+        document.documentElement.style.overflow = 'hidden';
 
+        document.body.style.overflow = 'hidden';
         document.body.style.width = '100vw';
         document.body.style.height = '100vh';
         document.body.style.margin = 0;

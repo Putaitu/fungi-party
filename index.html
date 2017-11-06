@@ -12,8 +12,11 @@
 	<script src="./src/Engine/Graphics.js"></script>
 	<script src="./src/Engine/Stage.js"></script>
 	<script src="./src/Engine/Entity.js"></script>
-	
+
 	<script src="./src/Engine/Math/Color.js"></script>
+	<script src="./src/Engine/Math/Rect.js"></script>
+	
+    <script src="./src/Engine/UI.js"></script>
 	
 	<script src="./src/Engine/Components/Component.js"></script>
 	<script src="./src/Engine/Components/Transform.js"></script>
@@ -23,41 +26,11 @@
 	
     <script src="./src/Engine/Actors/Actor.js"></script>
     <script src="./src/Engine/Actors/Pawn.js"></script>
-
   </head>
   <body>
     <script>
         Engine.Core.load('Common');
-
-        let button1 = document.createElement('button');
-        button1.innerHTML = '1';
-        button1.style.position = 'absolute';
-        button1.style.display = 'block';
-        button1.style.top = '0px';
-        button1.style.left = '0px';
-        button1.style.width = '100px';
-        button1.style.height = '30px';
-        document.body.appendChild(button1);
-        button1.addEventListener('click', () => {
-            Engine.Core.load('Game1');
-            document.body.removeChild(button1);
-            document.body.removeChild(button2);
-        });
-        
-        let button2 = document.createElement('button');
-        button2.innerHTML = '2';
-        button2.style.position = 'absolute';
-        button2.style.display = 'block';
-        button2.style.top = '0px';
-        button2.style.left = '100px';
-        button2.style.width = '100px';
-        button2.style.height = '30px';
-        document.body.appendChild(button2);
-        button2.addEventListener('click', () => {
-            Engine.Core.load('Game2');
-            document.body.removeChild(button1);
-            document.body.removeChild(button2);
-        });
+        Engine.Core.load('Game1');
     </script>
   </body>
 </html>

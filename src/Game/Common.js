@@ -29,8 +29,41 @@ Game.Actors.ColorTile = class ColorTile extends Engine.Actors.Actor {
         });
 
         this.addComponent('TextRenderer', {
-            fillColor: new Color(1, 1, 1)
+            fillColor: this.color.getNegative()
         });
+
+        this.colorHistory = [ this.color ];
+    }
+
+    /**
+     * Defaults
+     */
+    defaults() {
+        super.defaults();
+
+        this.color = new Engine.Math.Color(0, 0, 0);
+        this.colorHistory = [ this.color ];
+    }
+
+    /**
+     * Event: Picked
+     *
+     * @param {PlayerGrid} playerGrid
+     */
+    onPicked(playerGrid) {
+        let queueColor = this.color;
+        
+        // Get the current tile
+        let currentTile = playerGrid.children[playerGrid.currentTile];
+        
+        if(typeof currentTile.isCorrect !== 'undefined') { return; }
+        
+        // Add the new colour to the old colour
+        let oldColor = currentTile.getColor();
+        let newColor = Engine.Math.Color.add(oldColor, queueColor);
+
+        // Apply the mixed colour
+        currentTile.setColor(newColor);
     }
 
     /**
@@ -49,11 +82,26 @@ Game.Actors.ColorTile = class ColorTile extends Engine.Actors.Actor {
      * @param {Color} color
      */
     setColor(color) {
+        this.colorHistory.push(this.color);
+
         this.color = color;
 
         this.geometryRenderer.fillColor = color;
     }
-    
+
+    /**
+     * Undo color
+     */
+    undoColor() {
+        if(this.colorHistory.length < 2) { return; }
+
+        let prevColor = this.colorHistory.pop();
+        
+        this.color = prevColor;
+
+        this.geometryRenderer.fillColor = prevColor;
+    }
+
     /**
      * Gets the color
      */
@@ -69,7 +117,37 @@ Game.Actors.ColorTile = class ColorTile extends Engine.Actors.Actor {
     setCorrect(isCorrect) {
         this.isCorrect = isCorrect;
 
-        this.textRenderer.text = isCorrect ? '✓' : '✕';
+        switch(isCorrect) {
+            case true:
+                this.textRenderer.text = '✓';
+                break;
+
+            case false:
+                this.textRenderer.text = '✕';
+                break;
+
+            case undefined:
+                this.textRenderer.text = '';
+                break;
+        }
+    }
+}
+
+/**
+ * A powerup tile
+ */
+Game.Actors.PowerupTile = class PowerupTile extends Game.Actors.ColorTile {
+    /**
+     * Constructor
+     */
+    constructor(params) {
+        super(params);
+   
+        switch(this.type) {
+            case 'undo':
+                this.textRenderer.text = '↺';
+                break;
+        }
     }
 
     /**
@@ -78,7 +156,24 @@ Game.Actors.ColorTile = class ColorTile extends Engine.Actors.Actor {
     defaults() {
         super.defaults();
 
-        this.color = new Engine.Math.Color(0, 0, 0);
+        this.type = 'undo';
+    }
+
+    /**
+     * Event: Picked
+     *
+     * @param {PlayerGrid} playerGrid
+     */
+    onPicked(playerGrid) {
+        // Get the current tile
+        let currentTile = playerGrid.children[playerGrid.currentTile];
+        
+        switch(this.type) {
+            case 'undo':
+                currentTile.undoColor();
+                break;
+
+        }
     }
 }
 
@@ -138,27 +233,50 @@ Game.Actors.Queue = class Queue extends Engine.Actors.Actor {
     spawnTile() {
         if(this.children.length > 5) { return; }
 
+        // Get random powerup tile
+        let randomPowerups = [
+            false,
+            false,
+            false,
+            'undo'
+        ];
+
+
+        let randomPowerupIndex = Math.floor(Math.random() * randomPowerups.length);
+
+        if(randomPowerups[randomPowerupIndex]) {
+            let tile = new Game.Actors.PowerupTile({
+                color: new Color(1, 1, 1),
+                type: randomPowerups[randomPowerupIndex]
+            });
+        
+            this.addChild(tile);
+
+            this.updateTiles();
+            return;
+        }
+
+        // Get random color
         let randomColors = [
             new Color(0.5, 0, 0),
             new Color(0, 0.5, 0),
             new Color(0, 0, 0.5)
         ];
 
-        // Get random index
-        let randomIndex = Math.floor(Math.random() * 3);
+        let randomColorIndex = Math.floor(Math.random() * 3);
         
         // Make sure it isn't too random by comparing to previous occurrences
         for(let i = 0; i < 3; i++) {
-            if(this.randomAmounts[i] < this.randomAmounts[randomIndex]) {
-                randomIndex = i;
+            if(this.randomAmounts[i] < this.randomAmounts[randomColorIndex]) {
+                randomColorIndex = i;
                 break;
             }
         }
 
-        this.randomAmounts[randomIndex]++;
+        this.randomAmounts[randomColorIndex]++;
 
         // Get random colour and assign it to a new tile
-        let randomColor = randomColors[randomIndex];
+        let randomColor = randomColors[randomColorIndex];
 
         let tile = new Game.Actors.ColorTile({color: randomColor})
     
@@ -168,21 +286,20 @@ Game.Actors.Queue = class Queue extends Engine.Actors.Actor {
     }
     
     /**
-     * Removes the oldest color from the queue and returns it
+     * Removes the oldest tile from the queue and returns it
      *
-     * @returns {Color} Result
+     * @returns {ColorTile} Result
      */
-    popColor() {
+    popTile() {
         if(this.children.length < 1) { return; }
 
         let colorTile = this.children.shift();
-        let color = colorTile.color;
-
-        colorTile.destroy();
 
         this.updateTiles();
 
-        return color;
+        colorTile.destroy();
+
+        return colorTile;
     }
 }
 

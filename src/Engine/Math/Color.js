@@ -27,7 +27,7 @@ class Color {
      * @returns {Color} Negative
      */
     getNegative() {
-        return new Color(1 - this.r, 1 - this.g, 1- this.b);
+        return new Color(1 - this.r, 1 - this.g, 1 - this.b);
     }
 
     /**

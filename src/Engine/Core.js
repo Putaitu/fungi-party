@@ -12,6 +12,7 @@ class Core {
         Engine.Input.init();
         Engine.Graphics.init();
         Engine.Stage.init();
+        Engine.UI.init();
 
         this.trigger('init');
     }

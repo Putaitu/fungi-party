@@ -16,12 +16,39 @@ class Input {
 
         // Init listeners
         document.addEventListener('keydown', (e) => {
+            e.preventDefault();
+            
             this.trigger('keydown', e.which, e);
         });
         
         document.addEventListener('keyup', (e) => {
+            e.preventDefault();
+            
             this.trigger('keyup', e.which, e);
         });
+
+        document.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            this.trigger('click', e.which, e);
+
+            // Look for colliders to trigger clicks on
+            let actors = Engine.Stage.getActors();
+
+            for(let i in actors) {
+                if(actors[i].collider && actors[i].collider.getBounds().contains(e.pageX, e.pageY)) {
+                    actors[i].trigger('click');
+                }
+            }
+        });
+
+        // Buttons
+        this.BUTTON = {
+            LEFT_MOUSE: 1,
+            MIDDLE_MOUSE: 2,
+            RIGHT_MOUSE: 3
+        };
 
         // Keys
         this.KEY = {
@@ -135,6 +162,7 @@ class Input {
      * @param {InputEvent} event
      */
     static trigger(action, key, event) {
+        if(!this.events[action]) { return; }
         if(!this.events[action][key]) { return; }
             
         for(let i in this.events[action][key]) {
@@ -152,6 +180,10 @@ class Input {
      * @param {Function} callback
      */
     static on(action, key, callback) {
+        if(!this.events[action]) {
+            this.events[action] = {};
+        }
+        
         if(!this.events[action][key]) {
             this.events[action][key] = [];
         }
