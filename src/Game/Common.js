@@ -21,16 +21,6 @@ Game.Actors.ColorTile = class ColorTile extends Engine.Actors.Actor {
     constructor(config) {
         super(config);
                     
-        this.addComponent('GeometryRenderer', {
-            type: 'rectangle',
-            width: UNIT,
-            height: UNIT,
-            fillColor: this.color
-        });
-
-        this.addComponent('TextRenderer', {
-            fillColor: this.color.getNegative()
-        });
 
         this.colorHistory = [ this.color ];
     }
@@ -41,8 +31,34 @@ Game.Actors.ColorTile = class ColorTile extends Engine.Actors.Actor {
     defaults() {
         super.defaults();
 
-        this.color = new Engine.Math.Color(0, 0, 0);
-        this.colorHistory = [ this.color ];
+        this.addComponent('GeometryRenderer', {
+            type: 'rectangle',
+            width: UNIT,
+            height: UNIT,
+            fillColor: new Color(0, 0, 0)
+        });
+
+        this.addComponent('TextRenderer', {
+            fillColor: new Color(1, 1, 1),
+            strokeColor: new Color(1, 1, 1)
+        });
+        
+        this.colorHistory = [];
+    }
+
+    /**
+     * Getter: Colour
+     */
+    get color() {
+        return this.geometryRenderer.fillColor;
+    }
+    
+    /**
+     * Setter: Colour
+     */
+    set color(value) {
+        this.geometryRenderer.fillColor = value;
+        this.textRenderer.fillColor = value.getNegative();
     }
 
     /**
@@ -59,11 +75,11 @@ Game.Actors.ColorTile = class ColorTile extends Engine.Actors.Actor {
         if(typeof currentTile.isCorrect !== 'undefined') { return; }
         
         // Add the new colour to the old colour
-        let oldColor = currentTile.getColor();
+        let oldColor = currentTile.color;
         let newColor = Engine.Math.Color.add(oldColor, queueColor);
 
         // Apply the mixed colour
-        currentTile.setColor(newColor);
+        currentTile.pushColor(newColor);
     }
 
     /**
@@ -81,12 +97,10 @@ Game.Actors.ColorTile = class ColorTile extends Engine.Actors.Actor {
      *
      * @param {Color} color
      */
-    setColor(color) {
+    pushColor(color) {
         this.colorHistory.push(this.color);
 
         this.color = color;
-
-        this.geometryRenderer.fillColor = color;
     }
 
     /**
@@ -98,15 +112,6 @@ Game.Actors.ColorTile = class ColorTile extends Engine.Actors.Actor {
         let prevColor = this.colorHistory.pop();
         
         this.color = prevColor;
-
-        this.geometryRenderer.fillColor = prevColor;
-    }
-
-    /**
-     * Gets the color
-     */
-    getColor(color) {
-        return this.geometryRenderer.fillColor;
     }
 
     /**
@@ -338,7 +343,7 @@ Game.Actors.TargetGrid = class TargetGrid extends Game.Actors.Grid {
         for(let y = 0; y < this.size; y++) {
             for(let x = 0; x < this.size; x++) {
                 let tile = new Game.Actors.ColorTile({
-                    color: Engine.Math.Color.getRandom(0.5)
+                    color: Engine.Math.Color.getRandom(0.5, Engine.Math.Color.RULE.NO_GREYSCALE)
                 });
                 
                 tile.transform.position.x = UNIT * x - UNIT;

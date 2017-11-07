@@ -20,6 +20,15 @@ Game.Actors.PlayerGrid = class PlayerGrid extends Game.Actors.Grid {
                 tile.transform.position.x = UNIT * x - UNIT;
                 tile.transform.position.y = UNIT * y - UNIT;
 
+                tile.addComponent('Collider', {
+                    width: UNIT,
+                    height: UNIT,
+                    offset: {
+                        x: 0.5,
+                        y: 0.5
+                    }
+                });
+                    
                 this.addChild(tile);
             }
         }
@@ -66,6 +75,7 @@ Game.Actors.PlayerGrid = class PlayerGrid extends Game.Actors.Grid {
 
         tile.on('click', () => {
             this.currentTile = index;
+            this.updateTiles();
             this.pickColor();
         });
     }
@@ -127,8 +137,6 @@ Game.Actors.PlayerGrid = class PlayerGrid extends Game.Actors.Grid {
         // Check if we're above the max index, in which case the discard button is focused
         let maxIndex = Math.pow(this.size, 2) - 1;
         
-        if(this.currentTile > maxIndex) { return; }
-        
         // Get current tile
         let currentTile = this.children[this.currentTile];
         
@@ -136,6 +144,9 @@ Game.Actors.PlayerGrid = class PlayerGrid extends Game.Actors.Grid {
         let queue = Engine.Stage.getActor(Game.Actors.Queue);
         let queueTile = queue.popTile();
         
+        // If we're highlighting the discard button, just pop the queue
+        if(this.currentTile > maxIndex) { return; }
+       
         // Trigger on picked event
         queueTile.onPicked(this);
 

@@ -4,6 +4,14 @@
  * A class for performing color operations
  */
 class Color {
+    // Enum: Rule
+    static get RULE() {
+        return {
+            NONE: 0,
+            NO_GREYSCALE: 1
+        }
+    }
+
     /**
      * Constructor
      */
@@ -77,16 +85,35 @@ class Color {
      *
      * @returns {Color} Color
      */
-    static getRandom(divisableBy = 1) {
+    static getRandom(divisableBy = 1, rule = Color.RULE.NONE) {
         let dec = 1 / divisableBy;
+        let generate = () => {
+            return new Color(
+                parseFloat((Math.round(Math.random() * dec) / dec).toFixed(1)),
+                parseFloat((Math.round(Math.random() * dec) / dec).toFixed(1)),
+                parseFloat((Math.round(Math.random() * dec) / dec).toFixed(1))
+            );
+        };
 
-        return new Color(
-            parseFloat((Math.round(Math.random() * dec) / dec).toFixed(1)),
-            parseFloat((Math.round(Math.random() * dec) / dec).toFixed(1)),
-            parseFloat((Math.round(Math.random() * dec) / dec).toFixed(1))
-        );
+        let color = generate();
+
+        // Rule: No greys
+        while(rule === Color.RULE.NO_GREYSCALE && color.isGreyscale()) {
+            color = generate();
+        }
+
+        return color;
     }
-    
+   
+    /**
+     * Gets whether this colour is greyscale
+     *
+     * @returns {Boolean} Is greyscale
+     */
+    isGreyscale() {
+        return this.r === this.g && this.g === this.b;
+    }
+
     /**
      * Gets a hex value
      *
