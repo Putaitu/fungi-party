@@ -5,8 +5,7 @@ window.Game = {
 };
 
 // Set screen size
-Engine.Settings.screenWidth = 800;
-Engine.Settings.screenHeight = 600;
+Engine.Graphics.setFullscreen(true);
 
 // A standard unit for the game
 window.UNIT = Engine.Graphics.screenWidth / 10;
@@ -21,7 +20,6 @@ Game.Actors.ColorTile = class ColorTile extends Engine.Actors.Actor {
     constructor(config) {
         super(config);
                     
-
         this.colorHistory = [ this.color ];
     }
 
@@ -35,12 +33,15 @@ Game.Actors.ColorTile = class ColorTile extends Engine.Actors.Actor {
             type: 'rectangle',
             width: UNIT,
             height: UNIT,
-            fillColor: new Color(0, 0, 0)
+            fillColor: new Color(0, 0, 0),
+            strokeWidth: 0
         });
 
         this.addComponent('TextRenderer', {
             fillColor: new Color(1, 1, 1),
-            strokeColor: new Color(1, 1, 1)
+            strokeColor: new Color(1, 1, 1),
+            size: UNIT / 4,
+            strokeWidth: UNIT / 20
         });
         
         this.colorHistory = [];
@@ -58,6 +59,7 @@ Game.Actors.ColorTile = class ColorTile extends Engine.Actors.Actor {
      */
     set color(value) {
         this.geometryRenderer.fillColor = value;
+        this.geometryRenderer.strokeColor = value.getNegative();
         this.textRenderer.fillColor = value.getNegative();
     }
 
@@ -83,13 +85,12 @@ Game.Actors.ColorTile = class ColorTile extends Engine.Actors.Actor {
     }
 
     /**
-     * Sets stroke color
+     * Sets highlight
      *
-     * @param {Color} color
+     * @param {Boolean} isActive
      */
-    setStrokeColor(color) {
-        this.geometryRenderer.strokeColor = color;
-        this.geometryRenderer.strokeWidth = color ? 4 : 0;
+    setHighlight(isActive) {
+        this.geometryRenderer.strokeWidth = isActive ? UNIT / 20 : 0;
     }
     
     /**
@@ -148,9 +149,11 @@ Game.Actors.PowerupTile = class PowerupTile extends Game.Actors.ColorTile {
     constructor(params) {
         super(params);
    
+        this.textRenderer.size = UNIT / 8;
+
         switch(this.type) {
             case 'undo':
-                this.textRenderer.text = '↺';
+                this.textRenderer.text = '↺ undo';
                 break;
         }
     }
@@ -227,7 +230,7 @@ Game.Actors.Queue = class Queue extends Engine.Actors.Actor {
     updateTiles() {
         for(let i = 0; i < this.children.length; i++) {
             this.children[i].transform.scale = i === 0 ? 1 : 0.8;
-            this.children[i].setStrokeColor(i === 0 ? new Color(1, 1, 1) : null);
+            this.children[i].setHighlight(i === 0);
             this.children[i].transform.position.y = -i * UNIT + UNIT;
         }
     }
@@ -245,7 +248,6 @@ Game.Actors.Queue = class Queue extends Engine.Actors.Actor {
             false,
             'undo'
         ];
-
 
         let randomPowerupIndex = Math.floor(Math.random() * randomPowerups.length);
 

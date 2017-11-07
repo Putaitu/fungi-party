@@ -54,7 +54,8 @@ Game.Actors.PlayerGrid = class PlayerGrid extends Game.Actors.Grid {
             y: this.transform.position.y + UNIT * 2,
             width: UNIT,
             height: UNIT / 2,
-            text: '⌫',
+            text: '⌫ discard',
+            size: UNIT / 8,
             onClick: () => {
                 let queue = Engine.Stage.getActor(Game.Actors.Queue);
                 
@@ -127,7 +128,6 @@ Game.Actors.PlayerGrid = class PlayerGrid extends Game.Actors.Grid {
         }
 
         this.updateTiles();
-
     }
 
     /**
@@ -186,7 +186,7 @@ Game.Actors.PlayerGrid = class PlayerGrid extends Game.Actors.Grid {
      */
     updateTiles() {
         for(let i = 0; i < this.children.length; i++) {
-            this.children[i].setStrokeColor(i === this.currentTile ? new Color(1, 1, 1) : null); 
+            this.children[i].setHighlight(i === this.currentTile); 
         }
     }
 }

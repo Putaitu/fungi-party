@@ -11,12 +11,21 @@ class UI {
         this.div = document.createElement('div');
 
         this.div.style.position = 'absolute';
-        this.div.style.top = 0;
-        this.div.style.left = 0;
+        this.div.style.top = '50%';
+        this.div.style.left = '50%';
+        this.div.style.transform = 'translate(-50%, -50%)';
         this.div.style.width = Engine.Graphics.screenWidth + 'px';
-        this.div.style.height = Engine.Graphics.screenWidth + 'px';
+        this.div.style.height = Engine.Graphics.screenHeight + 'px';
 
         document.body.appendChild(this.div);
+    }
+
+    /**
+     * Updates the screen dimensions
+     */
+    static updateScreenDimensions() {
+        this.div.style.width = Engine.Graphics.screenWidth + 'px';
+        this.div.style.height = Engine.Graphics.screenHeight + 'px';
     }
 
     /**
@@ -39,6 +48,8 @@ UI.Button = class Button extends Engine.Entity {
     get x() { return parseInt(this.element.style.left); }
     get y() { return parseInt(this.element.style.top); }
     get text() { return this.element.innerHTML; }
+    get size() { return parseInt(this.element.style.fontSize); }
+    get font() { return parseInt(this.element.style.fontFamily); }
 
     // Setters
     set width(value) { this.element.style.width = value + 'px'; }
@@ -46,6 +57,8 @@ UI.Button = class Button extends Engine.Entity {
     set x(value) { this.element.style.left = value + 'px'; }
     set y(value) { this.element.style.top = value + 'px'; }
     set text(value) { this.element.innerHTML = value; }
+    set size(value) { this.element.style.fontSize = value + 'px'; }
+    set font(value) { this.element.style.fontFamily = value; }
    
     /**
      * Constructor
@@ -64,6 +77,7 @@ UI.Button = class Button extends Engine.Entity {
         this.element.style.display = 'block';
         this.element.style.position = 'absolute';;
         this.element.style.transform = 'translate(-50%, -50%)';
+        this.element.style.userSelect = 'none';
 
         this.element.addEventListener('click', (e) => {
             e.preventDefault();
@@ -76,6 +90,8 @@ UI.Button = class Button extends Engine.Entity {
         this.width = 200;
         this.height = 40;
         this.text = 'My button';
+        this.font = 'Arial';
+        this.size = 10;
     }
 
     /**

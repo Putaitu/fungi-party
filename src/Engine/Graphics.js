@@ -8,22 +8,28 @@ class Graphics {
      * Init
      */
     static init() {
+        // Init canvas and context
         this.canvas = document.createElement('canvas');
         this.ctx = this.canvas.getContext('2d');
 
-        this.screenWidth = Engine.Settings.screenWidth || window.innerWidth;
-        this.screenHeight = Engine.Settings.screenHeight || window.innerHeight;
+        // Adopt settings
+        this.screenWidth = window.innerWidth;
+        this.screenHeight = window.innerHeight;
+        this.backgroundColor = new Color(0.7, 0.7, 0.7);
+        this.frameColor = new Color(0.3, 0.3, 0.3);
 
+        // Set canvas styling
         this.canvas.style.display = 'block';
         this.canvas.width = this.screenWidth;
         this.canvas.height = this.screenHeight;
 
-        this.backgroundColor = '#cccccc';
-        
+        // Append to body
         document.body.appendChild(this.canvas);
         
+        // Set html styling
         document.documentElement.style.overflow = 'hidden';
 
+        // Set body styling
         document.body.style.overflow = 'hidden';
         document.body.style.width = '100vw';
         document.body.style.height = '100vh';
@@ -31,16 +37,72 @@ class Graphics {
         document.body.style.display = 'flex';
         document.body.style.alignItems = 'center';
         document.body.style.justifyContent = 'center';
-        document.body.style.backgroundColor = '#333333';
+        document.body.userSelect = 'none';
+        document.body.style.backgroundColor = this.frameColor.toHex();
 
+        // Kick off the first draw call
         this.draw();
+    }
+
+    /**
+     * Sets the background colour
+     *
+     * @param {Color} color
+     */
+    static setBackgroundColor(color) {
+        this.backgroundColor = color;
+    }
+
+    /**
+     * Sets the screen dimensions
+     *
+     * @param {Number} width
+     * @param {Number} height
+     */
+    static setScreenDimensions(width, height) {
+        this.screenWidth = width;
+        this.screenHeight = height;
+        
+        this.canvas.width = this.screenWidth;
+        this.canvas.height = this.screenHeight;
+
+        Engine.UI.updateScreenDimensions();
+    }
+
+    /**
+     * Set full screen
+     *
+     * @param {Boolean} isFullscreen
+     */
+    static setFullscreen(isFullscreen) {
+        if(isFullscreen) {
+            if(typeof document.documentElement.webkitRequestFullscreen === 'function') {
+                document.documentElement.webkitRequestFullscreen();
+            } else if(typeof document.documentElement.mozFullscreen === 'function') {
+                document.documentElement.mozRequestFullscreen();
+            } else if(typeof document.documentElement.msFullscreen === 'function') {
+                document.documentElement.msRequestFullscreen();
+            } else if(typeof document.documentElement.requestFullscreen === 'function') {
+                document.documentElement.requestFullscreen();
+            }
+        } else {
+            if(typeof document.webkitExitFullscreen === 'function') {
+                document.webkitExitFullscreen();
+            } else if(typeof document.mozFullscreen === 'function') {
+                document.mozExitFullscreen();
+            } else if(typeof document.msFullscreen === 'function') {
+                document.msExitFullscreen();
+            } else if(typeof document.exitFullscreen === 'function') {
+                document.exitFullscreen();
+            }
+        }
     }
 
     /**
      * The draw loop
      */
     static draw() {
-        this.ctx.fillStyle = this.backgroundColor;
+        this.ctx.fillStyle = this.backgroundColor.toHex();
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
         for(let i in Engine.Stage.actors) {
@@ -117,16 +179,17 @@ class Graphics {
      * @param {String} yAlign
      * @param {Number} size
      * @param {String} font
+     * @param {Number} strokeWidth
      * @param {Color} strokeColor
      * @param {Color} fillColor
      */
-    static drawText(x, y, text, xAlign, yAlign, size, font, strokeColor, fillColor) {
+    static drawText(x, y, text, xAlign, yAlign, size, font, strokeWidth, strokeColor, fillColor) {
         this.ctx.font = size + 'px ' + font;
 
         this.ctx.textAlign = xAlign;
         this.ctx.textBaseline = yAlign;
 
-        if(strokeColor) {
+        if(strokeColor && strokeWidth > 0) {
             this.ctx.strokeStyle = strokeColor.toHex();
             this.ctx.strokeText(text, x, y)
         }
@@ -157,7 +220,7 @@ class Graphics {
             this.ctx.fill();
         }
         
-        if(strokeColor) {
+        if(strokeColor && strokeWidth > 0) {
             this.ctx.strokeStyle = strokeColor.toHex();
             this.ctx.stroke();
         }
@@ -184,7 +247,7 @@ class Graphics {
             this.ctx.fill();
         }
         
-        if(strokeColor) {
+        if(strokeColor && strokeWidth > 0) {
             this.ctx.strokeStyle = strokeColor.toHex();
             this.ctx.stroke();
         }

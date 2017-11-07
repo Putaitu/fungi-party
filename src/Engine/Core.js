@@ -9,8 +9,8 @@ class Core {
      */
     static init() {
         Engine.Time.init();
-        Engine.Input.init();
         Engine.Graphics.init();
+        Engine.Input.init();
         Engine.Stage.init();
         Engine.UI.init();
 

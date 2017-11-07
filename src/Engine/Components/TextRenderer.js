@@ -17,12 +17,13 @@ class TextRenderer extends Engine.Components.Component {
     defaults() {
         super.defaults();
 
-        this.size = 30;
-        this.font = 'OpenSans';
+        this.size = 10;
+        this.font = 'Arial';
         this.text = '';
         this.xAlign = 'center';
         this.yAlign = 'middle';
         this.strokeColor = null;
+        this.strokeWidth = 0;
         this.fillColor = new Engine.Math.Color(0, 0, 0);
     }
 
@@ -32,7 +33,7 @@ class TextRenderer extends Engine.Components.Component {
     draw() {
         if(!this.text) { return; }
 
-        Engine.Graphics.drawText(this.offset.x, this.offset.y, this.text, this.xAlign, this.yAlign, this.size, this.font, this.strokeColor, this.fillColor);
+        Engine.Graphics.drawText(this.offset.x, this.offset.y, this.text, this.xAlign, this.yAlign, this.size, this.font, this.strokeWidth, this.strokeColor, this.fillColor);
     }
 }
 
