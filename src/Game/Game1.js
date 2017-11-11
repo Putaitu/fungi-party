@@ -17,45 +17,45 @@ Game.Actors.PlayerGrid = class PlayerGrid extends Game.Actors.Grid {
                     color: new Engine.Math.Color(0, 0, 0)
                 });
             
-                tile.transform.position.x = UNIT * x - UNIT;
-                tile.transform.position.y = UNIT * y - UNIT;
+                tile.transform.position.x = (UNIT * 2) * (x - 1);
+                tile.transform.position.y = (UNIT * 2) * (y - 1);
 
-                tile.addComponent('Collider', {
-                    width: UNIT,
-                    height: UNIT,
-                    offset: {
-                        x: 0.5,
-                        y: 0.5
-                    }
-                });
-                    
+                tile.geometryRenderer.width = UNIT * 2
+                tile.geometryRenderer.height = UNIT * 2
+                
+                tile.collider.width = UNIT * 2
+                tile.collider.height = UNIT * 2
+                
                 this.addChild(tile);
             }
         }
 
         // Place grid
-        this.transform.position.x = UNIT * 2;
-        this.transform.position.y = Engine.Graphics.screenHeight / 2;
+        this.transform.position.x = Engine.Graphics.screenWidth / 2;
+        this.transform.position.y = Engine.Graphics.screenHeight - UNIT * 6.5;
 
         // Update tiles
         this.updateTiles();
 
-        // Init input
-        Engine.Input.on('keydown', Engine.Input.KEY.W, (e) => { this.move('y', -1); });
-        Engine.Input.on('keydown', Engine.Input.KEY.A, (e) => { this.move('x', -1); });
-        Engine.Input.on('keydown', Engine.Input.KEY.S, (e) => { this.move('y', 1); });
-        Engine.Input.on('keydown', Engine.Input.KEY.D, (e) => { this.move('x', 1); });
-        Engine.Input.on('keydown', Engine.Input.KEY.SPACE, (e) => { this.pickColor(); });
-        Engine.Input.on('click', Engine.Input.BUTTON.LEFT_MOUSE, (e) => { this.onClick(e); });
+        // Pointer events 
+        Engine.Input.on('pointerup', 0, (e) => {
+            this.draggingTile = null;
+        });
+        
+        Engine.Input.on('pointermove', 0, (e) => {
+            if(!this.draggingTile) { return; }
+
+            this.onDraggingTile(e, this.draggingTile);
+        });
 
         // Place button
         this.discardButton = new Engine.UI.Button({
             x: this.transform.position.x,
-            y: this.transform.position.y + UNIT * 2,
+            y: this.transform.position.y + UNIT * 4,
             width: UNIT,
-            height: UNIT / 2,
-            text: '⌫ discard',
-            size: UNIT / 8,
+            height: UNIT,
+            text: '⌫ ',
+            size: UNIT / 2,
             onClick: () => {
                 let queue = Engine.Stage.getActor(Game.Actors.Queue);
                 
@@ -65,95 +65,47 @@ Game.Actors.PlayerGrid = class PlayerGrid extends Game.Actors.Grid {
     }
 
     /**
-     * Add tile
+     * Event: A tile is being dragged
      *
-     * @param {ColorTile} tile
+     * @param {InputEvent} e
+     * @param {ColorTile} queueTile
      */
-    addChild(tile) {
-        let index = this.children.length;
+    onDraggingTile(e, queueTile) {
+        let x = queueTile.transform.position.x;
+        let y = queueTile.transform.position.y;
 
-        super.addChild(tile);
+        if(e.touches && e.touches.length > 0) {
+            x = e.touches[0].pageX;
+            y = e.touches[0].pageY;
+        }
 
-        tile.on('click', () => {
-            this.currentTile = index;
-            this.updateTiles();
-            this.pickColor();
-        });
-    }
-
-        
-    /**
-     * Event: Click
-     */
-    onClick(e) {
-        
+        queueTile.transform.position.x = x;
+        queueTile.transform.position.y = y;
     }
 
     /**
-     * Move current tile along axis
+     * Event: A tile is hovering over the grid
      *
-     * @param {String} axis
-     * @param {Number} amount
+     * @param {ColorTile} queueTile
      */
-    move(axis, amount) {
-        let newTile = this.currentTile;
-
-        if(axis === 'y') {
-            newTile = this.currentTile + amount * this.size;
-        }
-        
-        if(axis === 'x') {
-            let mod = this.currentTile % this.size;
-
-            // Prevent going too far left
-            if(amount < 0 && mod === 0) { return; }
-            
-            // Prevent going too far right
-            if(amount > 0 && mod === 2) { return; }
-
-            newTile = this.currentTile + amount;
-        }
-
-        let minIndex = 0;
-        let maxIndex = Math.pow(this.size, 2) - 1;
-        
-        // If we're at the top, stop players from going up
-        if(newTile < minIndex) { return; }
-
-        // If we're on the bottom row and press down once more, focus the discard button
-        this.discardButton.setFocus(newTile > maxIndex);
-
-        if(newTile <= maxIndex + this.size) {
-            this.currentTile = newTile;
-        }
-
-        this.updateTiles();
+    onHoverTile(queueTile) {
+           
     }
 
     /**
-     * Picks the current color from the queue and applies it to the current tile
+     * Event: A tile was dropped onto the grid
+     *
+     * @param {ColorTile} queueTile
+     * @param {Number} targetTileIndex
      */
-    pickColor() { 
-        // Check if we're above the max index, in which case the discard button is focused
-        let maxIndex = Math.pow(this.size, 2) - 1;
-        
-        // Get current tile
-        let currentTile = this.children[this.currentTile];
-        
-        // Get colour from queue
-        let queue = Engine.Stage.getActor(Game.Actors.Queue);
-        let queueTile = queue.popTile();
-        
-        // If we're highlighting the discard button, just pop the queue
-        if(this.currentTile > maxIndex) { return; }
-       
+    onDropTile(queueTile, targetTileIndex) { 
         // Trigger on picked event
         queueTile.onPicked(this);
 
         // Compare to the target colour
         let targetGrid = Engine.Stage.getActor(Game.Actors.TargetGrid);
 
-        let targetTile = targetGrid.children[playerGrid.currentTile];
+        let targetTile = targetGrid.children[targetTileIndex];
 
         let isCorrect = currentTile.color.equals(targetTile.color);
 

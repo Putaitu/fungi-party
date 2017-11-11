@@ -15,33 +15,14 @@ class Input {
         };
 
         // Init listeners
-        document.addEventListener('keydown', (e) => {
-            e.preventDefault();
-            
-            this.trigger('keydown', e.which, e);
-        });
-        
-        document.addEventListener('keyup', (e) => {
-            e.preventDefault();
-            
-            this.trigger('keyup', e.which, e);
-        });
-
-        document.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-
-            this.trigger('click', e.which, e);
-
-            // Look for colliders to trigger clicks on
-            let actors = Engine.Stage.getActors();
-
-            for(let i in actors) {
-                if(actors[i].collider && actors[i].collider.getBounds().contains(e.pageX, e.pageY)) {
-                    actors[i].trigger('click');
-                }
-            }
-        });
+        document.addEventListener('keydown', (e) => { this.onKeyDown(e); });
+        document.addEventListener('keyup', (e) => { this.onKeyUp(e); });
+        document.addEventListener('mousedown', (e) => { this.onPointerDown(e); });
+        document.addEventListener('mouseup', (e) => { this.onPointerUp(e); });
+        document.addEventListener('mousemove', (e) => { this.onPointerMove(e); });
+        document.addEventListener('touchstart', (e) => { this.onPointerDown(e); });
+        document.addEventListener('touchend', (e) => { this.onPointerUp(e); });
+        document.addEventListener('touchmove', (e) => { this.onPointerMove(e); });
 
         // Buttons
         this.BUTTON = {
@@ -189,6 +170,95 @@ class Input {
         }
 
         this.events[action][key].push(callback);
+    }
+
+    /**
+     * Handles key down event
+     *
+     * @param {InputEvent} e
+     */
+    static onKeyDown(e) {
+        e.preventDefault();
+        
+        this.trigger('keydown', e.which, e);
+    }
+    
+    /**
+     * Handles key up event
+     *
+     * @param {InputEvent} e
+     */
+    static onKeyUp(e) {
+        e.preventDefault();
+        
+        this.trigger('keyup', e.which, e);
+    }
+    
+    /**
+     * Handles pointer move
+     *
+     * @param {InputEvent} e
+     */
+    static onPointerMove(e) {
+        e.preventDefault();
+        
+        this.trigger('pointermove', e.which, e);
+    }
+    
+    /**
+     * Handles pointer down event
+     *
+     * @param {InputEvent} e
+     */
+    static onPointerDown(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        let pointerPos = new Engine.Math.Vector2(e.pageX, e.pageY);
+
+        if(e.changedTouches && e.changedTouches.length > 0) {
+            pointerPos.x = e.changedTouches[0].pageX;
+            pointerPos.y = e.changedTouches[0].pageY;
+        }
+
+        this.trigger('pointerdown', e.which, e);
+
+        // Look for colliders to trigger clicks on
+        let actors = Engine.Stage.getActors();
+
+        for(let i in actors) {
+            if(actors[i].collider && actors[i].collider.getBounds().contains(pointerPos.x, pointerPos.y)) {
+                actors[i].trigger('pointerdown');
+            }
+        }
+    }
+    
+    /**
+     * Handles pointer up event
+     *
+     * @param {InputEvent} e
+     */
+    static onPointerUp(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        let pointerPos = new Engine.Math.Vector2(e.pageX, e.pageY);
+
+        if(e.changedTouches && e.changedTouches.length > 0) {
+            pointerPos.x = e.changedTouches[0].pageX;
+            pointerPos.y = e.changedTouches[0].pageY;
+        }
+
+        this.trigger('pointerup', e.which, e);
+
+        // Look for colliders to trigger clicks on
+        let actors = Engine.Stage.getActors();
+
+        for(let i in actors) {
+            if(actors[i].collider && actors[i].collider.getBounds().contains(pointerPos.x, pointerPos.y)) {
+                actors[i].trigger('pointerup');
+            }
+        }
     }
 }
 

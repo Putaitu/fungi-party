@@ -8,7 +8,7 @@ window.Game = {
 Engine.Graphics.setFullscreen(true);
 
 // A standard unit for the game
-window.UNIT = Engine.Graphics.screenWidth / 10;
+window.UNIT = Engine.Graphics.screenHeight / 14;
 
 /**
  * A simple colour tile 
@@ -44,6 +44,15 @@ Game.Actors.ColorTile = class ColorTile extends Engine.Actors.Actor {
             strokeWidth: UNIT / 20
         });
         
+        this.addComponent('Collider', {
+            width: UNIT,
+            height: UNIT,
+            offset: {
+                x: 0.5,
+                y: 0.5
+            }
+        });
+                    
         this.colorHistory = [];
     }
 
@@ -196,8 +205,8 @@ Game.Actors.Queue = class Queue extends Engine.Actors.Actor {
         super(config);
 
         // Position the queue
-        this.transform.position.x = Engine.Graphics.screenWidth / 2;
-        this.transform.position.y = Engine.Graphics.screenHeight - UNIT * 2;
+        this.transform.position.x = UNIT;
+        this.transform.position.y = Engine.Graphics.screenHeight - UNIT;
     }
 
     /**
@@ -229,9 +238,7 @@ Game.Actors.Queue = class Queue extends Engine.Actors.Actor {
      */
     updateTiles() {
         for(let i = 0; i < this.children.length; i++) {
-            this.children[i].transform.scale = i === 0 ? 1 : 0.8;
-            this.children[i].setHighlight(i === 0);
-            this.children[i].transform.position.y = -i * UNIT + UNIT;
+            this.children[i].transform.position.x = i * UNIT;
         }
     }
 
@@ -286,7 +293,12 @@ Game.Actors.Queue = class Queue extends Engine.Actors.Actor {
         let randomColor = randomColors[randomColorIndex];
 
         let tile = new Game.Actors.ColorTile({color: randomColor})
-    
+   
+        // Set input events on tile
+        tile.on('pointerdown', (e) => {
+            Engine.Stage.getActor(Game.Actors.PlayerGrid).draggingTile = tile;
+        });
+
         this.addChild(tile);
 
         this.updateTiles();
@@ -356,8 +368,8 @@ Game.Actors.TargetGrid = class TargetGrid extends Game.Actors.Grid {
         }
 
         // Place grid
-        this.transform.position.x = Engine.Graphics.screenWidth - UNIT * 2;
-        this.transform.position.y = Engine.Graphics.screenHeight / 2;
+        this.transform.position.x = Engine.Graphics.screenWidth / 2;
+        this.transform.position.y = UNIT * 2;
     }
 
     /**

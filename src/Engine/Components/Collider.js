@@ -28,10 +28,10 @@ class Collider extends Engine.Components.Component {
         let transform = this.actor.getGlobalTransform();
        
         return new Engine.Math.Rect(
-            transform.position.x - this.offset.x * this.width,
-            transform.position.y - this.offset.y * this.width,
-            this.width,
-            this.height
+            transform.position.x - this.offset.x * this.width * transform.scale.x,
+            transform.position.y - this.offset.y * this.width * transform.scale.y,
+            this.width * transform.scale.x,
+            this.height * transform.scale.y
         );
     }
 }

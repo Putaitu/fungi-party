@@ -8,8 +8,8 @@ class Transform extends Engine.Components.Component {
      * Defaults
      */
     defaults() {
-        this.position = { x: 0, y: 0 };
-        this.scale = { x: 1, y: 1 };
+        this.position = new Engine.Math.Vector2(0, 0);
+        this.scale = new Engine.Math.Vector2(1, 1);
         this.rotation = 0;
     }
 
@@ -27,8 +27,8 @@ class Transform extends Engine.Components.Component {
         result.position.x = a.position.x + b.position.x;
         result.position.y = a.position.y + b.position.y;
         
-        result.scale.x = a.scale.x + b.scale.x;
-        result.scale.y = a.scale.y + b.scale.y;
+        result.scale.x = a.scale.x * b.scale.x;
+        result.scale.y = a.scale.y * b.scale.y;
         
         result.rotation = a.rotation + b.rotation;
 

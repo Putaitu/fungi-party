@@ -111,13 +111,13 @@ class Graphics {
             let transform = Engine.Stage.actors[i].getGlobalTransform();
 
             this.translate(transform.position.x, transform.position.y);
-            //this.scale(transform.scale.x, transform.scale.y);
+            this.scale(transform.scale.x, transform.scale.y);
             this.rotate(transform.rotate);
 
             Engine.Stage.actors[i].draw();
            
             this.rotate(-transform.rotate);
-            //this.scale(Math.pow(transform.scale.x, -1), Math.pow(transform.scale.y, -1));
+            this.scale(Math.pow(transform.scale.x, -1), Math.pow(transform.scale.y, -1));
             this.translate(-transform.position.x, -transform.position.y);
         }
 
