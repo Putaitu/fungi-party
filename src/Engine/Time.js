@@ -11,7 +11,8 @@ class Time {
         this.deltaTime = 0;
         this.startTime = Date.now();
         this.lastTimeStamp = 0;
-        
+
+        // Kick off the first time update
         this.update(0);
     }
     

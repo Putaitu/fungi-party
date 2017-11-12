@@ -1,15 +1,5 @@
 'use strict';
 
-window.Game = {
-    Actors: {}
-};
-
-// Set screen size
-Engine.Graphics.setFullscreen(true);
-
-// A standard unit for the game
-window.UNIT = Engine.Graphics.screenHeight / 14;
-
 /**
  * A simple colour tile 
  */

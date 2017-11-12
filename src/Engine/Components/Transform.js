@@ -14,6 +14,39 @@ class Transform extends Engine.Components.Component {
     }
 
     /**
+     * Translates this transform
+     *
+     * @param {Number} x
+     * @param {Number} y
+     */
+    translate(x, y) {
+        this.position.x += x;
+        this.position.y += y;
+    }
+
+    /**
+     * Subtracts one Transform from another
+     *
+     * @param {Transform} a
+     * @param {Transform} b
+     *
+     * @returns {Transform} Result
+     */
+    static subtract(a, b) {
+        let result = new Transform();
+
+        result.position.x = a.position.x - b.position.x;
+        result.position.y = a.position.y - b.position.y;
+        
+        result.scale.x = a.scale.x / b.scale.x;
+        result.scale.y = a.scale.y / b.scale.y;
+        
+        result.rotation = a.rotation - b.rotation;
+
+        return result;
+    }
+
+    /**
      * Adds one Transform to another
      *
      * @param {Transform} a

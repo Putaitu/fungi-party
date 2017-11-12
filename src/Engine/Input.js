@@ -19,10 +19,16 @@ class Input {
         document.addEventListener('keyup', (e) => { this.onKeyUp(e); });
         document.addEventListener('mousedown', (e) => { this.onPointerDown(e); });
         document.addEventListener('mouseup', (e) => { this.onPointerUp(e); });
+        document.addEventListener('mousecancel', (e) => { this.onPointerUp(e); });
         document.addEventListener('mousemove', (e) => { this.onPointerMove(e); });
         document.addEventListener('touchstart', (e) => { this.onPointerDown(e); });
         document.addEventListener('touchend', (e) => { this.onPointerUp(e); });
+        document.addEventListener('touchcancel', (e) => { this.onPointerUp(e); });
         document.addEventListener('touchmove', (e) => { this.onPointerMove(e); });
+
+        // Cached values
+        this.previousPointerPosition = new Engine.Math.Vector2(0, 0);
+        this.pointerDelta = new Engine.Math.Vector2(0, 0);
 
         // Buttons
         this.BUTTON = {
@@ -200,7 +206,33 @@ class Input {
      * @param {InputEvent} e
      */
     static onPointerMove(e) {
-        e.preventDefault();
+        let x = 0;
+        let y = 0;
+
+        // Touch input
+        if(e.changedTouches && e.changedTouches.length > 0) {
+            x = e.changedTouches[0].pageX;
+            y = e.changedTouches[0].pageY;
+        
+        // Mouse input
+        } else if(typeof e.pageX === 'number') {
+            x = e.pageX;
+            y = e.pageY;
+        
+        // Neither?
+        } else {
+            return;
+
+        }
+       
+        // Ignore the very first frame, as the delta would be inaccurate
+        if(this.previousPointerPosition.x !== 0 && this.previousPointerPosition.y !== 0) {
+            this.pointerDelta.x = x - this.previousPointerPosition.x;
+            this.pointerDelta.y = y - this.previousPointerPosition.y;
+        }
+        
+        this.previousPointerPosition.x = x;
+        this.previousPointerPosition.y = y;
         
         this.trigger('pointermove', e.which, e);
     }
@@ -211,7 +243,6 @@ class Input {
      * @param {InputEvent} e
      */
     static onPointerDown(e) {
-        e.preventDefault();
         e.stopPropagation();
 
         let pointerPos = new Engine.Math.Vector2(e.pageX, e.pageY);
@@ -220,6 +251,10 @@ class Input {
             pointerPos.x = e.changedTouches[0].pageX;
             pointerPos.y = e.changedTouches[0].pageY;
         }
+
+        // Update previous pointer position
+        this.previousPointerPosition.x = pointerPos.x;
+        this.previousPointerPosition.y = pointerPos.y;
 
         this.trigger('pointerdown', e.which, e);
 
@@ -248,6 +283,10 @@ class Input {
             pointerPos.x = e.changedTouches[0].pageX;
             pointerPos.y = e.changedTouches[0].pageY;
         }
+
+        // Clear delta
+        this.pointerDelta.x = 0;
+        this.pointerDelta.y = 0;
 
         this.trigger('pointerup', e.which, e);
 

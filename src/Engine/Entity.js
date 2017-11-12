@@ -28,7 +28,7 @@ class Entity {
      * @returns {Entity} Clone
      */
     clone() {
-        return Object.assign({}, this);
+        return new this.constructor(Object.assign({}, this));
     }
 }
 

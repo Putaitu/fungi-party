@@ -8,13 +8,32 @@ class Core {
      * Init
      */
     static init() {
-        Engine.Time.init();
-        Engine.Graphics.init();
-        Engine.Input.init();
-        Engine.Stage.init();
-        Engine.UI.init();
+        // Fullscreen invisible button
+        let fsBtn = document.createElement('button');
+        fsBtn.style.position = 'fixed';
+        fsBtn.style.top = '0%';
+        fsBtn.style.left = '0%';
+        fsBtn.style.width = '100%';
+        fsBtn.style.height = '100%';
+        fsBtn.innerHTML = 'PLAY';
 
-        this.trigger('init');
+        document.body.appendChild(fsBtn);
+
+        fsBtn.addEventListener('click', (e) => {
+            // Init submodules
+            Engine.Time.init();
+            Engine.Graphics.init();
+            Engine.Input.init();
+            Engine.Stage.init();
+            Engine.UI.init();
+
+            Engine.Graphics.setFullscreen(true);
+
+            this.trigger('init');
+
+            // Remove the fullscreen button
+            document.body.removeChild(fsBtn);
+        });
     }
 
     /**
@@ -69,10 +88,18 @@ class Core {
     }
 }
 
+// Engine namespace
 window.Engine = {
 	Core: Core,
 	Math: {}
 };
+
+// Game namespace
+window.Game = {
+    Actors: {},
+    Components: {}
+};
+
 
 document.addEventListener('DOMContentLoaded', () => {
     Engine.Core.init();

@@ -71,16 +71,7 @@ Game.Actors.PlayerGrid = class PlayerGrid extends Game.Actors.Grid {
      * @param {ColorTile} queueTile
      */
     onDraggingTile(e, queueTile) {
-        let x = queueTile.transform.position.x;
-        let y = queueTile.transform.position.y;
-
-        if(e.touches && e.touches.length > 0) {
-            x = e.touches[0].pageX;
-            y = e.touches[0].pageY;
-        }
-
-        queueTile.transform.position.x = x;
-        queueTile.transform.position.y = y;
+        queueTile.transform.translate(Engine.Input.pointerDelta.x, Engine.Input.pointerDelta.y);
     }
 
     /**
@@ -143,9 +134,15 @@ Game.Actors.PlayerGrid = class PlayerGrid extends Game.Actors.Grid {
     }
 }
 
-// Initialise the grids
-let targetGrid = new Game.Actors.TargetGrid();
-let playerGrid = new Game.Actors.PlayerGrid();
+// Init everything
+Engine.Core.on('init', () => {
+    // A standard unit for the game
+    window.UNIT = Engine.Graphics.screenHeight / 14;
 
-// Initialise the queue
-let queue = new Game.Actors.Queue;
+    // Initialise the grids
+    let targetGrid = new Game.Actors.TargetGrid();
+    let playerGrid = new Game.Actors.PlayerGrid();
+
+    // Initialise the queue
+    let queue = new Game.Actors.Queue;
+});
