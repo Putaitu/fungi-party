@@ -12,16 +12,12 @@ class Graphics {
         this.canvas = document.createElement('canvas');
         this.ctx = this.canvas.getContext('2d');
 
-        // Adopt settings
-        this.screenWidth = window.innerWidth;
-        this.screenHeight = window.innerHeight;
+        // Init colours
         this.backgroundColor = new Color(0.7, 0.7, 0.7);
         this.frameColor = new Color(0.3, 0.3, 0.3);
 
         // Set canvas styling
         this.canvas.style.display = 'block';
-        this.canvas.width = this.screenWidth;
-        this.canvas.height = this.screenHeight;
 
         // Append to body
         document.body.appendChild(this.canvas);
@@ -40,8 +36,13 @@ class Graphics {
         document.body.userSelect = 'none';
         document.body.style.backgroundColor = this.frameColor.toHex();
 
+        // Update screen dimensions
+        this.updateScreenDimensions();
+
         // Kick off the first draw call
-        this.draw();
+        window.requestAnimationFrame(() => {
+            this.draw();
+        });
     }
 
     /**
@@ -54,12 +55,15 @@ class Graphics {
     }
 
     /**
-     * Sets the screen dimensions
-     *
-     * @param {Number} width
-     * @param {Number} height
+     * Updates the screen dimensions
      */
-    static setScreenDimensions(width, height) {
+    static updateScreenDimensions() {
+        let width = window.innerWidth;
+        let height = window.innerHeight;
+
+        this.screenWidth = width;
+        this.screenHeight = height;
+        
         this.screenWidth = width;
         this.screenHeight = height;
         
@@ -73,35 +77,67 @@ class Graphics {
      * Set full screen
      *
      * @param {Boolean} isFullscreen
+     *
+     * @returns {Promise} Completed
      */
     static setFullscreen(isFullscreen) {
-        if(isFullscreen) {
+        return new Promise((resolve, reject) => {
+            // Assume standards compatible API is available
+            let changeName = 'fullscreenchange';
+            let requestName = 'requestFullScreen';
+            let exitName = 'exitFullScreen';
+
+            // Change event
+            let onChange = () => {
+                document.removeEventListener(changeName, onChange);
+
+                window.requestAnimationFrame(() => {
+                    resolve();
+                });
+            };
+
+            // Webkit
             if(typeof document.documentElement.webkitRequestFullscreen === 'function') {
-                document.documentElement.webkitRequestFullscreen();
+                changeName = 'webkitfullscreenchange';
+                requestName = 'webkitRequestFullScreen';
+                exitName = 'webkitExitFullScreen';
+
+            // Mozilla
             } else if(typeof document.documentElement.mozFullscreen === 'function') {
-                document.documentElement.mozRequestFullscreen();
+                changeName = 'mozfullscreenchange';
+                requestName = 'mozRequestFullScreen';
+                exitName = 'mozExitFullScreen';
+            
+            // MS
             } else if(typeof document.documentElement.msFullscreen === 'function') {
-                document.documentElement.msRequestFullscreen();
-            } else if(typeof document.documentElement.requestFullscreen === 'function') {
-                document.documentElement.requestFullscreen();
+                changeName = 'MSFullscreenChange';
+                requestName = 'msRequestFullScreen';
+                exitName = 'msExitFullScreen';
+
             }
-        } else {
-            if(typeof document.webkitExitFullscreen === 'function') {
-                document.webkitExitFullscreen();
-            } else if(typeof document.mozFullscreen === 'function') {
-                document.mozExitFullscreen();
-            } else if(typeof document.msFullscreen === 'function') {
-                document.msExitFullscreen();
-            } else if(typeof document.exitFullscreen === 'function') {
-                document.exitFullscreen();
+
+            // Toggle on/off
+            if(isFullscreen) {
+                document.documentElement[requestName]();
+            
+            } else {
+                document[exitName]();
             }
-        }
+            
+            // Set change event
+            document.documentElement.addEventListener(changeName, onChange);
+        });
     }
 
     /**
      * The draw loop
      */
     static draw() {
+        // First check if the screen dimensions are correct
+        if(this.screenWidth !== window.innerWidth || this.screenHeight !== window.innerHeight) {
+            this.updateScreenDimensions();
+        }
+
         this.ctx.fillStyle = this.backgroundColor.toHex();
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
@@ -190,12 +226,12 @@ class Graphics {
         this.ctx.textBaseline = yAlign;
 
         if(strokeColor && strokeWidth > 0) {
-            this.ctx.strokeStyle = strokeColor.toHex();
+            this.ctx.strokeStyle = strokeColor.toRGB();
             this.ctx.strokeText(text, x, y)
         }
         
         if(fillColor) {
-            this.ctx.fillStyle = fillColor.toHex();
+            this.ctx.fillStyle = fillColor.toRGB();
             this.ctx.fillText(text, x, y)
         }
     }
@@ -216,12 +252,12 @@ class Graphics {
         this.ctx.lineWidth = strokeWidth;
         
         if(fillColor) {
-            this.ctx.fillStyle = fillColor.toHex();
+            this.ctx.fillStyle = fillColor.toRGB();
             this.ctx.fill();
         }
         
         if(strokeColor && strokeWidth > 0) {
-            this.ctx.strokeStyle = strokeColor.toHex();
+            this.ctx.strokeStyle = strokeColor.toRGB();
             this.ctx.stroke();
         }
     }
@@ -243,12 +279,12 @@ class Graphics {
         this.ctx.lineWidth = strokeWidth;
 
         if(fillColor) {
-            this.ctx.fillStyle = fillColor.toHex();
+            this.ctx.fillStyle = fillColor.toRGB();
             this.ctx.fill();
         }
         
         if(strokeColor && strokeWidth > 0) {
-            this.ctx.strokeStyle = strokeColor.toHex();
+            this.ctx.strokeStyle = strokeColor.toRGB();
             this.ctx.stroke();
         }
     }
@@ -256,17 +292,19 @@ class Graphics {
     /**
      * Draw a line
      *
-     * @param {Number} moveX How much to move on x-axis
-     * @param {Number} moveY How much to move on y-axis
+     * @param {Number} fromX
+     * @param {Number} fromY
+     * @param {Number} toX
+     * @param {Number} toY
      * @param {Number} strokeWidth
      * @param {Color} strokeColor
      */
-    static drawLine(x, y, moveX, moveY, strokeWidth, strokeColor) {
+    static drawLine(fromX, fromY, toX, toY, strokeWidth, strokeColor) {
         this.ctx.beginPath();
-        this.ctx.moveTo(x, y);
-        this.ctx.lineTo(x + moveX, y + moveY);
+        this.ctx.moveTo(fromX, fromY);
+        this.ctx.lineTo(toX, toY);
         this.ctx.lineWidth = strokeWidth;
-        this.ctx.strokeStyle = strokeColor ? strokeColor.toHex() : '#000000';
+        this.ctx.strokeStyle = strokeColor ? strokeColor.toRGB() : 'rgba(0,0,0,1)';
         this.ctx.stroke();
     }
 }

@@ -26,11 +26,18 @@ Game.Actors.ColorTile = class ColorTile extends Engine.Actors.Actor {
             fillColor: new Color(0, 0, 0),
             strokeWidth: 0
         });
+        
+        this.lineRenderer = this.addComponent('GeometryRenderer', {
+            type: 'line',
+            strokeColor: new Color(1, 1, 1),
+            strokeWidth: UNIT / 20,
+            points: []
+        });
 
         this.addComponent('TextRenderer', {
             fillColor: new Color(1, 1, 1),
             strokeColor: new Color(1, 1, 1),
-            size: UNIT / 4,
+            size: UNIT,
             strokeWidth: UNIT / 20
         });
         
@@ -57,21 +64,33 @@ Game.Actors.ColorTile = class ColorTile extends Engine.Actors.Actor {
      * Setter: Colour
      */
     set color(value) {
+        let unit = this.geometryRenderer.width * 0.8;
+        let yMax = unit / 2;
+        let xMin = -yMax;
+
         this.geometryRenderer.fillColor = value;
         this.geometryRenderer.strokeColor = value.getNegative();
         this.textRenderer.fillColor = value.getNegative();
+        this.textRenderer.fillColor = value.getNegative();
+        this.lineRenderer.strokeColor = value.getNegative();
+        this.lineRenderer.points = [
+            new Engine.Math.Vector2(xMin, yMax - (unit * value.r)),
+            new Engine.Math.Vector2(xMin + (unit / 2), yMax - (unit * value.g)),
+            new Engine.Math.Vector2(xMin + unit, yMax - (unit * value.b))
+        ];
     }
 
     /**
      * Event: Picked
      *
      * @param {PlayerGrid} playerGrid
+     * @param {Number} tileIndex
      */
-    onPicked(playerGrid) {
+    onPicked(playerGrid, tileIndex) {
         let queueColor = this.color;
         
         // Get the current tile
-        let currentTile = playerGrid.children[playerGrid.currentTile];
+        let currentTile = playerGrid.children[tileIndex];
         
         if(typeof currentTile.isCorrect !== 'undefined') { return; }
         
@@ -92,6 +111,19 @@ Game.Actors.ColorTile = class ColorTile extends Engine.Actors.Actor {
         this.geometryRenderer.strokeWidth = isActive ? UNIT / 20 : 0;
     }
     
+    /**
+     * Sets transparent
+     *
+     * @param {Boolean} isTransparent
+     */
+    setTransparent(isTransparent) {
+        let color = this.color;
+
+        color.a = isTransparent ? 0.5 : 1;
+
+        this.color = color;
+    }
+
     /**
      * Sets the color
      *
@@ -148,11 +180,11 @@ Game.Actors.PowerupTile = class PowerupTile extends Game.Actors.ColorTile {
     constructor(params) {
         super(params);
    
-        this.textRenderer.size = UNIT / 8;
+        this.textRenderer.size = UNIT / 2;
 
         switch(this.type) {
             case 'undo':
-                this.textRenderer.text = '↺ undo';
+                this.textRenderer.text = '↺';
                 break;
         }
     }
@@ -170,10 +202,11 @@ Game.Actors.PowerupTile = class PowerupTile extends Game.Actors.ColorTile {
      * Event: Picked
      *
      * @param {PlayerGrid} playerGrid
+     * @param {Number} tileIndex
      */
-    onPicked(playerGrid) {
+    onPicked(playerGrid, tileIndex) {
         // Get the current tile
-        let currentTile = playerGrid.children[playerGrid.currentTile];
+        let currentTile = playerGrid.children[tileIndex];
         
         switch(this.type) {
             case 'undo':
@@ -196,7 +229,7 @@ Game.Actors.Queue = class Queue extends Engine.Actors.Actor {
 
         // Position the queue
         this.transform.position.x = UNIT;
-        this.transform.position.y = Engine.Graphics.screenHeight - UNIT;
+        this.transform.position.y = Engine.Graphics.screenHeight - UNIT * 2;
     }
 
     /**
@@ -227,8 +260,14 @@ Game.Actors.Queue = class Queue extends Engine.Actors.Actor {
      * Updates tiles
      */
     updateTiles() {
+        let draggingTile = Engine.Stage.getActor(Game.Actors.PlayerGrid).draggingTile;
+
         for(let i = 0; i < this.children.length; i++) {
+            // Don't auto position the dragged tile
+            if(this.children[i] === draggingTile) { continue; }
+
             this.children[i].transform.position.x = i * UNIT;
+            this.children[i].transform.position.y = 0;
         }
     }
 
@@ -256,6 +295,11 @@ Game.Actors.Queue = class Queue extends Engine.Actors.Actor {
         
             this.addChild(tile);
 
+            // Set input events on tile
+            tile.on('pointerdown', (e) => {
+                Engine.Stage.getActor(Game.Actors.PlayerGrid).draggingTile = tile;
+            });
+            
             this.updateTiles();
             return;
         }
@@ -372,3 +416,165 @@ Game.Actors.TargetGrid = class TargetGrid extends Game.Actors.Grid {
     }
 }
 
+/**
+ * The player grid
+ */
+Game.Actors.PlayerGrid = class PlayerGrid extends Game.Actors.Grid {
+    /**
+     * Constructor
+     */
+    constructor(config) {
+        super(config);
+    
+        // Build blank tiles
+        for(let y = 0; y < this.size; y++) {
+            for(let x = 0; x < this.size; x++) {
+                let tile = new Game.Actors.ColorTile();
+            
+                tile.transform.position.x = (UNIT * 2) * (x - 1);
+                tile.transform.position.y = (UNIT * 2) * (y - 1);
+
+                tile.geometryRenderer.width = UNIT * 2
+                tile.geometryRenderer.height = UNIT * 2
+                
+                tile.collider.width = UNIT * 2
+                tile.collider.height = UNIT * 2
+               
+                tile.color = new Color(0, 0, 0);
+
+                this.addChild(tile);
+            }
+        }
+
+        // Place grid
+        this.transform.position.x = Engine.Graphics.screenWidth / 2;
+        this.transform.position.y = Engine.Graphics.screenHeight - UNIT * 6.5;
+
+        // Pointer events 
+        Engine.Input.on('pointerup', [0, 1], (e) => {
+            if(!this.draggingTile) { return; }
+
+            this.onReleasingTile(e, this.draggingTile);
+        });
+        
+        Engine.Input.on('pointermove', [0, 1], (e) => {
+            if(!this.draggingTile) { return; }
+
+            this.onDraggingTile(e, this.draggingTile);
+        });
+    }
+
+    /**
+     * Event: A tile is being dragged
+     *
+     * @param {InputEvent} e
+     * @param {ColorTile} queueTile
+     */
+    onDraggingTile(e, queueTile) {
+        queueTile.transform.translate(Engine.Input.pointerDelta.x, Engine.Input.pointerDelta.y);
+
+        let x = e.pageX;
+        let y = e.pageY;
+
+        if(e.changedTouches && e.changedTouches.length > 0) {
+            x = e.changedTouches[0].pageX;
+            y = e.changedTouches[0].pageY;
+        }
+        
+        // Highlight hovered tile
+        for(let i = 0; i < this.children.length; i++) {
+            this.children[i].setHighlight(this.children[i].collider.getBounds().contains(x, y));
+        }
+        
+        // Check if tile is hovering the void
+        queueTile.setTransparent(y > Engine.Stage.getActor(Game.Actors.Queue).getGlobalTransform().position.y + UNIT);
+    }
+
+    /**
+     * Event: A tile is being released
+     *
+     * @param {ColorTile} queueTile
+     */
+    onReleasingTile(e, queueTile) {
+        let x = e.pageX;
+        let y = e.pageY;
+
+        if(e.changedTouches && e.changedTouches.length > 0) {
+            x = e.changedTouches[0].pageX;
+            y = e.changedTouches[0].pageY;
+        }
+
+        // Find hovered tile, if any
+        for(let i = 0; i < this.children.length; i++) {
+            if(this.children[i].collider.getBounds().contains(x, y)) {
+                this.onDropTile(this.draggingTile, i);
+            }
+        }
+
+        // Check if tile is hovering the void
+        if(y > Engine.Stage.getActor(Game.Actors.Queue).getGlobalTransform().position.y + UNIT) {
+            this.draggingTile.destroy();
+        }
+
+        this.draggingTile = null;
+
+        Engine.Stage.getActor(Game.Actors.Queue).updateTiles();
+    }
+
+    /**
+     * Event: A tile was dropped onto the grid
+     *
+     * @param {ColorTile} queueTile
+     * @param {Number} tileIndex
+     */
+    onDropTile(queueTile, tileIndex) { 
+        // Trigger on picked event
+        queueTile.onPicked(this, tileIndex);
+
+        // Compare to the target colour
+        let targetGrid = Engine.Stage.getActor(Game.Actors.TargetGrid);
+
+        let targetTile = targetGrid.children[tileIndex];
+        let currentTile = this.children[tileIndex];
+
+        let isCorrect = currentTile.color.equals(targetTile.color);
+
+        let isIncorrect =
+            currentTile.color.r > targetTile.color.r || 
+            currentTile.color.g > targetTile.color.g || 
+            currentTile.color.b > targetTile.color.b;
+
+        if(isIncorrect) {
+            currentTile.setCorrect(false);
+        } else if(isCorrect) {
+            currentTile.setCorrect(true);
+        } else {
+            currentTile.setCorrect(undefined);
+        }
+
+        // Remove queue tile
+        queueTile.destroy();
+    }
+
+    /**
+     * Defaults
+     */
+    defaults() {
+        super.defaults();
+
+        this.size = 3;
+    }
+}
+
+// Init everything
+Engine.Core.on('init', () => {
+    // A standard unit for the game
+    window.UNIT = Engine.Graphics.screenHeight / 14;
+
+    // Initialise the grids
+    let targetGrid = new Game.Actors.TargetGrid();
+    let playerGrid = new Game.Actors.PlayerGrid();
+
+    // Initialise the queue
+    let queue = new Game.Actors.Queue;
+});

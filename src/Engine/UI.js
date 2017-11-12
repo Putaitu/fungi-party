@@ -16,6 +16,7 @@ class UI {
         this.div.style.transform = 'translate(-50%, -50%)';
         this.div.style.width = Engine.Graphics.screenWidth + 'px';
         this.div.style.height = Engine.Graphics.screenHeight + 'px';
+        this.div.style.pointerEvents = 'none';
 
         document.body.appendChild(this.div);
     }
@@ -34,6 +35,8 @@ class UI {
      * @param {Widget} widget
      */
     static addWidget(widget) {
+        widget.element.style.pointerEvents = 'all';
+
         this.div.appendChild(widget.element);
     }
 }

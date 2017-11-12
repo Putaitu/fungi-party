@@ -49,16 +49,19 @@ class GeometryRenderer extends Engine.Components.Component {
                     this.fillColor
                 );
                 
-            case 'line' :
-                Engine.Graphics.drawLine (
-                    0,
-                    0,
-                    this.moveX,
-                    this.moveY,
-                    this.strokeWidth,
-                    this.strokeColor
-                );
-                
+            case 'line':
+                if(!this.points) { this.points = []; }
+
+                for(let i = 0; i < this.points.length - 1; i++) {
+                    Engine.Graphics.drawLine (
+                        this.points[i].x,
+                        this.points[i].y,
+                        this.points[i + 1].x,
+                        this.points[i + 1].y,
+                        this.strokeWidth,
+                        this.strokeColor
+                    );
+                }
                 break;
         }
     }

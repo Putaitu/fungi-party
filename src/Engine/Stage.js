@@ -47,7 +47,14 @@ class Stage {
     static removeActor(actor) {
         for(let i = this.actors.length - 1; i > 0; i--) {
             if(this.actors[i] === actor) {
-                delete this.actors[i];
+                // Update parent Actor
+                if(this.actors[i].parent) {
+                    let childIndex = this.actors[i].parent.children.indexOf(this.actors[i]);
+
+                    this.actors[i].parent.children.splice(childIndex, 1);
+                }
+
+                this.actors.splice(i, 1);
             }
         }
     }

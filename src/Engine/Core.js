@@ -20,19 +20,22 @@ class Core {
         document.body.appendChild(fsBtn);
 
         fsBtn.addEventListener('click', (e) => {
-            // Init submodules
-            Engine.Time.init();
-            Engine.Graphics.init();
-            Engine.Input.init();
-            Engine.Stage.init();
-            Engine.UI.init();
-
-            Engine.Graphics.setFullscreen(true);
-
-            this.trigger('init');
-
             // Remove the fullscreen button
             document.body.removeChild(fsBtn);
+
+            // Set fullscreen
+            Engine.Graphics.setFullscreen(true)
+            .then(() => {
+                // Init submodules
+                Engine.Time.init();
+                Engine.UI.init();
+                Engine.Graphics.init();
+                Engine.Input.init();
+                Engine.Stage.init();
+
+                // Init everything else
+                this.trigger('init');
+            });
         });
     }
 

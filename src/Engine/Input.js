@@ -163,19 +163,25 @@ class Input {
      * Binds an input event
      *
      * @param {String} action
-     * @param {Number|String} key
+     * @param {Number|String|Array} keys
      * @param {Function} callback
      */
-    static on(action, key, callback) {
+    static on(action, keys, callback) {
         if(!this.events[action]) {
             this.events[action] = {};
         }
         
-        if(!this.events[action][key]) {
-            this.events[action][key] = [];
+        if(!Array.isArray(keys)) {
+            keys = [ keys ];
         }
 
-        this.events[action][key].push(callback);
+        for(let key of keys) {
+            if(!this.events[action][key]) {
+                this.events[action][key] = [];
+            }
+
+            this.events[action][key].push(callback);
+        }
     }
 
     /**
@@ -243,8 +249,6 @@ class Input {
      * @param {InputEvent} e
      */
     static onPointerDown(e) {
-        e.stopPropagation();
-
         let pointerPos = new Engine.Math.Vector2(e.pageX, e.pageY);
 
         if(e.changedTouches && e.changedTouches.length > 0) {
@@ -262,7 +266,9 @@ class Input {
         let actors = Engine.Stage.getActors();
 
         for(let i in actors) {
-            if(actors[i].collider && actors[i].collider.getBounds().contains(pointerPos.x, pointerPos.y)) {
+            if(!actors[i].collider) { continue; }
+
+            if(actors[i].collider.getBounds().contains(pointerPos.x, pointerPos.y)) {
                 actors[i].trigger('pointerdown');
             }
         }
@@ -274,9 +280,6 @@ class Input {
      * @param {InputEvent} e
      */
     static onPointerUp(e) {
-        e.preventDefault();
-        e.stopPropagation();
-
         let pointerPos = new Engine.Math.Vector2(e.pageX, e.pageY);
 
         if(e.changedTouches && e.changedTouches.length > 0) {
