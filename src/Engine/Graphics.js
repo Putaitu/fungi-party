@@ -13,8 +13,8 @@ class Graphics {
         this.ctx = this.canvas.getContext('2d');
 
         // Init colours
-        this.backgroundColor = new Color(0.7, 0.7, 0.7);
-        this.frameColor = new Color(0.3, 0.3, 0.3);
+        this.backgroundColor = new Engine.Math.Color(0.7, 0.7, 0.7);
+        this.frameColor = new Engine.Math.Color(0.3, 0.3, 0.3);
 
         // Set canvas styling
         this.canvas.style.display = 'block';

@@ -202,4 +202,4 @@ class Actor extends Engine.Entity {
     }
 }
 
-Engine.Actors = { Actor: Actor };
+Engine.Actors.Actor = Actor;

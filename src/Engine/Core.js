@@ -91,19 +91,4 @@ class Core {
     }
 }
 
-// Engine namespace
-window.Engine = {
-	Core: Core,
-	Math: {}
-};
-
-// Game namespace
-window.Game = {
-    Actors: {},
-    Components: {}
-};
-
-
-document.addEventListener('DOMContentLoaded', () => {
-    Engine.Core.init();
-}, false);
+Engine.Core = Core;

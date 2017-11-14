@@ -23,20 +23,20 @@ Game.Actors.ColorTile = class ColorTile extends Engine.Actors.Actor {
             type: 'rectangle',
             width: UNIT,
             height: UNIT,
-            fillColor: new Color(0, 0, 0),
+            fillColor: new Engine.Math.Color(0, 0, 0),
             strokeWidth: 0
         });
         
         this.lineRenderer = this.addComponent('GeometryRenderer', {
             type: 'line',
-            strokeColor: new Color(1, 1, 1),
+            strokeColor: new Engine.Math.Color(1, 1, 1),
             strokeWidth: UNIT / 20,
             points: []
         });
 
         this.addComponent('TextRenderer', {
-            fillColor: new Color(1, 1, 1),
-            strokeColor: new Color(1, 1, 1),
+            fillColor: new Engine.Math.Color(1, 1, 1),
+            strokeColor: new Engine.Math.Color(1, 1, 1),
             size: UNIT,
             strokeWidth: UNIT / 20
         });
@@ -289,7 +289,7 @@ Game.Actors.Queue = class Queue extends Engine.Actors.Actor {
 
         if(randomPowerups[randomPowerupIndex]) {
             let tile = new Game.Actors.PowerupTile({
-                color: new Color(1, 1, 1),
+                color: new Engine.Math.Color(1, 1, 1),
                 type: randomPowerups[randomPowerupIndex]
             });
         
@@ -306,9 +306,9 @@ Game.Actors.Queue = class Queue extends Engine.Actors.Actor {
 
         // Get random color
         let randomColors = [
-            new Color(0.5, 0, 0),
-            new Color(0, 0.5, 0),
-            new Color(0, 0, 0.5)
+            new Engine.Math.Color(0.5, 0, 0),
+            new Engine.Math.Color(0, 0.5, 0),
+            new Engine.Math.Color(0, 0, 0.5)
         ];
 
         let randomColorIndex = Math.floor(Math.random() * 3);
@@ -440,7 +440,7 @@ Game.Actors.PlayerGrid = class PlayerGrid extends Game.Actors.Grid {
                 tile.collider.width = UNIT * 2
                 tile.collider.height = UNIT * 2
                
-                tile.color = new Color(0, 0, 0);
+                tile.color = new Engine.Math.Color(0, 0, 0);
 
                 this.addChild(tile);
             }

@@ -41,4 +41,4 @@ class Component extends Engine.Entity {
     draw() {}
 }
 
-Engine.Components = { Component: Component };
+Engine.Components.Component = Component;
