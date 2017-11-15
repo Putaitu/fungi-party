@@ -13,7 +13,9 @@ class Time {
         this.lastTimeStamp = 0;
 
         // Kick off the first time update
-        this.update(0);
+        window.requestAnimationFrame((timestamp) => {
+            this.update(0);
+        });
     }
     
     /**
@@ -23,10 +25,12 @@ class Time {
         this.deltaTime = (timestamp - this.lastTimeStamp) * 0.001;
         this.lastTimeStamp = timestamp;
         
-        for(let i in Engine.Stage.actors) {
-            if(!Engine.Stage.actors[i].canUpdate) { continue; }
+        let actors = Engine.Stage.getActors();
+        
+        for(let i in actors) {
+            if(!actors[i].canUpdate) { continue; }
 
-            Engine.Stage.actors[i].update();
+            actors[i].update();
         }
 
         window.requestAnimationFrame((timestamp) => {

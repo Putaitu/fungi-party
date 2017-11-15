@@ -11,6 +11,11 @@ class Color {
             NO_GREYSCALE: 1
         }
     }
+    
+    // Preset: Black
+    static get BLACK() {
+        return new Color(0, 0, 0, 1);
+    }
 
     /**
      * Constructor

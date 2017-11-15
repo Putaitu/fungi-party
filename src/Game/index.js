@@ -1,7 +1,8 @@
 // Game namespace
 window.Game = {
     Actors: {},
-    Components: {}
+    Components: {},
+    Scenes: {}
 };
 
 // Load modules

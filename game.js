@@ -50,16 +50,17 @@
 	// Game namespace
 	window.Game = {
 	    Actors: {},
-	    Components: {}
+	    Components: {},
+	    Scenes: {}
 	};
 
 	// Load modules
-	__webpack_require__(21);
+	__webpack_require__(22);
 
 /***/ }),
 
-/***/ 21:
-/***/ (function(module, exports) {
+/***/ 22:
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -107,10 +108,18 @@
 	                width: UNIT,
 	                height: UNIT,
 	                fillColor: new Engine.Math.Color(0, 0, 0),
+	                strokeColor: new Engine.Math.Color(1, 1, 1),
 	                strokeWidth: 0
 	            });
 
-	            this.lineRenderer = this.addComponent('GeometryRenderer', {
+	            this.lineRenderer2 = this.addComponent('GeometryRenderer', {
+	                type: 'line',
+	                strokeColor: new Engine.Math.Color(0, 0, 0),
+	                strokeWidth: UNIT / 10,
+	                points: []
+	            });
+
+	            this.lineRenderer1 = this.addComponent('GeometryRenderer', {
 	                type: 'line',
 	                strokeColor: new Engine.Math.Color(1, 1, 1),
 	                strokeWidth: UNIT / 20,
@@ -119,7 +128,7 @@
 
 	            this.addComponent('TextRenderer', {
 	                fillColor: new Engine.Math.Color(1, 1, 1),
-	                strokeColor: new Engine.Math.Color(1, 1, 1),
+	                strokeColor: new Engine.Math.Color(0, 0, 0),
 	                size: UNIT,
 	                strokeWidth: UNIT / 20
 	            });
@@ -267,11 +276,10 @@
 	            var xMin = -yMax;
 
 	            this.geometryRenderer.fillColor = value;
-	            this.geometryRenderer.strokeColor = value.getNegative();
-	            this.textRenderer.fillColor = value.getNegative();
-	            this.textRenderer.fillColor = value.getNegative();
-	            this.lineRenderer.strokeColor = value.getNegative();
-	            this.lineRenderer.points = [new Engine.Math.Vector2(xMin, yMax - unit * value.r), new Engine.Math.Vector2(xMin + unit / 2, yMax - unit * value.g), new Engine.Math.Vector2(xMin + unit, yMax - unit * value.b)];
+
+	            this.lineRenderer1.points = [new Engine.Math.Vector2(xMin, yMax - unit * value.r), new Engine.Math.Vector2(xMin + unit / 2, yMax - unit * value.g), new Engine.Math.Vector2(xMin + unit, yMax - unit * value.b)];
+
+	            this.lineRenderer2.points = this.lineRenderer1.points;
 	        }
 	    }]);
 
@@ -723,6 +731,8 @@
 	            var targetTile = targetGrid.children[tileIndex];
 	            var currentTile = this.children[tileIndex];
 
+	            currentTile.setHighlight(false);
+
 	            var isCorrect = currentTile.color.equals(targetTile.color);
 
 	            var isIncorrect = currentTile.color.r > targetTile.color.r || currentTile.color.g > targetTile.color.g || currentTile.color.b > targetTile.color.b;
@@ -735,8 +745,39 @@
 	                currentTile.setCorrect(undefined);
 	            }
 
+	            // Check if won
+	            this.checkIfWon();
+
 	            // Remove queue tile
 	            queueTile.destroy();
+	        }
+
+	        /**
+	         * Checks if the level is won
+	         */
+
+	    }, {
+	        key: 'checkIfWon',
+	        value: function checkIfWon() {
+	            var targetGrid = Engine.Stage.getActor(Game.Actors.TargetGrid);
+	            var correctTiles = 0;
+
+	            for (var i in this.children) {
+	                var currentTile = this.children[i];
+	                var targetTile = targetGrid.children[i];
+
+	                if (targetTile.color.equals(currentTile.color)) {
+	                    correctTiles++;
+	                }
+	            }
+
+	            if (correctTiles >= this.children.length) {
+	                var currentScene = parseInt(Engine.Stage.scene.name.match(/\d+/));
+
+	                currentScene++;
+
+	                Engine.Stage.loadScene('Scene' + currentScene);
+	            }
 	        }
 
 	        /**
@@ -760,13 +801,117 @@
 	    // A standard unit for the game
 	    window.UNIT = Engine.Graphics.screenHeight / 14;
 
-	    // Initialise the grids
-	    var targetGrid = new Game.Actors.TargetGrid();
-	    var playerGrid = new Game.Actors.PlayerGrid();
+	    // Init scenes
+	    __webpack_require__(23);
+	    Engine.Stage.addScene(Game.Scenes.Scene1);
 
-	    // Initialise the queue
-	    var queue = new Game.Actors.Queue();
+	    __webpack_require__(24);
+	    Engine.Stage.addScene(Game.Scenes.Scene2);
+
+	    // Load first scene
+	    Engine.Stage.loadScene('Scene1');
 	});
+
+/***/ }),
+
+/***/ 23:
+/***/ (function(module, exports) {
+
+	'use strict';
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var Scene1 = function (_Engine$Scene) {
+	    _inherits(Scene1, _Engine$Scene);
+
+	    function Scene1() {
+	        _classCallCheck(this, Scene1);
+
+	        return _possibleConstructorReturn(this, (Scene1.__proto__ || Object.getPrototypeOf(Scene1)).apply(this, arguments));
+	    }
+
+	    _createClass(Scene1, [{
+	        key: 'start',
+	        value: function start() {
+	            Engine.UI.clearWidgets();
+
+	            var targetGrid = new Game.Actors.TargetGrid({ size: 2 });
+	            var playerGrid = new Game.Actors.PlayerGrid({ size: 2 });
+	            var queue = new Game.Actors.Queue();
+
+	            var label1 = new Engine.UI.Label({
+	                text: 'Bla bla bla ⮕',
+	                textSize: 20,
+	                x: UNIT * 7,
+	                y: UNIT * 2
+	            });
+
+	            var label2 = new Engine.UI.Label({
+	                text: '⬅ Bla bla bla',
+	                textSize: 20,
+	                x: UNIT * 14,
+	                y: Engine.Graphics.screenHeight / 2
+	            });
+
+	            var label3 = new Engine.UI.Label({
+	                text: '⬅ Bla bla bla',
+	                textSize: 20,
+	                x: UNIT * 14,
+	                y: Engine.Graphics.screenHeight - UNIT * 2
+	            });
+	        }
+	    }]);
+
+	    return Scene1;
+	}(Engine.Scene);
+
+	Game.Scenes.Scene1 = Scene1;
+
+/***/ }),
+
+/***/ 24:
+/***/ (function(module, exports) {
+
+	'use strict';
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var Scene2 = function (_Engine$Scene) {
+	    _inherits(Scene2, _Engine$Scene);
+
+	    function Scene2() {
+	        _classCallCheck(this, Scene2);
+
+	        return _possibleConstructorReturn(this, (Scene2.__proto__ || Object.getPrototypeOf(Scene2)).apply(this, arguments));
+	    }
+
+	    _createClass(Scene2, [{
+	        key: 'start',
+	        value: function start() {
+	            Engine.UI.clearWidgets();
+
+	            var targetGrid = new Game.Actors.TargetGrid();
+	            var playerGrid = new Game.Actors.PlayerGrid();
+	            var queue = new Game.Actors.Queue();
+	        }
+	    }]);
+
+	    return Scene2;
+	}(Engine.Scene);
+
+	Game.Scenes.Scene2 = Scene2;
 
 /***/ })
 

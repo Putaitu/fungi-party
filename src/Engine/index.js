@@ -16,6 +16,7 @@ require('./Debug');
 require('./Entity');
 require('./Graphics');
 require('./Input');
+require('./Scene');
 require('./Settings');
 require('./Stage');
 require('./Time');

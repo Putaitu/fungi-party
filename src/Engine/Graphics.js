@@ -141,16 +141,18 @@ class Graphics {
         this.ctx.fillStyle = this.backgroundColor.toHex();
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-        for(let i in Engine.Stage.actors) {
-            if(!Engine.Stage.actors[i].canDraw) { continue; }
+        let actors = Engine.Stage.getActors();
 
-            let transform = Engine.Stage.actors[i].getGlobalTransform();
+        for(let i in actors) {
+            if(!actors[i].canDraw) { continue; }
+
+            let transform = actors[i].getGlobalTransform();
 
             this.translate(transform.position.x, transform.position.y);
             this.scale(transform.scale.x, transform.scale.y);
             this.rotate(transform.rotate);
 
-            Engine.Stage.actors[i].draw();
+            actors[i].draw();
            
             this.rotate(-transform.rotate);
             this.scale(Math.pow(transform.scale.x, -1), Math.pow(transform.scale.y, -1));

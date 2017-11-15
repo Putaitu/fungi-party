@@ -39,19 +39,26 @@ class UI {
 
         this.div.appendChild(widget.element);
     }
+
+    /**
+     * Clears widgets
+     */
+    static clearWidgets() {
+        this.div.innerHTML = '';
+    }
 }
 
 /**
- * A button
+ * A widget
  */
-UI.Button = class Button extends Engine.Entity {
+UI.Widget = class Widget extends Engine.Entity {
     // Getters
     get width() { return parseInt(this.element.style.width); }
     get height() { return parseInt(this.element.style.height); }
     get x() { return parseInt(this.element.style.left); }
     get y() { return parseInt(this.element.style.top); }
     get text() { return this.element.innerHTML; }
-    get size() { return parseInt(this.element.style.fontSize); }
+    get textSize() { return parseInt(this.element.style.fontSize); }
     get font() { return parseInt(this.element.style.fontFamily); }
 
     // Setters
@@ -60,9 +67,9 @@ UI.Button = class Button extends Engine.Entity {
     set x(value) { this.element.style.left = value + 'px'; }
     set y(value) { this.element.style.top = value + 'px'; }
     set text(value) { this.element.innerHTML = value; }
-    set size(value) { this.element.style.fontSize = value + 'px'; }
+    set textSize(value) { this.element.style.fontSize = value + 'px'; }
     set font(value) { this.element.style.fontFamily = value; }
-   
+    
     /**
      * Constructor
      */
@@ -71,30 +78,30 @@ UI.Button = class Button extends Engine.Entity {
     
         Engine.UI.addWidget(this);
     }
-
+    
     /**
      * Defaults
      */
     defaults() {
-        this.element = document.createElement('button');
+        this.element = document.createElement('div');
         this.element.style.display = 'block';
         this.element.style.position = 'absolute';;
         this.element.style.transform = 'translate(-50%, -50%)';
         this.element.style.userSelect = 'none';
 
+        this.x = 0;
+        this.y = 0;
+        this.width = 200;
+        this.height = 40;
+        this.text = 'My widget';
+        this.font = 'Arial';
+        this.textSize = 10;
+        
         this.element.addEventListener('click', (e) => {
             e.preventDefault();
 
             this.onClick();
         });
-
-        this.x = 0;
-        this.y = 0;
-        this.width = 200;
-        this.height = 40;
-        this.text = 'My button';
-        this.font = 'Arial';
-        this.size = 10;
     }
 
     /**
@@ -112,6 +119,34 @@ UI.Button = class Button extends Engine.Entity {
      * Event: Click
      */
     onClick() {}
+}
+
+/**
+ * A label
+ */
+UI.Label = class Label extends UI.Widget {
+    /**
+     * Defaults
+     */
+    defaults() {
+        super.defaults();
+        
+        this.text = 'My label';
+    }
+}
+
+/**
+ * A button
+ */
+UI.Button = class Button extends UI.Widget {
+    /**
+     * Defaults
+     */
+    defaults() {
+        super.defaults();
+        
+        this.text = 'My button';
+    }
 }
 
 Engine.UI = UI;

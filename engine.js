@@ -68,20 +68,21 @@
 	__webpack_require__(7);
 	__webpack_require__(8);
 	__webpack_require__(9);
-
 	__webpack_require__(10);
+
 	__webpack_require__(11);
 	__webpack_require__(12);
-
 	__webpack_require__(13);
-	__webpack_require__(14);
 
+	__webpack_require__(14);
 	__webpack_require__(15);
+
 	__webpack_require__(16);
 	__webpack_require__(17);
 	__webpack_require__(18);
 	__webpack_require__(19);
 	__webpack_require__(20);
+	__webpack_require__(21);
 
 /***/ }),
 /* 1 */
@@ -508,18 +509,20 @@
 	            this.ctx.fillStyle = this.backgroundColor.toHex();
 	            this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-	            for (var i in Engine.Stage.actors) {
-	                if (!Engine.Stage.actors[i].canDraw) {
+	            var actors = Engine.Stage.getActors();
+
+	            for (var i in actors) {
+	                if (!actors[i].canDraw) {
 	                    continue;
 	                }
 
-	                var transform = Engine.Stage.actors[i].getGlobalTransform();
+	                var transform = actors[i].getGlobalTransform();
 
 	                this.translate(transform.position.x, transform.position.y);
 	                this.scale(transform.scale.x, transform.scale.y);
 	                this.rotate(transform.rotate);
 
-	                Engine.Stage.actors[i].draw();
+	                actors[i].draw();
 
 	                this.rotate(-transform.rotate);
 	                this.scale(Math.pow(transform.scale.x, -1), Math.pow(transform.scale.y, -1));
@@ -1114,36 +1117,43 @@
 
 	'use strict';
 
-	Engine.Settings = {};
-
-/***/ }),
-/* 7 */
-/***/ (function(module, exports) {
-
-	'use strict';
-
 	/**
-	 * The stage subsystem
+	 * The scene subsystem
 	 */
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	var Stage = function () {
-	    function Stage() {
-	        _classCallCheck(this, Stage);
-	    }
+	var Scene = function () {
+	    _createClass(Scene, [{
+	        key: 'name',
 
-	    _createClass(Stage, null, [{
-	        key: 'init',
+	        // Getters
+	        get: function get() {
+	            return this.constructor.name;
+	        }
 
 	        /**
-	         * Init
+	         * Constructor
 	         */
-	        value: function init() {
-	            this.actors = [];
-	        }
+
+	    }]);
+
+	    function Scene() {
+	        _classCallCheck(this, Scene);
+
+	        this.actors = [];
+	    }
+
+	    /**
+	     * Starts the scene
+	     */
+
+
+	    _createClass(Scene, [{
+	        key: 'start',
+	        value: function start() {}
 
 	        /**
 	         * Adds an actor
@@ -1223,13 +1233,161 @@
 	        }
 	    }]);
 
+	    return Scene;
+	}();
+
+	Engine.Scene = Scene;
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports) {
+
+	'use strict';
+
+	Engine.Settings = {};
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports) {
+
+	'use strict';
+
+	/**
+	 * The stage subsystem
+	 */
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var Stage = function () {
+	    function Stage() {
+	        _classCallCheck(this, Stage);
+	    }
+
+	    _createClass(Stage, null, [{
+	        key: 'init',
+
+	        /**
+	         * Init
+	         */
+	        value: function init() {
+	            this.scene = null;
+	            this.scenes = {};
+	        }
+
+	        /**
+	         * Adds a scene to the list
+	         *
+	         * @param {Scene} scene
+	         */
+
+	    }, {
+	        key: 'addScene',
+	        value: function addScene(scene) {
+	            if (!scene) {
+	                return;
+	            }
+
+	            if (this.scenes[scene.name]) {
+	                throw new Error('A scene by name "' + scene.name + '" was already added');
+	            }
+
+	            this.scenes[scene.name] = scene;
+	        }
+
+	        /**
+	         * Loads a Scene
+	         *
+	         * @param {String} name
+	         *
+	         * @returns {Scene} Scene
+	         */
+
+	    }, {
+	        key: 'loadScene',
+	        value: function loadScene(name) {
+	            if (!this.scenes[name]) {
+	                throw new Error('A scene by name "' + name + '" was not added');
+	            }
+
+	            this.scene = new this.scenes[name]();
+
+	            this.scene.start();
+	        }
+
+	        /**
+	         * Checks if a Scene is loaded
+	         */
+
+	    }, {
+	        key: 'checkScene',
+	        value: function checkScene() {
+	            if (!this.scene) {
+	                throw new Error('No scene is currently loaded');
+	            }
+	        }
+
+	        /**
+	         * Adds an actor
+	         *
+	         * @param {Actor} actor
+	         */
+
+	    }, {
+	        key: 'addActor',
+	        value: function addActor(actor) {
+	            this.checkScene();
+	            this.scene.addActor(actor);
+	        }
+
+	        /**
+	         * Gets an actor
+	         *
+	         * @param {Actor} type
+	         */
+
+	    }, {
+	        key: 'getActor',
+	        value: function getActor(type) {
+	            this.checkScene();
+	            return this.scene.getActor(type);
+	        }
+
+	        /**
+	         * Removes an actor
+	         *
+	         * @param {Actor} actor
+	         */
+
+	    }, {
+	        key: 'removeActor',
+	        value: function removeActor(actor) {
+	            this.checkScene();
+	            this.scene.removeActor(actor);
+	        }
+
+	        /**
+	         * Gets a list of actors
+	         *
+	         * @param {Actor} type
+	         */
+
+	    }, {
+	        key: 'getActors',
+	        value: function getActors(type) {
+	            this.checkScene();
+	            return this.scene.getActors(type);
+	        }
+	    }]);
+
 	    return Stage;
 	}();
 
 	Engine.Stage = Stage;
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -1254,12 +1412,16 @@
 	         * Init
 	         */
 	        value: function init() {
+	            var _this = this;
+
 	            this.deltaTime = 0;
 	            this.startTime = Date.now();
 	            this.lastTimeStamp = 0;
 
 	            // Kick off the first time update
-	            this.update(0);
+	            window.requestAnimationFrame(function (timestamp) {
+	                _this.update(0);
+	            });
 	        }
 
 	        /**
@@ -1269,21 +1431,23 @@
 	    }, {
 	        key: 'update',
 	        value: function update(timestamp) {
-	            var _this = this;
+	            var _this2 = this;
 
 	            this.deltaTime = (timestamp - this.lastTimeStamp) * 0.001;
 	            this.lastTimeStamp = timestamp;
 
-	            for (var i in Engine.Stage.actors) {
-	                if (!Engine.Stage.actors[i].canUpdate) {
+	            var actors = Engine.Stage.getActors();
+
+	            for (var i in actors) {
+	                if (!actors[i].canUpdate) {
 	                    continue;
 	                }
 
-	                Engine.Stage.actors[i].update();
+	                actors[i].update();
 	            }
 
 	            window.requestAnimationFrame(function (timestamp) {
-	                _this.update(timestamp);
+	                _this2.update(timestamp);
 	            });
 	        }
 	    }]);
@@ -1294,7 +1458,7 @@
 	Engine.Time = Time;
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -1302,6 +1466,8 @@
 	/**
 	 * The UI subsystem
 	 */
+
+	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -1360,20 +1526,30 @@
 
 	            this.div.appendChild(widget.element);
 	        }
+
+	        /**
+	         * Clears widgets
+	         */
+
+	    }, {
+	        key: 'clearWidgets',
+	        value: function clearWidgets() {
+	            this.div.innerHTML = '';
+	        }
 	    }]);
 
 	    return UI;
 	}();
 
 	/**
-	 * A button
+	 * A widget
 	 */
 
 
-	UI.Button = function (_Engine$Entity) {
-	    _inherits(Button, _Engine$Entity);
+	UI.Widget = function (_Engine$Entity) {
+	    _inherits(Widget, _Engine$Entity);
 
-	    _createClass(Button, [{
+	    _createClass(Widget, [{
 	        key: 'width',
 
 	        // Getters
@@ -1419,7 +1595,7 @@
 	            this.element.innerHTML = value;
 	        }
 	    }, {
-	        key: 'size',
+	        key: 'textSize',
 	        get: function get() {
 	            return parseInt(this.element.style.fontSize);
 	        },
@@ -1441,10 +1617,10 @@
 
 	    }]);
 
-	    function Button(config) {
-	        _classCallCheck(this, Button);
+	    function Widget(config) {
+	        _classCallCheck(this, Widget);
 
-	        var _this = _possibleConstructorReturn(this, (Button.__proto__ || Object.getPrototypeOf(Button)).call(this, config));
+	        var _this = _possibleConstructorReturn(this, (Widget.__proto__ || Object.getPrototypeOf(Widget)).call(this, config));
 
 	        Engine.UI.addWidget(_this);
 	        return _this;
@@ -1455,30 +1631,30 @@
 	     */
 
 
-	    _createClass(Button, [{
+	    _createClass(Widget, [{
 	        key: 'defaults',
 	        value: function defaults() {
 	            var _this2 = this;
 
-	            this.element = document.createElement('button');
+	            this.element = document.createElement('div');
 	            this.element.style.display = 'block';
 	            this.element.style.position = 'absolute';;
 	            this.element.style.transform = 'translate(-50%, -50%)';
 	            this.element.style.userSelect = 'none';
+
+	            this.x = 0;
+	            this.y = 0;
+	            this.width = 200;
+	            this.height = 40;
+	            this.text = 'My widget';
+	            this.font = 'Arial';
+	            this.textSize = 10;
 
 	            this.element.addEventListener('click', function (e) {
 	                e.preventDefault();
 
 	                _this2.onClick();
 	            });
-
-	            this.x = 0;
-	            this.y = 0;
-	            this.width = 200;
-	            this.height = 40;
-	            this.text = 'My button';
-	            this.font = 'Arial';
-	            this.size = 10;
 	        }
 
 	        /**
@@ -1504,13 +1680,69 @@
 	        value: function onClick() {}
 	    }]);
 
-	    return Button;
+	    return Widget;
 	}(Engine.Entity);
+
+	/**
+	 * A label
+	 */
+	UI.Label = function (_UI$Widget) {
+	    _inherits(Label, _UI$Widget);
+
+	    function Label() {
+	        _classCallCheck(this, Label);
+
+	        return _possibleConstructorReturn(this, (Label.__proto__ || Object.getPrototypeOf(Label)).apply(this, arguments));
+	    }
+
+	    _createClass(Label, [{
+	        key: 'defaults',
+
+	        /**
+	         * Defaults
+	         */
+	        value: function defaults() {
+	            _get(Label.prototype.__proto__ || Object.getPrototypeOf(Label.prototype), 'defaults', this).call(this);
+
+	            this.text = 'My label';
+	        }
+	    }]);
+
+	    return Label;
+	}(UI.Widget);
+
+	/**
+	 * A button
+	 */
+	UI.Button = function (_UI$Widget2) {
+	    _inherits(Button, _UI$Widget2);
+
+	    function Button() {
+	        _classCallCheck(this, Button);
+
+	        return _possibleConstructorReturn(this, (Button.__proto__ || Object.getPrototypeOf(Button)).apply(this, arguments));
+	    }
+
+	    _createClass(Button, [{
+	        key: 'defaults',
+
+	        /**
+	         * Defaults
+	         */
+	        value: function defaults() {
+	            _get(Button.prototype.__proto__ || Object.getPrototypeOf(Button.prototype), 'defaults', this).call(this);
+
+	            this.text = 'My button';
+	        }
+	    }]);
+
+	    return Button;
+	}(UI.Widget);
 
 	Engine.UI = UI;
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -1533,6 +1765,14 @@
 	                NONE: 0,
 	                NO_GREYSCALE: 1
 	            };
+	        }
+
+	        // Preset: Black
+
+	    }, {
+	        key: 'BLACK',
+	        get: function get() {
+	            return new Color(0, 0, 0, 1);
 	        }
 
 	        /**
@@ -1716,7 +1956,7 @@
 	Engine.Math.Color = Color;
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -1796,7 +2036,7 @@
 	Engine.Math.Rect = Rect;
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -1821,7 +2061,7 @@
 	Engine.Math.Vector2 = Vector2;
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -2091,7 +2331,7 @@
 	Engine.Actors.Actor = Actor;
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -2152,7 +2392,7 @@
 	Engine.Actors.Pawn = Pawn;
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -2230,7 +2470,7 @@
 	Engine.Components.Component = Component;
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -2294,7 +2534,7 @@
 	Engine.Components.Collider = Collider;
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -2374,7 +2614,7 @@
 	Engine.Components.GeometryRenderer = GeometryRenderer;
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -2438,7 +2678,7 @@
 	Engine.Components.SpriteRenderer = SpriteRenderer;
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -2510,7 +2750,7 @@
 	Engine.Components.TextRenderer = TextRenderer;
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, exports) {
 
 	'use strict';

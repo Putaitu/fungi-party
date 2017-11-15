@@ -24,19 +24,27 @@ Game.Actors.ColorTile = class ColorTile extends Engine.Actors.Actor {
             width: UNIT,
             height: UNIT,
             fillColor: new Engine.Math.Color(0, 0, 0),
+            strokeColor: new Engine.Math.Color(1, 1, 1),
             strokeWidth: 0
         });
         
-        this.lineRenderer = this.addComponent('GeometryRenderer', {
+        this.lineRenderer2 = this.addComponent('GeometryRenderer', {
+            type: 'line',
+            strokeColor: new Engine.Math.Color(0, 0, 0),
+            strokeWidth: UNIT / 10,
+            points: []
+        });
+
+        this.lineRenderer1 = this.addComponent('GeometryRenderer', {
             type: 'line',
             strokeColor: new Engine.Math.Color(1, 1, 1),
             strokeWidth: UNIT / 20,
             points: []
         });
-
+        
         this.addComponent('TextRenderer', {
             fillColor: new Engine.Math.Color(1, 1, 1),
-            strokeColor: new Engine.Math.Color(1, 1, 1),
+            strokeColor: new Engine.Math.Color(0, 0, 0),
             size: UNIT,
             strokeWidth: UNIT / 20
         });
@@ -69,15 +77,14 @@ Game.Actors.ColorTile = class ColorTile extends Engine.Actors.Actor {
         let xMin = -yMax;
 
         this.geometryRenderer.fillColor = value;
-        this.geometryRenderer.strokeColor = value.getNegative();
-        this.textRenderer.fillColor = value.getNegative();
-        this.textRenderer.fillColor = value.getNegative();
-        this.lineRenderer.strokeColor = value.getNegative();
-        this.lineRenderer.points = [
+       
+        this.lineRenderer1.points = [
             new Engine.Math.Vector2(xMin, yMax - (unit * value.r)),
             new Engine.Math.Vector2(xMin + (unit / 2), yMax - (unit * value.g)),
             new Engine.Math.Vector2(xMin + unit, yMax - (unit * value.b))
         ];
+        
+        this.lineRenderer2.points = this.lineRenderer1.points;
     }
 
     /**
@@ -537,6 +544,8 @@ Game.Actors.PlayerGrid = class PlayerGrid extends Game.Actors.Grid {
         let targetTile = targetGrid.children[tileIndex];
         let currentTile = this.children[tileIndex];
 
+        currentTile.setHighlight(false);
+
         let isCorrect = currentTile.color.equals(targetTile.color);
 
         let isIncorrect =
@@ -552,8 +561,36 @@ Game.Actors.PlayerGrid = class PlayerGrid extends Game.Actors.Grid {
             currentTile.setCorrect(undefined);
         }
 
+        // Check if won
+        this.checkIfWon();
+
         // Remove queue tile
         queueTile.destroy();
+    }
+
+    /**
+     * Checks if the level is won
+     */
+    checkIfWon() {
+        let targetGrid = Engine.Stage.getActor(Game.Actors.TargetGrid);
+        let correctTiles = 0;
+
+        for(let i in this.children) {
+            let currentTile = this.children[i];
+            let targetTile = targetGrid.children[i];
+        
+            if(targetTile.color.equals(currentTile.color)) {
+                correctTiles++;
+            }
+        }
+
+        if(correctTiles >= this.children.length) {
+            let currentScene = parseInt(Engine.Stage.scene.name.match(/\d+/));
+        
+            currentScene++;
+
+            Engine.Stage.loadScene('Scene' + currentScene);
+        }
     }
 
     /**
@@ -571,10 +608,13 @@ Engine.Core.on('init', () => {
     // A standard unit for the game
     window.UNIT = Engine.Graphics.screenHeight / 14;
 
-    // Initialise the grids
-    let targetGrid = new Game.Actors.TargetGrid();
-    let playerGrid = new Game.Actors.PlayerGrid();
+    // Init scenes
+    require('./Scenes/Scene1');
+    Engine.Stage.addScene(Game.Scenes.Scene1);
+    
+    require('./Scenes/Scene2');
+    Engine.Stage.addScene(Game.Scenes.Scene2);
 
-    // Initialise the queue
-    let queue = new Game.Actors.Queue;
+    // Load first scene
+    Engine.Stage.loadScene('Scene1');
 });
