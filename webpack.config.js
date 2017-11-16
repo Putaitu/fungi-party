@@ -4,8 +4,8 @@
 module.exports = {
     // The main .js file path
     entry: {
-        engine: './src/Engine',
-        game: './src/Game'
+        engine: './Source/Engine',
+        game: './Source/Game'
     },
 
     // Define loaders

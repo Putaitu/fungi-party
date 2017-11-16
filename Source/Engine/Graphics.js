@@ -91,9 +91,9 @@ class Graphics {
             let onChange = () => {
                 document.removeEventListener(changeName, onChange);
 
-                window.requestAnimationFrame(() => {
+                setTimeout(() => {
                     resolve();
-                });
+                }, 500);
             };
 
             // Webkit
@@ -262,6 +262,38 @@ class Graphics {
             this.ctx.strokeStyle = strokeColor.toRGB();
             this.ctx.stroke();
         }
+    }
+    
+    /**
+     * Draw an image
+     *
+     * @param {Number} x
+     * @param {Number} y
+     * @param {CanvasImageResource} image
+     * @param {Rect} rect
+     * @param {Number} width
+     * @param {Number} height
+     */
+    static drawImage(x, y, image, rect, width, height) {
+        if(rect) {
+            this.ctx.drawImage(image, rect.x, rect.y, rect.width, rect.height, x, y, width, height);
+        } else {
+            this.ctx.drawImage(image, x, y, width, height);
+        }
+    }
+    
+    /**
+     * Draw an image as a pattern
+     *
+     * @param {Number} x
+     * @param {Number} y
+     * @param {CanvasPattern} pattern
+     * @param {Number} width
+     * @param {Number} height
+     */
+    static drawPattern(x, y, pattern, width, height) {
+        this.ctx.fillStyle = pattern;
+        this.ctx.fillRect(x, y, width, height);
     }
 
     /**

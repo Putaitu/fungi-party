@@ -20,7 +20,7 @@ class GeometryRenderer extends Engine.Components.Component {
         this.radius = 10;
         this.fillColor = new Engine.Math.Color(1, 1, 1);
         this.type = 'circle';
-        this.pivot = { x: 0.5, y: 0.5 };
+        this.pivot = new Engine.Math.Vector2(0.5, 0.5);
     }
 
     /**

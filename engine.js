@@ -119,7 +119,7 @@
 	            fsBtn.style.left = '0%';
 	            fsBtn.style.width = '100%';
 	            fsBtn.style.height = '100%';
-	            fsBtn.innerHTML = 'PLAY';
+	            fsBtn.innerHTML = 'PRESS TO PLAY';
 
 	            document.body.appendChild(fsBtn);
 
@@ -456,9 +456,9 @@
 	                var onChange = function onChange() {
 	                    document.removeEventListener(changeName, onChange);
 
-	                    window.requestAnimationFrame(function () {
+	                    setTimeout(function () {
 	                        resolve();
-	                    });
+	                    }, 500);
 	                };
 
 	                // Webkit
@@ -653,6 +653,44 @@
 	                this.ctx.strokeStyle = strokeColor.toRGB();
 	                this.ctx.stroke();
 	            }
+	        }
+
+	        /**
+	         * Draw an image
+	         *
+	         * @param {Number} x
+	         * @param {Number} y
+	         * @param {CanvasImageResource} image
+	         * @param {Rect} rect
+	         * @param {Number} width
+	         * @param {Number} height
+	         */
+
+	    }, {
+	        key: 'drawImage',
+	        value: function drawImage(x, y, image, rect, width, height) {
+	            if (rect) {
+	                this.ctx.drawImage(image, rect.x, rect.y, rect.width, rect.height, x, y, width, height);
+	            } else {
+	                this.ctx.drawImage(image, x, y, width, height);
+	            }
+	        }
+
+	        /**
+	         * Draw an image as a pattern
+	         *
+	         * @param {Number} x
+	         * @param {Number} y
+	         * @param {CanvasPattern} pattern
+	         * @param {Number} width
+	         * @param {Number} height
+	         */
+
+	    }, {
+	        key: 'drawPattern',
+	        value: function drawPattern(x, y, pattern, width, height) {
+	            this.ctx.fillStyle = pattern;
+	            this.ctx.fillRect(x, y, width, height);
 	        }
 
 	        /**
@@ -1603,6 +1641,22 @@
 	            this.element.style.fontSize = value + 'px';
 	        }
 	    }, {
+	        key: 'textAlign',
+	        get: function get() {
+	            return this.element.style.textAlign;
+	        },
+	        set: function set(value) {
+	            this.element.style.textAlign = value;
+	        }
+	    }, {
+	        key: 'textColor',
+	        get: function get() {
+	            return Engine.Math.Color.fromRGB(this.element.style.color);
+	        },
+	        set: function set(value) {
+	            this.element.style.color = value.toRGB();
+	        }
+	    }, {
 	        key: 'font',
 	        get: function get() {
 	            return parseInt(this.element.style.fontFamily);
@@ -1887,13 +1941,22 @@
 	        }
 
 	        /**
-	         * Gets a hex value
+	         * Gets a Color value from a Hex string
 	         *
-	         * @returns {String} Hex
+	         * @param {String} hex
+	         *
+	         * @returns {Color} Color
 	         */
 
 	    }, {
 	        key: 'toHex',
+
+
+	        /**
+	         * Gets a hex value
+	         *
+	         * @returns {String} Hex
+	         */
 	        value: function toHex() {
 	            function componentToHex(c) {
 	                var hex = Math.round(c * 255).toString(16);
@@ -1947,6 +2010,45 @@
 	            }
 
 	            return color;
+	        }
+	    }, {
+	        key: 'fromHex',
+	        value: function fromHex(hex) {
+	            hex = hex.replace('#', '');
+
+	            var components = hex.match(/.{1,2}/g);
+
+	            for (var i in components) {
+	                components[i] = parseInt(components[i], 16) / 255;
+	            }
+
+	            return new Color(components[0], components[1], components[2]);
+	        }
+
+	        /**
+	         * Gets a Color value from an RGBA string
+	         *
+	         * @param {String} rgba
+	         *
+	         * @returns {Color} Color
+	         */
+
+	    }, {
+	        key: 'fromRGB',
+	        value: function fromRGB(rgba) {
+	            var components = rgba.match(/\d{1,2}/g);
+
+	            for (var i in components) {
+	                components[i] = parseInt(components[i]);
+
+	                if (i === 3) {
+	                    continue;
+	                }
+
+	                components[i] = components[i] / 255;
+	            }
+
+	            return new Color(components[0], components[1], components[2], components[3] || 1);
 	        }
 	    }]);
 
@@ -2294,7 +2396,7 @@
 
 	            // Debug
 	            if (Engine.Settings.useDebug === true) {
-	                Engine.Graphics.drawCircle(this.transform.position.x, this.transform.position.y, 10, 0, null, '#ff0000');
+	                Engine.Graphics.drawCircle(0, 0, 10, 0, null, new Engine.Math.Color(1, 0, 0));
 	            }
 	        }
 
@@ -2432,7 +2534,7 @@
 	      this.canUpdate = true;
 	      this.canDraw = true;
 	      this.isActive = true;
-	      this.offset = { x: 0, y: 0 };
+	      this.offset = new Engine.Math.Vector2(0, 0);
 	    }
 
 	    /**
@@ -2578,7 +2680,7 @@
 	            this.radius = 10;
 	            this.fillColor = new Engine.Math.Color(1, 1, 1);
 	            this.type = 'circle';
-	            this.pivot = { x: 0.5, y: 0.5 };
+	            this.pivot = new Engine.Math.Vector2(0.5, 0.5);
 	        }
 
 	        /**
@@ -2634,45 +2736,80 @@
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 	var SpriteRenderer = function (_Engine$Components$Co) {
-	  _inherits(SpriteRenderer, _Engine$Components$Co);
+	    _inherits(SpriteRenderer, _Engine$Components$Co);
 
-	  /**
-	   * Constructor
-	   */
-	  function SpriteRenderer(config) {
-	    _classCallCheck(this, SpriteRenderer);
+	    /**
+	     * Constructor
+	     */
+	    function SpriteRenderer(config) {
+	        _classCallCheck(this, SpriteRenderer);
 
-	    return _possibleConstructorReturn(this, (SpriteRenderer.__proto__ || Object.getPrototypeOf(SpriteRenderer)).call(this, config));
-	  }
-
-	  /**
-	   * Defaults
-	   */
-
-
-	  _createClass(SpriteRenderer, [{
-	    key: 'defaults',
-	    value: function defaults() {
-	      _get(SpriteRenderer.prototype.__proto__ || Object.getPrototypeOf(SpriteRenderer.prototype), 'defaults', this).call(this);
-
-	      this.texture = null;
-	      this.sprites = [];
+	        return _possibleConstructorReturn(this, (SpriteRenderer.__proto__ || Object.getPrototypeOf(SpriteRenderer)).call(this, config));
 	    }
 
 	    /**
-	     * Draw
+	     * Defaults
 	     */
 
-	  }, {
-	    key: 'draw',
-	    value: function draw() {
-	      if (!this.texture) {
-	        return;
-	      }
-	    }
-	  }]);
 
-	  return SpriteRenderer;
+	    _createClass(SpriteRenderer, [{
+	        key: 'defaults',
+	        value: function defaults() {
+	            _get(SpriteRenderer.prototype.__proto__ || Object.getPrototypeOf(SpriteRenderer.prototype), 'defaults', this).call(this);
+
+	            this.texture = null;
+	            this.rect = null;
+	            this.width = null;
+	            this.height = null;
+	            this.offset = new Engine.Math.Vector2(0.5, 0.5);
+	            this.useTiling = false;
+	        }
+
+	        /**
+	         * Sets a texture
+	         *
+	         * @param {Image|String} img
+	         */
+
+	    }, {
+	        key: 'setTexture',
+	        value: function setTexture(img) {
+	            if (typeof img === 'string') {
+	                var src = img;
+
+	                img = new Image();
+	                img.src = src;
+	            }
+
+	            this.texture = img;
+	        }
+
+	        /**
+	         * Draw
+	         */
+
+	    }, {
+	        key: 'draw',
+	        value: function draw() {
+	            if (!this.texture) {
+	                return;
+	            }
+
+	            if (this.useTiling) {
+	                if (!this.texturePattern) {
+	                    this.texturePattern = Engine.Graphics.ctx.createPattern(this.texture, 'repeat');
+	                }
+
+	                Engine.Graphics.drawPattern(-this.offset.x * (this.width || 0), -this.offset.y * (this.height || 0), this.texturePattern, this.width, this.height);
+	            } else {
+	                this.texturePattern = null;
+
+	                Engine.Graphics.drawImage(-this.offset.x * (this.width || 0), -this.offset.y * (this.height || 0), this.texture, this.rect, this.width, this.height);
+	            }
+	        }
+	    }]);
+
+	    return SpriteRenderer;
 	}(Engine.Components.Component);
 
 	Engine.Components.SpriteRenderer = SpriteRenderer;

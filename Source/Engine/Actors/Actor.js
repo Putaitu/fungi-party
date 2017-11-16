@@ -176,10 +176,10 @@ class Actor extends Engine.Entity {
             
             Engine.Graphics.translate(-this.components[i].offset.x, -this.components[i].offset.y);
         }
-
+        
         // Debug
         if(Engine.Settings.useDebug === true) {
-            Engine.Graphics.drawCircle(this.transform.position.x, this.transform.position.y, 10, 0, null, '#ff0000');
+            Engine.Graphics.drawCircle(0, 0, 10, 0, null, new Engine.Math.Color(1, 0, 0));
         }
     }
 

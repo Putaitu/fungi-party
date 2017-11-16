@@ -59,6 +59,8 @@ UI.Widget = class Widget extends Engine.Entity {
     get y() { return parseInt(this.element.style.top); }
     get text() { return this.element.innerHTML; }
     get textSize() { return parseInt(this.element.style.fontSize); }
+    get textAlign() { return this.element.style.textAlign; }
+    get textColor() { return Engine.Math.Color.fromRGB(this.element.style.color); }
     get font() { return parseInt(this.element.style.fontFamily); }
 
     // Setters
@@ -68,6 +70,8 @@ UI.Widget = class Widget extends Engine.Entity {
     set y(value) { this.element.style.top = value + 'px'; }
     set text(value) { this.element.innerHTML = value; }
     set textSize(value) { this.element.style.fontSize = value + 'px'; }
+    set textAlign(value) { this.element.style.textAlign = value; }
+    set textColor(value) { this.element.style.color = value.toRGB(); }
     set font(value) { this.element.style.fontFamily = value; }
     
     /**

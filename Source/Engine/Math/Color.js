@@ -125,6 +125,46 @@ class Color {
     }
 
     /**
+     * Gets a Color value from a Hex string
+     *
+     * @param {String} hex
+     *
+     * @returns {Color} Color
+     */
+    static fromHex(hex) {
+        hex = hex.replace('#', '');
+
+        let components = hex.match(/.{1,2}/g);
+
+        for(let i in components) {
+            components[i] = parseInt(components[i], 16) / 255;
+        }
+
+        return new Color(components[0], components[1], components[2]);
+    }
+    
+    /**
+     * Gets a Color value from an RGBA string
+     *
+     * @param {String} rgba
+     *
+     * @returns {Color} Color
+     */
+    static fromRGB(rgba) {
+        let components = rgba.match(/\d{1,2}/g);
+
+        for(let i in components) {
+            components[i] = parseInt(components[i]);
+
+            if(i === 3) { continue; }
+
+            components[i] = components[i] / 255;
+        }
+
+        return new Color(components[0], components[1], components[2], components[3] || 1);
+    }
+
+    /**
      * Gets a hex value
      *
      * @returns {String} Hex
