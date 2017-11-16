@@ -19,7 +19,7 @@ class Scene1 extends Engine.Scene {
         let queue = new Game.Actors.Queue();
         
         let label1 = new Engine.UI.Label({
-            text: 'The blueprint: Try to match the the floor tile colours to this blueprint ⮕',
+            text: 'The blueprint ⮕\nTry to match the the floor tile colours to this blueprint',
             textSize: 20,
             textAlign: 'right',
             textColor: new Engine.Math.Color(1, 1, 1),
@@ -29,7 +29,7 @@ class Scene1 extends Engine.Scene {
         });
         
         let label2 = new Engine.UI.Label({
-            text: '⬅ The floor: Drag and drop mushrooms to add colour to this floor',
+            text: '⬅ The floor\nDrag and drop mushrooms to add colour to this floor',
             textSize: 20,
             textColor: new Engine.Math.Color(1, 1, 1),
             width: UNIT * 4,
@@ -38,7 +38,7 @@ class Scene1 extends Engine.Scene {
         });
         
         let label3 = new Engine.UI.Label({
-            text: '⬅ Mushrooms: Red, green or blue. Use the "↺" to undo',
+            text: '⬅ Mushrooms\nRed, green or blue. \nUse the "↺" to undo. \nDrag down to discard.',
             textSize: 20,
             textColor: new Engine.Math.Color(1, 1, 1),
             width: UNIT * 4,

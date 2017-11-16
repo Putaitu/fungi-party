@@ -1627,10 +1627,10 @@
 	    }, {
 	        key: 'text',
 	        get: function get() {
-	            return this.element.innerHTML;
+	            return this.element.innerHTML.replace(/\<br\>/g, '\n');
 	        },
 	        set: function set(value) {
-	            this.element.innerHTML = value;
+	            this.element.innerHTML = value.replace(/\n/g, '<br>');
 	        }
 	    }, {
 	        key: 'textSize',
