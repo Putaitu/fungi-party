@@ -4,6 +4,26 @@ class Scene1 extends Engine.Scene {
     start() {
         Engine.UI.clearWidgets();
 
+        let colorBlindButton = new Engine.UI.Button({
+            text: 'Colour Blind: OFF',
+            width: UNIT * 3,
+            height: UNIT / 2,
+            x: Engine.Graphics.screenWidth - UNIT * 2,
+            y: UNIT,
+            textColor: new Engine.Math.Color(1, 1, 1),
+            textSize: UNIT / 4,
+            onClick: () => {
+                let isOn = colorBlindButton.text.indexOf('ON') < 0;
+
+                colorBlindButton.text = 'Colour Blind: ' + (isOn ? 'ON' : 'OFF');
+
+                for(let floorTile of Engine.Stage.getActors(Game.Actors.FloorTile)) {
+                    floorTile.lineRenderer1.isEnabled = isOn;
+                    floorTile.lineRenderer2.isEnabled = isOn;
+                }
+            }
+        });
+
         let background = new Engine.Actors.Actor();
         let backgroundSprite = background.addComponent('SpriteRenderer', {
             offset: new Engine.Math.Vector2(0, 0),
@@ -20,8 +40,8 @@ class Scene1 extends Engine.Scene {
         
         let label1 = new Engine.UI.Label({
             text: 'The blueprint ⮕\nTry to match the the floor tile colours to this blueprint',
-            textSize: 20,
-            textAlign: 'right',
+            textSize: UNIT / 4,
+            textAlignX: 'end',
             textColor: new Engine.Math.Color(1, 1, 1),
             x: (Engine.Graphics.screenWidth / 2) - (UNIT * 4),
             y: UNIT * 2,
@@ -30,7 +50,7 @@ class Scene1 extends Engine.Scene {
         
         let label2 = new Engine.UI.Label({
             text: '⬅ The floor\nDrag and drop mushrooms to add colour to this floor',
-            textSize: 20,
+            textSize: UNIT / 4,
             textColor: new Engine.Math.Color(1, 1, 1),
             width: UNIT * 4,
             x: (Engine.Graphics.screenWidth / 2) + (UNIT * 4),

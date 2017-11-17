@@ -169,6 +169,7 @@ class Actor extends Engine.Entity {
     draw() {
         for(let i in this.components) {
             if(!this.components[i].canDraw) { continue; }
+            if(!this.components[i].isEnabled) { continue; }
 
             Engine.Graphics.translate(this.components[i].offset.x, this.components[i].offset.y);
 
@@ -196,6 +197,7 @@ class Actor extends Engine.Entity {
     update() {
         for(let i in this.components) {
             if(!this.components[i].canUpdate) { continue; }
+            if(!this.components[i].isEnabled) { continue; }
 
             this.components[i].update();
         }

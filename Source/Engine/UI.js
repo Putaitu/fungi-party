@@ -18,6 +18,11 @@ class UI {
         this.div.style.height = Engine.Graphics.screenHeight + 'px';
         this.div.style.pointerEvents = 'none';
 
+        this.cssDictionary = {
+            'flex-end': 'end',
+            'flex-start': 'start'
+        };
+
         document.body.appendChild(this.div);
     }
 
@@ -46,6 +51,34 @@ class UI {
     static clearWidgets() {
         this.div.innerHTML = '';
     }
+    
+    /**
+     * Translates CSS properties to sensible names
+     *
+     * @param {String} css
+     *
+     * @returns {String} Name
+     */
+    static fromCss(css) {
+        return this.cssDictionary[css] || css;
+    }
+    
+    /**
+     * Translates sensible names to CSS properties
+     *
+     * @param {String} name
+     *
+     * @returns {String} CSS property
+     */
+    static toCss(name) {
+        for(let css in this.cssDictionary) {
+            if(this.cssDictionary[css] === name) {
+                return css;
+            }
+        }
+
+        return name;
+    }
 }
 
 /**
@@ -59,9 +92,12 @@ UI.Widget = class Widget extends Engine.Entity {
     get y() { return parseInt(this.element.style.top); }
     get text() { return this.element.innerHTML.replace(/\<br\>/g, '\n'); }
     get textSize() { return parseInt(this.element.style.fontSize); }
-    get textAlign() { return this.element.style.textAlign; }
+    get textAlignX() { return Engine.UI.fromCss(this.element.style.justifyContent); }
+    get textAlignY() { return Engine.UI.fromCss(this.element.style.alignItems); }
     get textColor() { return Engine.Math.Color.fromRGB(this.element.style.color); }
     get font() { return parseInt(this.element.style.fontFamily); }
+    get strokeWidth() { return parseInt(this.element.style.borderWidth); }
+    get strokeColor() { return Engine.Math.Color.fromRGB(this.element.style.borderColor); }
 
     // Setters
     set width(value) { this.element.style.width = value + 'px'; }
@@ -70,9 +106,12 @@ UI.Widget = class Widget extends Engine.Entity {
     set y(value) { this.element.style.top = value + 'px'; }
     set text(value) { this.element.innerHTML = value.replace(/\n/g, '<br>'); }
     set textSize(value) { this.element.style.fontSize = value + 'px'; }
-    set textAlign(value) { this.element.style.textAlign = value; }
+    set textAlignX(value) { this.element.style.justifyContent = Engine.UI.toCss(value); }
+    set textAlignY(value) { this.element.style.alignItems = Engine.UI.toCss(value); }
     set textColor(value) { this.element.style.color = value.toRGB(); }
     set font(value) { this.element.style.fontFamily = value; }
+    set strokeWidth(value) { this.element.style.borderWidth = value + 'px'; }
+    set strokeColor(value) { this.element.style.borderColor = value.toRGB(); }
     
     /**
      * Constructor
@@ -88,10 +127,13 @@ UI.Widget = class Widget extends Engine.Entity {
      */
     defaults() {
         this.element = document.createElement('div');
-        this.element.style.display = 'block';
-        this.element.style.position = 'absolute';;
+        this.element.style.display = 'flex';
+        this.element.style.position = 'absolute';
         this.element.style.transform = 'translate(-50%, -50%)';
         this.element.style.userSelect = 'none';
+        this.element.style.cursor = 'normal';
+        this.element.style.borderStyle = 'solid';
+        this.element.style.borderWidth = '0px';
 
         this.x = 0;
         this.y = 0;
@@ -150,6 +192,10 @@ UI.Button = class Button extends UI.Widget {
         super.defaults();
         
         this.text = 'My button';
+        this.strokeWidth = 4;
+        this.strokeColor = new Engine.Math.Color(1, 1, 1);
+        this.textAlignX = 'center';
+        this.textAlignY = 'center';
     }
 }
 

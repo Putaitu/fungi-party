@@ -32,14 +32,16 @@ Game.Actors.FloorTile = class FloorTile extends Game.Actors.ColorTile {
             type: 'line',
             strokeColor: new Engine.Math.Color(0, 0, 0),
             strokeWidth: UNIT / 10,
-            points: []
+            points: [],
+            isEnabled: false
         });
 
         this.lineRenderer1 = this.addComponent('GeometryRenderer', {
             type: 'line',
             strokeColor: new Engine.Math.Color(1, 1, 1),
             strokeWidth: UNIT / 20,
-            points: []
+            points: [],
+            isEnabled: false
         });
         
         this.addComponent('TextRenderer', {

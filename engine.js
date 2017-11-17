@@ -1537,6 +1537,11 @@
 	            this.div.style.height = Engine.Graphics.screenHeight + 'px';
 	            this.div.style.pointerEvents = 'none';
 
+	            this.cssDictionary = {
+	                'flex-end': 'end',
+	                'flex-start': 'start'
+	            };
+
 	            document.body.appendChild(this.div);
 	        }
 
@@ -1573,6 +1578,40 @@
 	        key: 'clearWidgets',
 	        value: function clearWidgets() {
 	            this.div.innerHTML = '';
+	        }
+
+	        /**
+	         * Translates CSS properties to sensible names
+	         *
+	         * @param {String} css
+	         *
+	         * @returns {String} Name
+	         */
+
+	    }, {
+	        key: 'fromCss',
+	        value: function fromCss(css) {
+	            return this.cssDictionary[css] || css;
+	        }
+
+	        /**
+	         * Translates sensible names to CSS properties
+	         *
+	         * @param {String} name
+	         *
+	         * @returns {String} CSS property
+	         */
+
+	    }, {
+	        key: 'toCss',
+	        value: function toCss(name) {
+	            for (var css in this.cssDictionary) {
+	                if (this.cssDictionary[css] === name) {
+	                    return css;
+	                }
+	            }
+
+	            return name;
 	        }
 	    }]);
 
@@ -1641,12 +1680,20 @@
 	            this.element.style.fontSize = value + 'px';
 	        }
 	    }, {
-	        key: 'textAlign',
+	        key: 'textAlignX',
 	        get: function get() {
-	            return this.element.style.textAlign;
+	            return Engine.UI.fromCss(this.element.style.justifyContent);
 	        },
 	        set: function set(value) {
-	            this.element.style.textAlign = value;
+	            this.element.style.justifyContent = Engine.UI.toCss(value);
+	        }
+	    }, {
+	        key: 'textAlignY',
+	        get: function get() {
+	            return Engine.UI.fromCss(this.element.style.alignItems);
+	        },
+	        set: function set(value) {
+	            this.element.style.alignItems = Engine.UI.toCss(value);
 	        }
 	    }, {
 	        key: 'textColor',
@@ -1663,6 +1710,22 @@
 	        },
 	        set: function set(value) {
 	            this.element.style.fontFamily = value;
+	        }
+	    }, {
+	        key: 'strokeWidth',
+	        get: function get() {
+	            return parseInt(this.element.style.borderWidth);
+	        },
+	        set: function set(value) {
+	            this.element.style.borderWidth = value + 'px';
+	        }
+	    }, {
+	        key: 'strokeColor',
+	        get: function get() {
+	            return Engine.Math.Color.fromRGB(this.element.style.borderColor);
+	        },
+	        set: function set(value) {
+	            this.element.style.borderColor = value.toRGB();
 	        }
 
 	        /**
@@ -1691,10 +1754,13 @@
 	            var _this2 = this;
 
 	            this.element = document.createElement('div');
-	            this.element.style.display = 'block';
-	            this.element.style.position = 'absolute';;
+	            this.element.style.display = 'flex';
+	            this.element.style.position = 'absolute';
 	            this.element.style.transform = 'translate(-50%, -50%)';
 	            this.element.style.userSelect = 'none';
+	            this.element.style.cursor = 'normal';
+	            this.element.style.borderStyle = 'solid';
+	            this.element.style.borderWidth = '0px';
 
 	            this.x = 0;
 	            this.y = 0;
@@ -1787,6 +1853,10 @@
 	            _get(Button.prototype.__proto__ || Object.getPrototypeOf(Button.prototype), 'defaults', this).call(this);
 
 	            this.text = 'My button';
+	            this.strokeWidth = 4;
+	            this.strokeColor = new Engine.Math.Color(1, 1, 1);
+	            this.textAlignX = 'center';
+	            this.textAlignY = 'center';
 	        }
 	    }]);
 
@@ -2386,6 +2456,9 @@
 	                if (!this.components[i].canDraw) {
 	                    continue;
 	                }
+	                if (!this.components[i].isEnabled) {
+	                    continue;
+	                }
 
 	                Engine.Graphics.translate(this.components[i].offset.x, this.components[i].offset.y);
 
@@ -2419,6 +2492,9 @@
 	        value: function update() {
 	            for (var i in this.components) {
 	                if (!this.components[i].canUpdate) {
+	                    continue;
+	                }
+	                if (!this.components[i].isEnabled) {
 	                    continue;
 	                }
 
@@ -2533,7 +2609,7 @@
 	    value: function defaults() {
 	      this.canUpdate = true;
 	      this.canDraw = true;
-	      this.isActive = true;
+	      this.isEnabled = true;
 	      this.offset = new Engine.Math.Vector2(0, 0);
 	    }
 

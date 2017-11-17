@@ -17,7 +17,7 @@ class Component extends Engine.Entity {
     defaults() {
         this.canUpdate = true;
         this.canDraw = true;
-        this.isActive = true;
+        this.isEnabled = true;
         this.offset = new Engine.Math.Vector2(0, 0);
     }
 

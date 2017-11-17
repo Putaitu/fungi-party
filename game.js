@@ -212,14 +212,16 @@
 	                type: 'line',
 	                strokeColor: new Engine.Math.Color(0, 0, 0),
 	                strokeWidth: UNIT / 10,
-	                points: []
+	                points: [],
+	                isEnabled: false
 	            });
 
 	            this.lineRenderer1 = this.addComponent('GeometryRenderer', {
 	                type: 'line',
 	                strokeColor: new Engine.Math.Color(1, 1, 1),
 	                strokeWidth: UNIT / 20,
-	                points: []
+	                points: [],
+	                isEnabled: false
 	            });
 
 	            this.addComponent('TextRenderer', {
@@ -1119,6 +1121,47 @@
 	        value: function start() {
 	            Engine.UI.clearWidgets();
 
+	            var colorBlindButton = new Engine.UI.Button({
+	                text: 'Colour Blind: OFF',
+	                width: UNIT * 3,
+	                height: UNIT / 2,
+	                x: Engine.Graphics.screenWidth - UNIT * 2,
+	                y: UNIT,
+	                textColor: new Engine.Math.Color(1, 1, 1),
+	                textSize: UNIT / 4,
+	                onClick: function onClick() {
+	                    var isOn = colorBlindButton.text.indexOf('ON') < 0;
+
+	                    colorBlindButton.text = 'Colour Blind: ' + (isOn ? 'ON' : 'OFF');
+
+	                    var _iteratorNormalCompletion = true;
+	                    var _didIteratorError = false;
+	                    var _iteratorError = undefined;
+
+	                    try {
+	                        for (var _iterator = Engine.Stage.getActors(Game.Actors.FloorTile)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	                            var floorTile = _step.value;
+
+	                            floorTile.lineRenderer1.isEnabled = isOn;
+	                            floorTile.lineRenderer2.isEnabled = isOn;
+	                        }
+	                    } catch (err) {
+	                        _didIteratorError = true;
+	                        _iteratorError = err;
+	                    } finally {
+	                        try {
+	                            if (!_iteratorNormalCompletion && _iterator.return) {
+	                                _iterator.return();
+	                            }
+	                        } finally {
+	                            if (_didIteratorError) {
+	                                throw _iteratorError;
+	                            }
+	                        }
+	                    }
+	                }
+	            });
+
 	            var background = new Engine.Actors.Actor();
 	            var backgroundSprite = background.addComponent('SpriteRenderer', {
 	                offset: new Engine.Math.Vector2(0, 0),
@@ -1135,8 +1178,8 @@
 
 	            var label1 = new Engine.UI.Label({
 	                text: 'The blueprint ⮕\nTry to match the the floor tile colours to this blueprint',
-	                textSize: 20,
-	                textAlign: 'right',
+	                textSize: UNIT / 4,
+	                textAlignX: 'end',
 	                textColor: new Engine.Math.Color(1, 1, 1),
 	                x: Engine.Graphics.screenWidth / 2 - UNIT * 4,
 	                y: UNIT * 2,
@@ -1145,7 +1188,7 @@
 
 	            var label2 = new Engine.UI.Label({
 	                text: '⬅ The floor\nDrag and drop mushrooms to add colour to this floor',
-	                textSize: 20,
+	                textSize: UNIT / 4,
 	                textColor: new Engine.Math.Color(1, 1, 1),
 	                width: UNIT * 4,
 	                x: Engine.Graphics.screenWidth / 2 + UNIT * 4,
@@ -1195,6 +1238,47 @@
 	        key: 'start',
 	        value: function start() {
 	            Engine.UI.clearWidgets();
+
+	            var colorBlindButton = new Engine.UI.Button({
+	                text: 'Colour Blind: OFF',
+	                width: UNIT * 3,
+	                height: UNIT / 2,
+	                x: Engine.Graphics.screenWidth - UNIT * 2,
+	                y: UNIT,
+	                textColor: new Engine.Math.Color(1, 1, 1),
+	                textSize: UNIT / 4,
+	                onClick: function onClick() {
+	                    var isOn = colorBlindButton.text.indexOf('ON') < 0;
+
+	                    colorBlindButton.text = 'Colour Blind: ' + (isOn ? 'ON' : 'OFF');
+
+	                    var _iteratorNormalCompletion = true;
+	                    var _didIteratorError = false;
+	                    var _iteratorError = undefined;
+
+	                    try {
+	                        for (var _iterator = Engine.Stage.getActors(Game.Actors.FloorTile)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	                            var floorTile = _step.value;
+
+	                            floorTile.lineRenderer1.isEnabled = isOn;
+	                            floorTile.lineRenderer2.isEnabled = isOn;
+	                        }
+	                    } catch (err) {
+	                        _didIteratorError = true;
+	                        _iteratorError = err;
+	                    } finally {
+	                        try {
+	                            if (!_iteratorNormalCompletion && _iterator.return) {
+	                                _iterator.return();
+	                            }
+	                        } finally {
+	                            if (_didIteratorError) {
+	                                throw _iteratorError;
+	                            }
+	                        }
+	                    }
+	                }
+	            });
 
 	            var background = new Engine.Actors.Actor();
 	            var backgroundSprite = background.addComponent('SpriteRenderer', {
