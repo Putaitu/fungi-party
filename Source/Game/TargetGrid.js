@@ -13,7 +13,7 @@ Game.Actors.TargetGrid = class TargetGrid extends Game.Actors.Grid {
         // Build random tiles
         for(let y = 0; y < this.size; y++) {
             for(let x = 0; x < this.size; x++) {
-                let tile = new Game.Actors.FloorTile({
+                let tile = new Game.Actors.GridTile({
                     color: Engine.Math.Color.getRandom(0.5, Engine.Math.Color.RULE.NO_GREYSCALE)
                 });
                 

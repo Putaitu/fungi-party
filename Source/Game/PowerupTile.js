@@ -62,7 +62,7 @@ Game.Actors.PowerupTile = class PowerupTile extends Game.Actors.ColorTile {
         
         switch(this.type) {
             case 'undo':
-                currentTile.undoColor();
+                currentTile.popColor();
                 break;
 
         }

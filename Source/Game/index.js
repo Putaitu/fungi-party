@@ -7,11 +7,12 @@ window.Game = {
 
 // Load modules
 require('./ColorTile');
-require('./FloorTile');
+require('./GridTile');
 require('./QueueTile');
 require('./PowerupTile');
 require('./Queue');
 require('./Grid');
+require('./Fire');
 require('./TargetGrid');
 require('./PlayerGrid');
 

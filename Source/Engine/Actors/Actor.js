@@ -180,7 +180,7 @@ class Actor extends Engine.Entity {
         
         // Debug
         if(Engine.Settings.useDebug === true) {
-            Engine.Graphics.drawCircle(0, 0, 10, 0, null, new Engine.Math.Color(1, 0, 0));
+            Engine.Graphics.drawCircle(0, 0, 10, 0, null, Engine.Math.Color.RED);
         }
     }
 

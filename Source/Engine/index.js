@@ -33,5 +33,6 @@ require('./Components/Component');
 require('./Components/Collider');
 require('./Components/GeometryRenderer');
 require('./Components/SpriteRenderer');
+require('./Components/SpriteAnimator');
 require('./Components/TextRenderer');
 require('./Components/Transform');

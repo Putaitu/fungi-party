@@ -54,7 +54,6 @@
 	};
 
 	// Load modules
-	__webpack_require__(22);
 	__webpack_require__(23);
 	__webpack_require__(24);
 	__webpack_require__(25);
@@ -62,8 +61,10 @@
 	__webpack_require__(27);
 	__webpack_require__(28);
 	__webpack_require__(29);
-
 	__webpack_require__(30);
+	__webpack_require__(31);
+
+	__webpack_require__(32);
 
 /***/ }),
 /* 1 */,
@@ -87,7 +88,8 @@
 /* 19 */,
 /* 20 */,
 /* 21 */,
-/* 22 */
+/* 22 */,
+/* 23 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -155,7 +157,7 @@
 	}(Engine.Actors.Actor);
 
 /***/ }),
-/* 23 */
+/* 24 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -174,16 +176,16 @@
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-	Game.Actors.FloorTile = function (_Game$Actors$ColorTil) {
-	    _inherits(FloorTile, _Game$Actors$ColorTil);
+	Game.Actors.GridTile = function (_Game$Actors$ColorTil) {
+	    _inherits(GridTile, _Game$Actors$ColorTil);
 
 	    /**
 	     * Constructor
 	     */
-	    function FloorTile(config) {
-	        _classCallCheck(this, FloorTile);
+	    function GridTile(config) {
+	        _classCallCheck(this, GridTile);
 
-	        var _this = _possibleConstructorReturn(this, (FloorTile.__proto__ || Object.getPrototypeOf(FloorTile)).call(this, config));
+	        var _this = _possibleConstructorReturn(this, (GridTile.__proto__ || Object.getPrototypeOf(GridTile)).call(this, config));
 
 	        _this.colorHistory = [_this.color];
 	        return _this;
@@ -194,10 +196,10 @@
 	     */
 
 
-	    _createClass(FloorTile, [{
+	    _createClass(GridTile, [{
 	        key: 'defaults',
 	        value: function defaults() {
-	            _get(FloorTile.prototype.__proto__ || Object.getPrototypeOf(FloorTile.prototype), 'defaults', this).call(this);
+	            _get(GridTile.prototype.__proto__ || Object.getPrototypeOf(GridTile.prototype), 'defaults', this).call(this);
 
 	            this.addComponent('GeometryRenderer', {
 	                type: 'rectangle',
@@ -254,31 +256,35 @@
 	        /**
 	         * Sets the color
 	         *
-	         * @param {Color} color
+	         * @param {Color} newColor
 	         */
 
 	    }, {
 	        key: 'pushColor',
-	        value: function pushColor(color) {
-	            this.colorHistory.push(this.color);
+	        value: function pushColor(newColor) {
+	            this.colorHistory.push(newColor);
 
-	            this.color = color;
+	            this.color = Engine.Math.Color.add(this.color, newColor);
 	        }
 
 	        /**
-	         * Undo color
+	         * Pop/undo color
+	         *
+	         * @returns {Color} Color from queue
 	         */
 
 	    }, {
-	        key: 'undoColor',
-	        value: function undoColor() {
+	        key: 'popColor',
+	        value: function popColor() {
 	            if (this.colorHistory.length < 2) {
 	                return;
 	            }
 
 	            var prevColor = this.colorHistory.pop();
 
-	            this.color = prevColor;
+	            this.color = Engine.Math.Color.subtract(this.color, prevColor);
+
+	            return prevColor;
 	        }
 
 	        /**
@@ -329,11 +335,11 @@
 	        }
 	    }]);
 
-	    return FloorTile;
+	    return GridTile;
 	}(Game.Actors.ColorTile);
 
 /***/ }),
-/* 24 */
+/* 25 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -391,33 +397,6 @@
 	         * @param {Boolean} isTransparent
 	         */
 	        value: function setTransparent(isTransparent) {}
-
-	        /**
-	         * Event: Picked
-	         *
-	         * @param {PlayerGrid} playerGrid
-	         * @param {Number} tileIndex
-	         */
-
-	    }, {
-	        key: 'onPicked',
-	        value: function onPicked(playerGrid, tileIndex) {
-	            var queueColor = this.color;
-
-	            // Get the current tile
-	            var currentTile = playerGrid.children[tileIndex];
-
-	            if (typeof currentTile.isCorrect !== 'undefined') {
-	                return;
-	            }
-
-	            // Add the new colour to the old colour
-	            var oldColor = currentTile.color;
-	            var newColor = Engine.Math.Color.add(oldColor, queueColor);
-
-	            // Apply the mixed colour
-	            currentTile.pushColor(newColor);
-	        }
 	    }, {
 	        key: 'color',
 	        get: function get() {
@@ -432,11 +411,11 @@
 	            this.spriteRenderer.tint = value;
 
 	            if (value.r > 0) {
-	                this.spriteRenderer.setTexture('./Content/Textures/T_Mushroom_Red_D.png');
+	                this.spriteRenderer.texture = './Content/Textures/T_Mushroom_Red_D.png';
 	            } else if (value.g > 0) {
-	                this.spriteRenderer.setTexture('./Content/Textures/T_Mushroom_Green_D.png');
+	                this.spriteRenderer.texture = './Content/Textures/T_Mushroom_Green_D.png';
 	            } else if (value.b > 0) {
-	                this.spriteRenderer.setTexture('./Content/Textures/T_Mushroom_Blue_D.png');
+	                this.spriteRenderer.texture = './Content/Textures/T_Mushroom_Blue_D.png';
 	            }
 	        }
 	    }]);
@@ -445,7 +424,7 @@
 	}(Game.Actors.ColorTile);
 
 /***/ }),
-/* 25 */
+/* 26 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -538,7 +517,7 @@
 
 	            switch (this.type) {
 	                case 'undo':
-	                    currentTile.undoColor();
+	                    currentTile.popColor();
 	                    break;
 
 	            }
@@ -549,7 +528,7 @@
 	}(Game.Actors.ColorTile);
 
 /***/ }),
-/* 26 */
+/* 27 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -580,14 +559,15 @@
 	        // Position the queue
 	        var _this = _possibleConstructorReturn(this, (Queue.__proto__ || Object.getPrototypeOf(Queue)).call(this, config));
 
-	        _this.transform.position.x = UNIT;
+	        _this.transform.position.x = Engine.Graphics.screenWidth / 2 - UNIT * 3;
 	        _this.transform.position.y = Engine.Graphics.screenHeight - UNIT * 2;
 
 	        _this.addComponent('GeometryRenderer', {
 	            type: 'rectangle',
+	            pivot: new Engine.Math.Vector2(0, 0.5),
 	            fillColor: new Engine.Math.Color(0.3, 0.3, 0.3),
 	            height: UNIT,
-	            width: UNIT * 12
+	            width: UNIT * 6
 	        });
 	        return _this;
 	    }
@@ -638,7 +618,7 @@
 	                    continue;
 	                }
 
-	                this.children[i].transform.position.x = i * UNIT;
+	                this.children[i].transform.position.x = (i + 0.5) * UNIT;
 	                this.children[i].transform.position.y = 0;
 	            }
 	        }
@@ -651,28 +631,6 @@
 	        key: 'spawnTile',
 	        value: function spawnTile() {
 	            if (this.children.length > 5) {
-	                return;
-	            }
-
-	            // Get random powerup tile
-	            var randomPowerups = [false, false, false, 'undo'];
-
-	            var randomPowerupIndex = Math.floor(Math.random() * randomPowerups.length);
-
-	            if (randomPowerups[randomPowerupIndex]) {
-	                var _tile = new Game.Actors.PowerupTile({
-	                    color: new Engine.Math.Color(1, 1, 1),
-	                    type: randomPowerups[randomPowerupIndex]
-	                });
-
-	                this.addChild(_tile);
-
-	                // Set input events on tile
-	                _tile.on('pointerdown', function (e) {
-	                    Engine.Stage.getActor(Game.Actors.PlayerGrid).draggingTile = _tile;
-	                });
-
-	                this.updateTiles();
 	                return;
 	            }
 
@@ -733,7 +691,7 @@
 	}(Engine.Actors.Actor);
 
 /***/ }),
-/* 27 */
+/* 28 */
 /***/ (function(module, exports) {
 
 	"use strict";
@@ -781,7 +739,81 @@
 	}(Engine.Actors.Actor);
 
 /***/ }),
-/* 28 */
+/* 29 */
+/***/ (function(module, exports) {
+
+	'use strict';
+
+	/**
+	 * A fire into which mushrooms can be discarded
+	 */
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var Fire = function (_Engine$Actors$Actor) {
+	    _inherits(Fire, _Engine$Actors$Actor);
+
+	    /**
+	     * Constructor
+	     */
+	    function Fire(config) {
+	        _classCallCheck(this, Fire);
+
+	        var _this = _possibleConstructorReturn(this, (Fire.__proto__ || Object.getPrototypeOf(Fire)).call(this, config));
+
+	        _this.spriteAnimator.play('burning', true);
+	        return _this;
+	    }
+
+	    /**
+	     * Defaults
+	     */
+
+
+	    _createClass(Fire, [{
+	        key: 'defaults',
+	        value: function defaults() {
+	            _get(Fire.prototype.__proto__ || Object.getPrototypeOf(Fire.prototype), 'defaults', this).call(this);
+
+	            this.addComponent('SpriteRenderer', {
+	                texture: './Content/Textures/T_Fire_D.png',
+	                width: UNIT,
+	                height: UNIT
+	            });
+
+	            this.addComponent('Collider', {
+	                width: UNIT,
+	                height: UNIT,
+	                offset: new Engine.Math.Vector2(0.5, 0.5)
+	            });
+
+	            this.addComponent('SpriteAnimator', {
+	                framesPerSecond: 12,
+	                animations: {
+	                    'burning': [new Engine.Math.Rect(0, 0, 256, 256), new Engine.Math.Rect(256, 0, 256, 256), new Engine.Math.Rect(512, 0, 256, 256), new Engine.Math.Rect(768, 0, 256, 256), new Engine.Math.Rect(0, 256, 256, 256), new Engine.Math.Rect(256, 256, 256, 256), new Engine.Math.Rect(512, 256, 256, 256), new Engine.Math.Rect(768, 256, 256, 256)]
+	                }
+	            });
+
+	            this.transform.position.y = Engine.Graphics.screenHeight - UNIT;
+	            this.transform.position.x = Engine.Graphics.screenWidth / 2;
+	        }
+	    }]);
+
+	    return Fire;
+	}(Engine.Actors.Actor);
+
+	Game.Actors.Fire = Fire;
+
+/***/ }),
+/* 30 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -814,7 +846,7 @@
 
 	        for (var y = 0; y < _this.size; y++) {
 	            for (var x = 0; x < _this.size; x++) {
-	                var tile = new Game.Actors.FloorTile({
+	                var tile = new Game.Actors.GridTile({
 	                    color: Engine.Math.Color.getRandom(0.5, Engine.Math.Color.RULE.NO_GREYSCALE)
 	                });
 
@@ -849,7 +881,7 @@
 	}(Game.Actors.Grid);
 
 /***/ }),
-/* 29 */
+/* 31 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -882,20 +914,7 @@
 
 	        for (var y = 0; y < _this.size; y++) {
 	            for (var x = 0; x < _this.size; x++) {
-	                var tile = new Game.Actors.FloorTile();
-
-	                tile.transform.position.x = UNIT * 2 * (x - 1);
-	                tile.transform.position.y = UNIT * 2 * (y - 1);
-
-	                tile.geometryRenderer.width = UNIT * 2;
-	                tile.geometryRenderer.height = UNIT * 2;
-
-	                tile.collider.width = UNIT * 2;
-	                tile.collider.height = UNIT * 2;
-
-	                tile.color = new Engine.Math.Color(0, 0, 0);
-
-	                _this.addChild(tile);
+	                _this.initTile(x, y);
 	            }
 	        }
 
@@ -923,14 +942,57 @@
 	    }
 
 	    /**
-	     * Event: A tile is being dragged
+	     * Init a tile
 	     *
-	     * @param {InputEvent} e
-	     * @param {ColorTile} queueTile
+	     * @param {Number} x
+	     * @param {Number} y
 	     */
 
 
 	    _createClass(PlayerGrid, [{
+	        key: 'initTile',
+	        value: function initTile(x, y) {
+	            var _this2 = this;
+
+	            var tile = new Game.Actors.GridTile();
+
+	            tile.transform.position.x = UNIT * 2 * (x - 1);
+	            tile.transform.position.y = UNIT * 2 * (y - 1);
+
+	            tile.geometryRenderer.width = UNIT * 2;
+	            tile.geometryRenderer.height = UNIT * 2;
+
+	            tile.collider.width = UNIT * 2;
+	            tile.collider.height = UNIT * 2;
+
+	            tile.color = new Engine.Math.Color(0, 0, 0);
+
+	            // Set input events on tile
+	            tile.on('pointerdown', function (e) {
+	                var lastColor = tile.popColor();
+
+	                if (!lastColor) {
+	                    return;
+	                }
+
+	                _this2.draggingTile = new Game.Actors.QueueTile({
+	                    color: lastColor
+	                });
+
+	                tile.addChild(_this2.draggingTile);
+	            });
+
+	            this.addChild(tile);
+	        }
+
+	        /**
+	         * Event: A tile is being dragged
+	         *
+	         * @param {InputEvent} e
+	         * @param {ColorTile} queueTile
+	         */
+
+	    }, {
 	        key: 'onDraggingTile',
 	        value: function onDraggingTile(e, queueTile) {
 	            queueTile.transform.translate(Engine.Input.pointerDelta.x, Engine.Input.pointerDelta.y);
@@ -948,8 +1010,8 @@
 	                this.children[i].setHighlight(this.children[i].collider.getBounds().contains(x, y));
 	            }
 
-	            // Check if tile is hovering the void
-	            queueTile.setTransparent(y > Engine.Stage.getActor(Game.Actors.Queue).getGlobalTransform().position.y + UNIT);
+	            // Check if tile is hovering the fire
+	            queueTile.setTransparent(Engine.Stage.getActor(Game.Actors.Fire).collider.getBounds().contains(x, y));
 	        }
 
 	        /**
@@ -964,21 +1026,25 @@
 	            var x = e.pageX;
 	            var y = e.pageY;
 
+	            // Get touch position
 	            if (e.changedTouches && e.changedTouches.length > 0) {
 	                x = e.changedTouches[0].pageX;
 	                y = e.changedTouches[0].pageY;
 	            }
 
-	            // Find hovered tile, if any
-	            for (var i = 0; i < this.children.length; i++) {
-	                if (this.children[i].collider.getBounds().contains(x, y)) {
-	                    this.onDropTile(this.draggingTile, i);
-	                }
-	            }
-
-	            // Check if tile is hovering the void
-	            if (y > Engine.Stage.getActor(Game.Actors.Queue).getGlobalTransform().position.y + UNIT) {
+	            // Check if tile is hovering the fire
+	            if (Engine.Stage.getActor(Game.Actors.Fire).collider.getBounds().contains(x, y)) {
 	                this.draggingTile.destroy();
+
+	                // If not, find parent or hovered tile, if any
+	            } else {
+	                for (var i = 0; i < this.children.length; i++) {
+	                    if (this.children[i].collider.getBounds().contains(x, y) || // The tile is hovered
+	                    this.children[i] == this.draggingTile.parent // The tile is the parent
+	                    ) {
+	                            this.onDropTile(this.draggingTile, i);
+	                        }
+	                }
 	            }
 
 	            this.draggingTile = null;
@@ -996,14 +1062,15 @@
 	    }, {
 	        key: 'onDropTile',
 	        value: function onDropTile(queueTile, tileIndex) {
-	            // Trigger on picked event
-	            queueTile.onPicked(this, tileIndex);
+	            var currentTile = this.children[tileIndex];
+
+	            // Apply the queue colour
+	            currentTile.pushColor(queueTile.color);
 
 	            // Compare to the target colour
 	            var targetGrid = Engine.Stage.getActor(Game.Actors.TargetGrid);
 
 	            var targetTile = targetGrid.children[tileIndex];
-	            var currentTile = this.children[tileIndex];
 
 	            currentTile.setHighlight(false);
 
@@ -1071,7 +1138,7 @@
 	}(Game.Actors.Grid);
 
 /***/ }),
-/* 30 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -1083,10 +1150,10 @@
 	    window.UNIT = Engine.Graphics.screenHeight / 14;
 
 	    // Init scenes
-	    __webpack_require__(31);
+	    __webpack_require__(33);
 	    Engine.Stage.addScene(Game.Scenes.Scene1);
 
-	    __webpack_require__(32);
+	    __webpack_require__(34);
 	    Engine.Stage.addScene(Game.Scenes.Scene2);
 
 	    // Load first scene
@@ -1094,7 +1161,7 @@
 	});
 
 /***/ }),
-/* 31 */
+/* 33 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -1139,11 +1206,11 @@
 	                    var _iteratorError = undefined;
 
 	                    try {
-	                        for (var _iterator = Engine.Stage.getActors(Game.Actors.FloorTile)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-	                            var floorTile = _step.value;
+	                        for (var _iterator = Engine.Stage.getActors(Game.Actors.GridTile)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	                            var gridTile = _step.value;
 
-	                            floorTile.lineRenderer1.isEnabled = isOn;
-	                            floorTile.lineRenderer2.isEnabled = isOn;
+	                            gridTile.lineRenderer1.isEnabled = isOn;
+	                            gridTile.lineRenderer2.isEnabled = isOn;
 	                        }
 	                    } catch (err) {
 	                        _didIteratorError = true;
@@ -1170,7 +1237,7 @@
 	                useTiling: true
 	            });
 
-	            backgroundSprite.setTexture('./Content/Textures/T_ForestFloor_D.png');
+	            backgroundSprite.texture = './Content/Textures/T_ForestFloor_D.png';
 
 	            var targetGrid = new Game.Actors.TargetGrid({ size: 2 });
 	            var playerGrid = new Game.Actors.PlayerGrid({ size: 2 });
@@ -1203,6 +1270,8 @@
 	                x: Engine.Graphics.screenWidth - UNIT * 4,
 	                y: Engine.Graphics.screenHeight - UNIT * 2
 	            });
+
+	            var fire = new Game.Actors.Fire();
 	        }
 	    }]);
 
@@ -1212,7 +1281,7 @@
 	Game.Scenes.Scene1 = Scene1;
 
 /***/ }),
-/* 32 */
+/* 34 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -1257,11 +1326,11 @@
 	                    var _iteratorError = undefined;
 
 	                    try {
-	                        for (var _iterator = Engine.Stage.getActors(Game.Actors.FloorTile)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-	                            var floorTile = _step.value;
+	                        for (var _iterator = Engine.Stage.getActors(Game.Actors.GridTile)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	                            var gridTile = _step.value;
 
-	                            floorTile.lineRenderer1.isEnabled = isOn;
-	                            floorTile.lineRenderer2.isEnabled = isOn;
+	                            gridTile.lineRenderer1.isEnabled = isOn;
+	                            gridTile.lineRenderer2.isEnabled = isOn;
 	                        }
 	                    } catch (err) {
 	                        _didIteratorError = true;
@@ -1288,7 +1357,7 @@
 	                useTiling: true
 	            });
 
-	            backgroundSprite.setTexture('./Content/Textures/T_ForestFloor_D.png');
+	            backgroundSprite.texture = './Content/Textures/T_ForestFloor_D.png';
 
 	            var targetGrid = new Game.Actors.TargetGrid();
 	            var playerGrid = new Game.Actors.PlayerGrid();

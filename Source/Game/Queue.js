@@ -11,15 +11,16 @@ Game.Actors.Queue = class Queue extends Engine.Actors.Actor {
         super(config);
 
         // Position the queue
-        this.transform.position.x = UNIT;
+        this.transform.position.x = Engine.Graphics.screenWidth / 2 - UNIT * 3;
         this.transform.position.y = Engine.Graphics.screenHeight - UNIT * 2;
 
 
         this.addComponent('GeometryRenderer', {
             type: 'rectangle',
+            pivot: new Engine.Math.Vector2(0, 0.5),
             fillColor: new Engine.Math.Color(0.3, 0.3, 0.3),
             height: UNIT,
-            width: UNIT * 12
+            width: UNIT * 6
         });
     }
 
@@ -57,7 +58,7 @@ Game.Actors.Queue = class Queue extends Engine.Actors.Actor {
             // Don't auto position the dragged tile
             if(this.children[i] === draggingTile) { continue; }
 
-            this.children[i].transform.position.x = i * UNIT;
+            this.children[i].transform.position.x = (i + 0.5) * UNIT;
             this.children[i].transform.position.y = 0;
         }
     }
@@ -67,33 +68,6 @@ Game.Actors.Queue = class Queue extends Engine.Actors.Actor {
      */
     spawnTile() {
         if(this.children.length > 5) { return; }
-
-        // Get random powerup tile
-        let randomPowerups = [
-            false,
-            false,
-            false,
-            'undo'
-        ];
-
-        let randomPowerupIndex = Math.floor(Math.random() * randomPowerups.length);
-
-        if(randomPowerups[randomPowerupIndex]) {
-            let tile = new Game.Actors.PowerupTile({
-                color: new Engine.Math.Color(1, 1, 1),
-                type: randomPowerups[randomPowerupIndex]
-            });
-        
-            this.addChild(tile);
-
-            // Set input events on tile
-            tile.on('pointerdown', (e) => {
-                Engine.Stage.getActor(Game.Actors.PlayerGrid).draggingTile = tile;
-            });
-            
-            this.updateTiles();
-            return;
-        }
 
         // Get random color
         let randomColors = [

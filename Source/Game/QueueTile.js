@@ -31,13 +31,13 @@ Game.Actors.QueueTile = class QueueTile extends Game.Actors.ColorTile {
         this.spriteRenderer.tint = value;
 
         if(value.r > 0) {
-            this.spriteRenderer.setTexture('./Content/Textures/T_Mushroom_Red_D.png');
+            this.spriteRenderer.texture = './Content/Textures/T_Mushroom_Red_D.png';
 
         } else if(value.g > 0) {
-            this.spriteRenderer.setTexture('./Content/Textures/T_Mushroom_Green_D.png');
+            this.spriteRenderer.texture = './Content/Textures/T_Mushroom_Green_D.png';
 
         } else if(value.b > 0) {
-            this.spriteRenderer.setTexture('./Content/Textures/T_Mushroom_Blue_D.png');
+            this.spriteRenderer.texture = './Content/Textures/T_Mushroom_Blue_D.png';
 
         }
     }
@@ -50,27 +50,4 @@ Game.Actors.QueueTile = class QueueTile extends Game.Actors.ColorTile {
     setTransparent(isTransparent) {
         
     }
-    
-    /**
-     * Event: Picked
-     *
-     * @param {PlayerGrid} playerGrid
-     * @param {Number} tileIndex
-     */
-    onPicked(playerGrid, tileIndex) {
-        let queueColor = this.color;
-        
-        // Get the current tile
-        let currentTile = playerGrid.children[tileIndex];
-        
-        if(typeof currentTile.isCorrect !== 'undefined') { return; }
-        
-        // Add the new colour to the old colour
-        let oldColor = currentTile.color;
-        let newColor = Engine.Math.Color.add(oldColor, queueColor);
-
-        // Apply the mixed colour
-        currentTile.pushColor(newColor);
-    }
-
 }

@@ -17,7 +17,7 @@ class SpriteRenderer extends Engine.Components.Component {
     defaults() {
         super.defaults();
 
-        this.texture = null;
+        this.image = null;
         this.rect = null;
         this.width = null;
         this.height = null;
@@ -30,7 +30,7 @@ class SpriteRenderer extends Engine.Components.Component {
      *
      * @param {Image|String} img
      */
-    setTexture(img) {
+    set texture(img) {
         if(typeof img === 'string') {
             let src = img;
 
@@ -38,18 +38,27 @@ class SpriteRenderer extends Engine.Components.Component {
             img.src = src;
         }
 
-        this.texture = img;
+        this.image = img;
+    }
+
+    /**
+     * Gets a texture
+     *
+     * @returns {Image} Texture
+     */
+    get texture() {
+        return this.image;
     }
 
     /**
      * Draw
      */
     draw() {
-        if(!this.texture) { return; }
+        if(!this.image) { return; }
 
         if(this.useTiling) {
             if(!this.texturePattern) {
-                this.texturePattern = Engine.Graphics.ctx.createPattern(this.texture, 'repeat');
+                this.texturePattern = Engine.Graphics.ctx.createPattern(this.image, 'repeat');
             }
 
             Engine.Graphics.drawPattern(
@@ -65,7 +74,7 @@ class SpriteRenderer extends Engine.Components.Component {
             Engine.Graphics.drawImage(
                 -this.offset.x * (this.width || 0),
                 -this.offset.y * (this.height || 0),
-                this.texture,
+                this.image,
                 this.rect,
                 this.width,
                 this.height

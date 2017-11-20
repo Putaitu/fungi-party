@@ -12,10 +12,11 @@ class Color {
         }
     }
     
-    // Preset: Black
-    static get BLACK() {
-        return new Color(0, 0, 0, 1);
-    }
+    // Presets
+    static get BLACK() { return new Color(0, 0, 0, 1); }
+    static get RED() { return new Color(1, 0, 0, 1); }
+    static get GREEN() { return new Color(0, 1, 0, 1); }
+    static get BLUE() { return new Color(0, 0, 1, 1); }
 
     /**
      * Constructor
@@ -84,7 +85,19 @@ class Color {
      * @returns {Color} Result
      */
     static add(a, b) {
-        return new Color(a.r + b.r, a.g + b.g, a.b + b.b, a.a, b.a);
+        return new Color(a.r + b.r, a.g + b.g, a.b + b.b, a.a + b.a);
+    }
+    
+    /**
+     * Subtracts one color to another
+     *
+     * @param {Color} a
+     * @param {Color} b
+     *
+     * @returns {Color} Result
+     */
+    static subtract(a, b) {
+        return new Color(a.r - b.r, a.g - b.g, a.b - b.b, (a.a >= 1 && b.a >= 1 ? 1 : a.a - b.a));
     }
 
     /**

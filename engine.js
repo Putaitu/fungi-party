@@ -83,6 +83,7 @@
 	__webpack_require__(19);
 	__webpack_require__(20);
 	__webpack_require__(21);
+	__webpack_require__(22);
 
 /***/ }),
 /* 1 */
@@ -1891,12 +1892,27 @@
 	            };
 	        }
 
-	        // Preset: Black
+	        // Presets
 
 	    }, {
 	        key: 'BLACK',
 	        get: function get() {
 	            return new Color(0, 0, 0, 1);
+	        }
+	    }, {
+	        key: 'RED',
+	        get: function get() {
+	            return new Color(1, 0, 0, 1);
+	        }
+	    }, {
+	        key: 'GREEN',
+	        get: function get() {
+	            return new Color(0, 1, 0, 1);
+	        }
+	    }, {
+	        key: 'BLUE',
+	        get: function get() {
+	            return new Color(0, 0, 1, 1);
 	        }
 
 	        /**
@@ -2050,7 +2066,22 @@
 	    }], [{
 	        key: 'add',
 	        value: function add(a, b) {
-	            return new Color(a.r + b.r, a.g + b.g, a.b + b.b, a.a, b.a);
+	            return new Color(a.r + b.r, a.g + b.g, a.b + b.b, a.a + b.a);
+	        }
+
+	        /**
+	         * Subtracts one color to another
+	         *
+	         * @param {Color} a
+	         * @param {Color} b
+	         *
+	         * @returns {Color} Result
+	         */
+
+	    }, {
+	        key: 'subtract',
+	        value: function subtract(a, b) {
+	            return new Color(a.r - b.r, a.g - b.g, a.b - b.b, a.a >= 1 && b.a >= 1 ? 1 : a.a - b.a);
 	        }
 
 	        /**
@@ -2469,7 +2500,7 @@
 
 	            // Debug
 	            if (Engine.Settings.useDebug === true) {
-	                Engine.Graphics.drawCircle(0, 0, 10, 0, null, new Engine.Math.Color(1, 0, 0));
+	                Engine.Graphics.drawCircle(0, 0, 10, 0, null, Engine.Math.Color.RED);
 	            }
 	        }
 
@@ -2704,6 +2735,20 @@
 
 	            return new Engine.Math.Rect(transform.position.x - this.offset.x * this.width * transform.scale.x, transform.position.y - this.offset.y * this.width * transform.scale.y, this.width * transform.scale.x, this.height * transform.scale.y);
 	        }
+
+	        /**
+	         * Draw bounds
+	         */
+
+	    }, {
+	        key: 'draw',
+	        value: function draw() {
+	            if (!Engine.Settings.useDebug) {
+	                return;
+	            }
+
+	            Engine.Graphics.drawRectangle(-this.offset.x * this.width * this.actor.transform.scale.x, -this.offset.y * this.height * this.actor.transform.scale.y, this.width * this.actor.transform.scale.x, this.height * this.actor.transform.scale.y, 2, Engine.Math.Color.RED);
+	        }
 	    }]);
 
 	    return Collider;
@@ -2833,7 +2878,7 @@
 	        value: function defaults() {
 	            _get(SpriteRenderer.prototype.__proto__ || Object.getPrototypeOf(SpriteRenderer.prototype), 'defaults', this).call(this);
 
-	            this.texture = null;
+	            this.image = null;
 	            this.rect = null;
 	            this.width = null;
 	            this.height = null;
@@ -2848,8 +2893,32 @@
 	         */
 
 	    }, {
-	        key: 'setTexture',
-	        value: function setTexture(img) {
+	        key: 'draw',
+
+
+	        /**
+	         * Draw
+	         */
+	        value: function draw() {
+	            if (!this.image) {
+	                return;
+	            }
+
+	            if (this.useTiling) {
+	                if (!this.texturePattern) {
+	                    this.texturePattern = Engine.Graphics.ctx.createPattern(this.image, 'repeat');
+	                }
+
+	                Engine.Graphics.drawPattern(-this.offset.x * (this.width || 0), -this.offset.y * (this.height || 0), this.texturePattern, this.width, this.height);
+	            } else {
+	                this.texturePattern = null;
+
+	                Engine.Graphics.drawImage(-this.offset.x * (this.width || 0), -this.offset.y * (this.height || 0), this.image, this.rect, this.width, this.height);
+	            }
+	        }
+	    }, {
+	        key: 'texture',
+	        set: function set(img) {
 	            if (typeof img === 'string') {
 	                var src = img;
 
@@ -2857,31 +2926,17 @@
 	                img.src = src;
 	            }
 
-	            this.texture = img;
+	            this.image = img;
 	        }
 
 	        /**
-	         * Draw
+	         * Gets a texture
+	         *
+	         * @returns {Image} Texture
 	         */
-
-	    }, {
-	        key: 'draw',
-	        value: function draw() {
-	            if (!this.texture) {
-	                return;
-	            }
-
-	            if (this.useTiling) {
-	                if (!this.texturePattern) {
-	                    this.texturePattern = Engine.Graphics.ctx.createPattern(this.texture, 'repeat');
-	                }
-
-	                Engine.Graphics.drawPattern(-this.offset.x * (this.width || 0), -this.offset.y * (this.height || 0), this.texturePattern, this.width, this.height);
-	            } else {
-	                this.texturePattern = null;
-
-	                Engine.Graphics.drawImage(-this.offset.x * (this.width || 0), -this.offset.y * (this.height || 0), this.texture, this.rect, this.width, this.height);
-	            }
+	        ,
+	        get: function get() {
+	            return this.image;
 	        }
 	    }]);
 
@@ -2892,6 +2947,129 @@
 
 /***/ }),
 /* 20 */
+/***/ (function(module, exports) {
+
+	'use strict';
+
+	/**
+	 * A component for animating sprites
+	 */
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _get = function get(object, property, receiver) { if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { return get(parent, property, receiver); } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } };
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var SpriteAnimator = function (_Engine$Components$Co) {
+	    _inherits(SpriteAnimator, _Engine$Components$Co);
+
+	    function SpriteAnimator() {
+	        _classCallCheck(this, SpriteAnimator);
+
+	        return _possibleConstructorReturn(this, (SpriteAnimator.__proto__ || Object.getPrototypeOf(SpriteAnimator)).apply(this, arguments));
+	    }
+
+	    _createClass(SpriteAnimator, [{
+	        key: 'defaults',
+
+	        /**
+	         * Defaults
+	         */
+	        value: function defaults() {
+	            _get(SpriteAnimator.prototype.__proto__ || Object.getPrototypeOf(SpriteAnimator.prototype), 'defaults', this).call(this);
+
+	            this.animations = {};
+	            this.currentAnimationName = null;
+	            this.framesPerSecond = 30;
+	            this.frameTimer = 0;
+	            this.currentFrame = 0;
+	            this.isLooping = false;
+	        }
+
+	        /**
+	         * Plays an animation by name
+	         *
+	         * @param {String} name
+	         * @param {Boolean} isLooping
+	         */
+
+	    }, {
+	        key: 'play',
+	        value: function play(name, isLooping) {
+	            if (!this.animations[name]) {
+	                return console.warn('Animation "' + name + '" could not be found', this);
+	            }
+
+	            this.isLooping = isLooping || false;
+
+	            this.currentAnimationName = name;
+	        }
+
+	        /**
+	         * Adds an animaton
+	         *
+	         * @param {String} name
+	         * @param {Array} frames
+	         */
+
+	    }, {
+	        key: 'add',
+	        value: function add(name, frames) {
+	            this.animations[name] = frames;
+	        }
+
+	        /**
+	         * Update
+	         */
+
+	    }, {
+	        key: 'update',
+	        value: function update() {
+	            if (!this.actor.spriteRenderer) {
+	                return;
+	            }
+
+	            var animation = this.animations[this.currentAnimationName];
+
+	            if (!animation) {
+	                return;
+	            }
+
+	            // Determine which frame we should be playing
+	            if (this.frameTimer > 1 / this.framesPerSecond) {
+	                this.frameTimer = 0;
+
+	                this.currentFrame++;
+
+	                if (this.currentFrame >= animation.length) {
+	                    if (this.isLooping) {
+	                        this.currentFrame = 0;
+	                    } else {
+	                        this.currentFrame = animation.length - 1;
+	                    }
+	                }
+	            }
+
+	            // Change the SpriteRenderer to the current frame
+	            this.actor.spriteRenderer.rect = animation[this.currentFrame];
+
+	            // Increase the frame timer
+	            this.frameTimer += Engine.Time.deltaTime;
+	        }
+	    }]);
+
+	    return SpriteAnimator;
+	}(Engine.Components.Component);
+
+	Engine.Components.SpriteAnimator = SpriteAnimator;
+
+/***/ }),
+/* 21 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -2963,7 +3141,7 @@
 	Engine.Components.TextRenderer = TextRenderer;
 
 /***/ }),
-/* 21 */
+/* 22 */
 /***/ (function(module, exports) {
 
 	'use strict';

@@ -3,7 +3,7 @@
 /**
  * A floor tile, which is both in the target grid and the player grid
  */
-Game.Actors.FloorTile = class FloorTile extends Game.Actors.ColorTile {
+Game.Actors.GridTile = class GridTile extends Game.Actors.ColorTile {
     /**
      * Constructor
      */
@@ -92,23 +92,27 @@ Game.Actors.FloorTile = class FloorTile extends Game.Actors.ColorTile {
     /**
      * Sets the color
      *
-     * @param {Color} color
+     * @param {Color} newColor
      */
-    pushColor(color) {
-        this.colorHistory.push(this.color);
+    pushColor(newColor) {
+        this.colorHistory.push(newColor);
 
-        this.color = color;
+        this.color = Engine.Math.Color.add(this.color, newColor);
     }
 
     /**
-     * Undo color
+     * Pop/undo color
+     *
+     * @returns {Color} Color from queue
      */
-    undoColor() {
+    popColor() {
         if(this.colorHistory.length < 2) { return; }
 
         let prevColor = this.colorHistory.pop();
-        
-        this.color = prevColor;
+    
+        this.color = Engine.Math.Color.subtract(this.color, prevColor);
+
+        return prevColor;
     }
 
     /**

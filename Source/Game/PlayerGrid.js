@@ -13,20 +13,7 @@ Game.Actors.PlayerGrid = class PlayerGrid extends Game.Actors.Grid {
         // Build blank tiles
         for(let y = 0; y < this.size; y++) {
             for(let x = 0; x < this.size; x++) {
-                let tile = new Game.Actors.FloorTile();
-            
-                tile.transform.position.x = (UNIT * 2) * (x - 1);
-                tile.transform.position.y = (UNIT * 2) * (y - 1);
-
-                tile.geometryRenderer.width = UNIT * 2
-                tile.geometryRenderer.height = UNIT * 2
-                
-                tile.collider.width = UNIT * 2
-                tile.collider.height = UNIT * 2
-               
-                tile.color = new Engine.Math.Color(0, 0, 0);
-
-                this.addChild(tile);
+                this.initTile(x, y);
             }
         }
 
@@ -46,6 +33,42 @@ Game.Actors.PlayerGrid = class PlayerGrid extends Game.Actors.Grid {
 
             this.onDraggingTile(e, this.draggingTile);
         });
+    }
+
+    /**
+     * Init a tile
+     *
+     * @param {Number} x
+     * @param {Number} y
+     */
+    initTile(x, y) {
+        let tile = new Game.Actors.GridTile();
+    
+        tile.transform.position.x = (UNIT * 2) * (x - 1);
+        tile.transform.position.y = (UNIT * 2) * (y - 1);
+
+        tile.geometryRenderer.width = UNIT * 2;
+        tile.geometryRenderer.height = UNIT * 2;
+        
+        tile.collider.width = UNIT * 2;
+        tile.collider.height = UNIT * 2;
+       
+        tile.color = new Engine.Math.Color(0, 0, 0);
+
+        // Set input events on tile
+        tile.on('pointerdown', (e) => {
+            let lastColor = tile.popColor();
+
+            if(!lastColor) { return; }
+
+            this.draggingTile = new Game.Actors.QueueTile({
+                color: lastColor 
+            });
+
+            tile.addChild(this.draggingTile);
+        });
+
+        this.addChild(tile);
     }
 
     /**
@@ -70,8 +93,8 @@ Game.Actors.PlayerGrid = class PlayerGrid extends Game.Actors.Grid {
             this.children[i].setHighlight(this.children[i].collider.getBounds().contains(x, y));
         }
         
-        // Check if tile is hovering the void
-        queueTile.setTransparent(y > Engine.Stage.getActor(Game.Actors.Queue).getGlobalTransform().position.y + UNIT);
+        // Check if tile is hovering the fire
+        queueTile.setTransparent(Engine.Stage.getActor(Game.Actors.Fire).collider.getBounds().contains(x, y));
     }
 
     /**
@@ -83,21 +106,26 @@ Game.Actors.PlayerGrid = class PlayerGrid extends Game.Actors.Grid {
         let x = e.pageX;
         let y = e.pageY;
 
+        // Get touch position
         if(e.changedTouches && e.changedTouches.length > 0) {
             x = e.changedTouches[0].pageX;
             y = e.changedTouches[0].pageY;
         }
 
-        // Find hovered tile, if any
-        for(let i = 0; i < this.children.length; i++) {
-            if(this.children[i].collider.getBounds().contains(x, y)) {
-                this.onDropTile(this.draggingTile, i);
-            }
-        }
-
-        // Check if tile is hovering the void
-        if(y > Engine.Stage.getActor(Game.Actors.Queue).getGlobalTransform().position.y + UNIT) {
+        // Check if tile is hovering the fire
+        if(Engine.Stage.getActor(Game.Actors.Fire).collider.getBounds().contains(x, y)) {
             this.draggingTile.destroy();
+
+        // If not, find parent or hovered tile, if any
+        } else {
+            for(let i = 0; i < this.children.length; i++) {
+                if(
+                    this.children[i].collider.getBounds().contains(x, y) || // The tile is hovered
+                    this.children[i] == this.draggingTile.parent // The tile is the parent
+                ) {
+                    this.onDropTile(this.draggingTile, i);
+                }
+            }
         }
 
         this.draggingTile = null;
@@ -112,14 +140,15 @@ Game.Actors.PlayerGrid = class PlayerGrid extends Game.Actors.Grid {
      * @param {Number} tileIndex
      */
     onDropTile(queueTile, tileIndex) { 
-        // Trigger on picked event
-        queueTile.onPicked(this, tileIndex);
+        let currentTile = this.children[tileIndex];
+
+        // Apply the queue colour
+        currentTile.pushColor(queueTile.color);
 
         // Compare to the target colour
         let targetGrid = Engine.Stage.getActor(Game.Actors.TargetGrid);
 
         let targetTile = targetGrid.children[tileIndex];
-        let currentTile = this.children[tileIndex];
 
         currentTile.setHighlight(false);
 

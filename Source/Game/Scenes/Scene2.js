@@ -17,9 +17,9 @@ class Scene2 extends Engine.Scene {
 
                 colorBlindButton.text = 'Colour Blind: ' + (isOn ? 'ON' : 'OFF');
 
-                for(let floorTile of Engine.Stage.getActors(Game.Actors.FloorTile)) {
-                    floorTile.lineRenderer1.isEnabled = isOn;
-                    floorTile.lineRenderer2.isEnabled = isOn;
+                for(let gridTile of Engine.Stage.getActors(Game.Actors.GridTile)) {
+                    gridTile.lineRenderer1.isEnabled = isOn;
+                    gridTile.lineRenderer2.isEnabled = isOn;
                 }
             }
         });
@@ -32,7 +32,7 @@ class Scene2 extends Engine.Scene {
             useTiling: true
         });
 
-        backgroundSprite.setTexture('./Content/Textures/T_ForestFloor_D.png');
+        backgroundSprite.texture = './Content/Textures/T_ForestFloor_D.png';
 
 
         let targetGrid = new Game.Actors.TargetGrid();
