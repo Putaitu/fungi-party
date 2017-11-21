@@ -4,7 +4,115 @@
  * The tutorial level
  */
 class Scene1 extends Engine.Scene {
-    start() {
+	/**
+	 * Starts the tutorial step 1
+	 */
+	startTutorial1() {
+		let label1 = new Engine.UI.Label({
+            text: 'Drag and drop the glowing mushrooms to the floor tile to add color, mix color so it matches with the guide',
+            textSize: UNIT * 0.4,
+            //textAlignX: 'end',
+            textColor: new Engine.Math.Color(1, 1, 1),
+            x: (Engine.Graphics.screenWidth / 2) ,
+            y: UNIT * 2,
+            width: Engine.Graphics.screenWidth * 0.7
+        });
+        
+        /**let label2 = new Engine.UI.Label({
+            text: '⬅ The floor\nDrag and drop mushrooms to add colour to this floor',
+            textSize: UNIT / 4,
+            textColor: new Engine.Math.Color(1, 1, 1),
+            width: UNIT * 4,
+            x: (Engine.Graphics.screenWidth / 2) + (UNIT * 2),
+            y: Engine.Graphics.screenHeight / 2
+        });
+		*/
+        
+        /**
+		let label3 = new Engine.UI.Label({
+            text: '⬅ Mushrooms\nRed, green or blue. \nUse the "↺" to undo. \nDrag down to discard.',
+            textSize: 16,
+            textColor: new Engine.Math.Color(1, 1, 1),
+            width: UNIT * 4,
+            x: Engine.Graphics.screenWidth - (UNIT * 4),
+            y: Engine.Graphics.screenHeight - UNIT * 4
+        });
+		*/
+		
+		let button = new Engine.UI.Button({
+			text: 'Next',
+			x: Engine.Graphics.screenWidth / 2,
+			y: UNIT * 12,
+			textSize: UNIT * 0.6,
+			textColor: new Engine.Math.Color(1, 1, 1),
+			width: UNIT * 4,
+			height: UNIT,
+			onClick: () => { this.startTutorial2(); }
+		});
+	}
+	
+	/**
+	 * Starts tutorial step 2
+	 */
+	startTutorial2() {
+		// Remove previous UI widgets
+        Engine.UI.clearWidgets();		
+
+		let label1 = new Engine.UI.Label({
+            text: 'Drag mushrooms from the tray to the fire to discard, hold and drag to remove a mushroom from the floor tile  ',
+            textSize: UNIT * 0.4,
+            //textAlignX: 'end',
+            textColor: new Engine.Math.Color(1, 1, 1),
+            x: (Engine.Graphics.screenWidth / 2) ,
+            y: UNIT * 2,
+            width: Engine.Graphics.screenWidth * 0.7
+        });
+		
+		let button = new Engine.UI.Button({
+			text: 'Next',
+			x: Engine.Graphics.screenWidth / 2,
+			y: UNIT * 12,
+			textSize: UNIT * 0.6,
+			textColor: new Engine.Math.Color(1, 1, 1),
+			width: UNIT * 4,
+			height: UNIT,
+			onClick: () => { this.startTutorial3(); }
+		});
+	}
+	
+		/**
+	 * Starts tutorial step 3
+	 */
+	startTutorial3() {
+		// Remove previous UI widgets
+        Engine.UI.clearWidgets();		
+
+		let label1 = new Engine.UI.Label({
+            text: 'The "Color guide mode" helps to get you familiar to RGB color mixing, it is also a color blind mode',
+            textSize: UNIT * 0.4,
+            //textAlignX: 'end',
+            textColor: new Engine.Math.Color(1, 1, 1),
+            x: (Engine.Graphics.screenWidth / 2) ,
+            y: UNIT * 2,
+            width: Engine.Graphics.screenWidth * 0.7
+        });
+		
+		let button = new Engine.UI.Button({
+			text: 'Start',
+			x: Engine.Graphics.screenWidth / 2,
+			y: UNIT * 12,
+			textSize: UNIT * 0.6,
+			textColor: new Engine.Math.Color(1, 1, 1),
+			width: UNIT * 4,
+			height: UNIT,
+			onClick: () => { this.startLevel(); }
+		});
+	}
+	
+	/**
+	 * Start level
+	 */
+	startLevel() {
 		// Remove previous UI widgets
         Engine.UI.clearWidgets();
 
@@ -50,9 +158,9 @@ class Scene1 extends Engine.Scene {
         let targetGrid = new Game.Actors.TargetGrid({
 			size: 3,
 			colors: [
-				[new Engine.Math.Color(0.5, 0, 0),new Engine.Math.Color(0, 0.5, 0), new Engine.Math.Color(0, 0, 0.5)],
-				[new Engine.Math.Color(0.5, 0, 0),new Engine.Math.Color(0, 0.5, 0), new Engine.Math.Color(0, 0, 0.5)],
-				[new Engine.Math.Color(0.5, 0, 0),new Engine.Math.Color(0, 0.5, 0), new Engine.Math.Color(0, 0, 0.5)]
+				[new Engine.Math.Color(0.5, 0, 0),new Engine.Math.Color(1, 0, 0), new Engine.Math.Color(0, 0.5, 0)],
+				[new Engine.Math.Color(0, 1, 0),new Engine.Math.Color(0, 0, 0.5), new Engine.Math.Color(0, 0, 1)],
+				[new Engine.Math.Color(0.5, 0.5, 0),new Engine.Math.Color(0.5, 0, 0.5), new Engine.Math.Color(0, 0.5, 0.5)]
 			]
 		});
         
@@ -61,43 +169,31 @@ class Scene1 extends Engine.Scene {
 		let queue = new Game.Actors.Queue({
 			colors: [
 				new Engine.Math.Color(0.5, 0, 0),
+				new Engine.Math.Color(0.5, 0, 0),
+				new Engine.Math.Color(0.5, 0, 0),
+				new Engine.Math.Color(0, 0.5, 0),
+				new Engine.Math.Color(0, 0.5, 0),
 				new Engine.Math.Color(0, 0.5, 0),
 				new Engine.Math.Color(0, 0, 0.5),
+				new Engine.Math.Color(0, 0, 0.5),
+				new Engine.Math.Color(0, 0, 0.5),
 				new Engine.Math.Color(0.5, 0, 0),
+				new Engine.Math.Color(0, 0.5, 0),
+				new Engine.Math.Color(0.5, 0, 0),
+				new Engine.Math.Color(0, 0, 0.5),
 				new Engine.Math.Color(0, 0.5, 0),
 				new Engine.Math.Color(0, 0, 0.5)
 			]
 		});
-        
-        let label1 = new Engine.UI.Label({
-            text: 'The blueprint ⮕\nTry to match the the floor tile colours to this blueprint',
-            textSize: UNIT / 4,
-            textAlignX: 'end',
-            textColor: new Engine.Math.Color(1, 1, 1),
-            x: (Engine.Graphics.screenWidth / 2) - (UNIT * 4),
-            y: UNIT * 2,
-            width: UNIT * 4
-        });
-        
-        let label2 = new Engine.UI.Label({
-            text: '⬅ The floor\nDrag and drop mushrooms to add colour to this floor',
-            textSize: UNIT / 4,
-            textColor: new Engine.Math.Color(1, 1, 1),
-            width: UNIT * 4,
-            x: (Engine.Graphics.screenWidth / 2) + (UNIT * 4),
-            y: Engine.Graphics.screenHeight / 2
-        });
-        
-        let label3 = new Engine.UI.Label({
-            text: '⬅ Mushrooms\nRed, green or blue. \nUse the "↺" to undo. \nDrag down to discard.',
-            textSize: 20,
-            textColor: new Engine.Math.Color(1, 1, 1),
-            width: UNIT * 4,
-            x: Engine.Graphics.screenWidth - (UNIT * 4),
-            y: Engine.Graphics.screenHeight - UNIT * 2
-        });
 
         let fire = new Game.Actors.Fire();
+	}
+	
+	/**
+	 * Start
+	 */
+    start() {
+		this.startTutorial1();
     }
 }
 

@@ -5,7 +5,7 @@ class Scene2 extends Engine.Scene {
         Engine.UI.clearWidgets();
         
         let colorBlindButton = new Engine.UI.Button({
-            text: 'Colour Blind: OFF',
+            text: 'Color Guides: OFF',
             width: UNIT * 3,
             height: UNIT / 2,
             x: Engine.Graphics.screenWidth - UNIT * 2,
@@ -15,7 +15,7 @@ class Scene2 extends Engine.Scene {
             onClick: () => {
                 let isOn = colorBlindButton.text.indexOf('ON') < 0;
 
-                colorBlindButton.text = 'Colour Blind: ' + (isOn ? 'ON' : 'OFF');
+                colorBlindButton.text = 'Colour Guides: ' + (isOn ? 'ON' : 'OFF');
 
                 for(let gridTile of Engine.Stage.getActors(Game.Actors.GridTile)) {
                     gridTile.lineRenderer1.isEnabled = isOn;
