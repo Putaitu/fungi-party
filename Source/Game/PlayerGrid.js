@@ -57,6 +57,8 @@ Game.Actors.PlayerGrid = class PlayerGrid extends Game.Actors.Grid {
 
         // Set input events on tile
         tile.on('pointerdown', (e) => {
+            if(tile.isCorrect) { return; }
+
             let lastColor = tile.popColor();
 
             if(!lastColor) { return; }
@@ -66,6 +68,8 @@ Game.Actors.PlayerGrid = class PlayerGrid extends Game.Actors.Grid {
             });
 
             tile.addChild(this.draggingTile);
+
+            this.updateTiles();
         });
 
         this.addChild(tile);
@@ -90,7 +94,7 @@ Game.Actors.PlayerGrid = class PlayerGrid extends Game.Actors.Grid {
         
         // Highlight hovered tile
         for(let i = 0; i < this.children.length; i++) {
-            this.children[i].setHighlight(this.children[i].collider.getBounds().contains(x, y));
+            this.children[i].setHighlight(!this.children[i].isCorrect && this.children[i].collider.getBounds().contains(x, y));
         }
         
         // Check if tile is hovering the fire
@@ -113,24 +117,39 @@ Game.Actors.PlayerGrid = class PlayerGrid extends Game.Actors.Grid {
         }
 
         // Check if tile is hovering the fire
-        if(Engine.Stage.getActor(Game.Actors.Fire).collider.getBounds().contains(x, y)) {
-            this.draggingTile.destroy();
+        let fire = Engine.Stage.getActor(Game.Actors.Fire);
 
-        // If not, find parent or hovered tile, if any
+        if(fire.collider.getBounds().contains(x, y)) {
+            fire.burn(this.draggingTile);
+
+        // If not...
         } else {
+            // Find a hovered tile
+            let foundHovered = false;
             for(let i = 0; i < this.children.length; i++) {
-                if(
-                    this.children[i].collider.getBounds().contains(x, y) || // The tile is hovered
-                    this.children[i] == this.draggingTile.parent // The tile is the parent
-                ) {
+                if(!this.children[i].isCorrect && this.children[i].collider.getBounds().contains(x, y)) {
                     this.onDropTile(this.draggingTile, i);
+                    foundHovered = true;
+                }
+            }
+
+            // If no hovered tile, find a parent (meaning it's being dragged away from a tile)
+            if(!foundHovered) {
+                for(let i = 0; i < this.children.length; i++) {
+                    if(this.children[i] == this.draggingTile.parent) {
+                        this.onDropTile(this.draggingTile, i);
+                    }
                 }
             }
         }
 
+        this.draggingTile.setTransparent(false);
+
         this.draggingTile = null;
 
         Engine.Stage.getActor(Game.Actors.Queue).updateTiles();
+
+        this.updateTiles();
     }
 
     /**
@@ -145,33 +164,42 @@ Game.Actors.PlayerGrid = class PlayerGrid extends Game.Actors.Grid {
         // Apply the queue colour
         currentTile.pushColor(queueTile.color);
 
-        // Compare to the target colour
-        let targetGrid = Engine.Stage.getActor(Game.Actors.TargetGrid);
-
-        let targetTile = targetGrid.children[tileIndex];
-
         currentTile.setHighlight(false);
 
-        let isCorrect = currentTile.color.equals(targetTile.color);
-
-        let isIncorrect =
-            currentTile.color.r > targetTile.color.r || 
-            currentTile.color.g > targetTile.color.g || 
-            currentTile.color.b > targetTile.color.b;
-
-        if(isIncorrect) {
-            currentTile.setCorrect(false);
-        } else if(isCorrect) {
-            currentTile.setCorrect(true);
-        } else {
-            currentTile.setCorrect(undefined);
-        }
+        // Update tiles
+        this.updateTiles();
 
         // Check if won
         this.checkIfWon();
 
         // Remove queue tile
         queueTile.destroy();
+    }
+
+    /**
+     * Updates all tiles
+     */
+    updateTiles() {
+        let targetGrid = Engine.Stage.getActor(Game.Actors.TargetGrid);
+
+        for(let tileIndex in this.children) {
+            let targetTile = targetGrid.children[tileIndex];
+            let currentTile = this.children[tileIndex];
+            let isCorrect = currentTile.color.equals(targetTile.color);
+
+            let isIncorrect =
+                currentTile.color.r > targetTile.color.r || 
+                currentTile.color.g > targetTile.color.g || 
+                currentTile.color.b > targetTile.color.b;
+
+            if(isIncorrect) {
+                currentTile.setCorrect(false);
+            } else if(isCorrect) {
+                currentTile.setCorrect(true);
+            } else {
+                currentTile.setCorrect(undefined);
+            }
+        }
     }
 
     /**

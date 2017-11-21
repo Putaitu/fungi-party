@@ -23,6 +23,7 @@ class SpriteRenderer extends Engine.Components.Component {
         this.height = null;
         this.offset = new Engine.Math.Vector2(0.5, 0.5);
         this.useTiling = false;
+        this.alpha = 1;
     }
 
     /**
@@ -56,6 +57,8 @@ class SpriteRenderer extends Engine.Components.Component {
     draw() {
         if(!this.image) { return; }
 
+        Engine.Graphics.ctx.globalAlpha = this.alpha;
+
         if(this.useTiling) {
             if(!this.texturePattern) {
                 this.texturePattern = Engine.Graphics.ctx.createPattern(this.image, 'repeat');
@@ -80,6 +83,8 @@ class SpriteRenderer extends Engine.Components.Component {
                 this.height
             );
         }
+        
+        Engine.Graphics.ctx.globalAlpha = 1;
     }
 }
 
