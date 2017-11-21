@@ -549,162 +549,162 @@
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 	Game.Actors.Queue = function (_Engine$Actors$Actor) {
-	  _inherits(Queue, _Engine$Actors$Actor);
+	    _inherits(Queue, _Engine$Actors$Actor);
 
-	  /**
-	   * Constructor
-	   */
-	  function Queue(config) {
-	    _classCallCheck(this, Queue);
+	    /**
+	     * Constructor
+	     */
+	    function Queue(config) {
+	        _classCallCheck(this, Queue);
 
-	    // Position the queue
-	    var _this = _possibleConstructorReturn(this, (Queue.__proto__ || Object.getPrototypeOf(Queue)).call(this, config));
+	        // Position the queue
+	        var _this = _possibleConstructorReturn(this, (Queue.__proto__ || Object.getPrototypeOf(Queue)).call(this, config));
 
-	    _this.transform.position.x = Engine.Graphics.screenWidth / 2 - UNIT * 3;
-	    _this.transform.position.y = Engine.Graphics.screenHeight - UNIT * 2;
+	        _this.transform.position.x = Engine.Graphics.screenWidth / 2 - UNIT * 3;
+	        _this.transform.position.y = Engine.Graphics.screenHeight - UNIT * 2;
 
-	    _this.addComponent('GeometryRenderer', {
-	      type: 'rectangle',
-	      pivot: new Engine.Math.Vector2(0, 0.5),
-	      fillColor: new Engine.Math.Color(0.3, 0.3, 0.3),
-	      height: UNIT,
-	      width: UNIT * 6
-	    });
-	    return _this;
-	  }
-
-	  /**
-	   * Defaults
-	   */
-
-
-	  _createClass(Queue, [{
-	    key: 'defaults',
-	    value: function defaults() {
-	      _get(Queue.prototype.__proto__ || Object.getPrototypeOf(Queue.prototype), 'defaults', this).call(this);
-
-	      this.interval = 1;
-	      this.timer = 0;
-	      this.randomAmounts = [0, 0, 0];
+	        _this.addComponent('GeometryRenderer', {
+	            type: 'rectangle',
+	            pivot: new Engine.Math.Vector2(0, 0.5),
+	            fillColor: new Engine.Math.Color(0.3, 0.3, 0.3),
+	            height: UNIT,
+	            width: UNIT * 6
+	        });
+	        return _this;
 	    }
 
 	    /**
-	     * Update
+	     * Defaults
 	     */
 
-	  }, {
-	    key: 'update',
-	    value: function update() {
-	      if (this.timer <= 0) {
-	        this.spawnTile();
 
-	        this.timer = this.interval;
-	      }
+	    _createClass(Queue, [{
+	        key: 'defaults',
+	        value: function defaults() {
+	            _get(Queue.prototype.__proto__ || Object.getPrototypeOf(Queue.prototype), 'defaults', this).call(this);
 
-	      this.timer -= Engine.Time.deltaTime;
-	    }
-
-	    /**
-	     * Updates tiles
-	     */
-
-	  }, {
-	    key: 'updateTiles',
-	    value: function updateTiles() {
-	      var draggingTile = Engine.Stage.getActor(Game.Actors.PlayerGrid).draggingTile;
-
-	      for (var i = 0; i < this.children.length; i++) {
-	        // Don't auto position the dragged tile
-	        if (this.children[i] === draggingTile) {
-	          continue;
+	            this.interval = 1;
+	            this.timer = 0;
+	            this.randomAmounts = [0, 0, 0];
 	        }
 
-	        this.children[i].transform.position.x = (i + 0.5) * UNIT;
-	        this.children[i].transform.position.y = 0;
-	      }
-	    }
+	        /**
+	         * Update
+	         */
 
-	    /**
-	     * Gets the next colour
-	     *
-	     * @returns {Color} The next color
-	     */
+	    }, {
+	        key: 'update',
+	        value: function update() {
+	            if (this.timer <= 0) {
+	                this.spawnTile();
 
-	  }, {
-	    key: 'getNextColor',
-	    value: function getNextColor() {
-	      // If a queue was specified, pick the next colour from that queue
-	      if (this.colors && this.colors.length > 0) {
-	        return this.colors.shift();
+	                this.timer = this.interval;
+	            }
 
-	        // If not, get a random colour
-	      } else {
-	        // Get random color
-	        var randomColors = [new Engine.Math.Color(0.5, 0, 0), new Engine.Math.Color(0, 0.5, 0), new Engine.Math.Color(0, 0, 0.5)];
-
-	        var randomColorIndex = Math.floor(Math.random() * 3);
-
-	        // Make sure it isn't too random by comparing to previous occurrences
-	        for (var i = 0; i < 3; i++) {
-	          if (this.randomAmounts[i] < this.randomAmounts[randomColorIndex]) {
-	            randomColorIndex = i;
-	            break;
-	          }
+	            this.timer -= Engine.Time.deltaTime;
 	        }
 
-	        this.randomAmounts[randomColorIndex]++;
+	        /**
+	         * Updates tiles
+	         */
 
-	        return randomColors[randomColorIndex];
-	      }
-	    }
+	    }, {
+	        key: 'updateTiles',
+	        value: function updateTiles() {
+	            var draggingTile = Engine.Stage.getActor(Game.Actors.PlayerGrid).draggingTile;
 
-	    /**
-	     * Spawns a new tile
-	     */
+	            for (var i = 0; i < this.children.length; i++) {
+	                // Don't auto position the dragged tile
+	                if (this.children[i] === draggingTile) {
+	                    continue;
+	                }
 
-	  }, {
-	    key: 'spawnTile',
-	    value: function spawnTile() {
-	      if (this.children.length > 5) {
-	        return;
-	      }
+	                this.children[i].transform.position.x = (i + 0.5) * UNIT;
+	                this.children[i].transform.position.y = 0;
+	            }
+	        }
 
-	      var tile = new Game.Actors.QueueTile({ color: this.getNextColor() });
+	        /**
+	         * Gets the next colour
+	         *
+	         * @returns {Color} The next color
+	         */
 
-	      // Set input events on tile
-	      tile.on('pointerdown', function (e) {
-	        Engine.Stage.getActor(Game.Actors.PlayerGrid).draggingTile = tile;
-	      });
+	    }, {
+	        key: 'getNextColor',
+	        value: function getNextColor() {
+	            // If a queue was specified, pick the next colour from that queue
+	            if (this.colors && this.colors.length > 0) {
+	                return this.colors.shift();
 
-	      this.addChild(tile);
+	                // If not, get a random colour
+	            } else {
+	                // Get random color
+	                var randomColors = [new Engine.Math.Color(0.5, 0, 0), new Engine.Math.Color(0, 0.5, 0), new Engine.Math.Color(0, 0, 0.5)];
 
-	      this.updateTiles();
-	    }
+	                var randomColorIndex = Math.floor(Math.random() * 3);
 
-	    /**
-	     * Removes the oldest tile from the queue and returns it
-	     *
-	     * @returns {ColorTile} Result
-	     */
+	                // Make sure it isn't too random by comparing to previous occurrences
+	                for (var i = 0; i < 3; i++) {
+	                    if (this.randomAmounts[i] < this.randomAmounts[randomColorIndex]) {
+	                        randomColorIndex = i;
+	                        break;
+	                    }
+	                }
 
-	  }, {
-	    key: 'popTile',
-	    value: function popTile() {
-	      if (this.children.length < 1) {
-	        return;
-	      }
+	                this.randomAmounts[randomColorIndex]++;
 
-	      var colorTile = this.children.shift();
+	                return randomColors[randomColorIndex];
+	            }
+	        }
 
-	      this.updateTiles();
+	        /**
+	         * Spawns a new tile
+	         */
 
-	      colorTile.destroy();
+	    }, {
+	        key: 'spawnTile',
+	        value: function spawnTile() {
+	            if (this.children.length > 5) {
+	                return;
+	            }
 
-	      return colorTile;
-	    }
-	  }]);
+	            var tile = new Game.Actors.QueueTile({ color: this.getNextColor() });
 
-	  return Queue;
+	            // Set input events on tile
+	            tile.on('pointerdown', function (e) {
+	                Engine.Stage.getActor(Game.Actors.PlayerGrid).draggingTile = tile;
+	            });
+
+	            this.addChild(tile);
+
+	            this.updateTiles();
+	        }
+
+	        /**
+	         * Removes the oldest tile from the queue and returns it
+	         *
+	         * @returns {ColorTile} Result
+	         */
+
+	    }, {
+	        key: 'popTile',
+	        value: function popTile() {
+	            if (this.children.length < 1) {
+	                return;
+	            }
+
+	            var colorTile = this.children.shift();
+
+	            this.updateTiles();
+
+	            colorTile.destroy();
+
+	            return colorTile;
+	        }
+	    }]);
+
+	    return Queue;
 	}(Engine.Actors.Actor);
 
 /***/ }),
@@ -727,32 +727,32 @@
 	 * A grid
 	 */
 	Game.Actors.Grid = function (_Engine$Actors$Actor) {
-	  _inherits(Grid, _Engine$Actors$Actor);
+	    _inherits(Grid, _Engine$Actors$Actor);
 
-	  /**
-	   * Constructor
-	   */
-	  function Grid(config) {
-	    _classCallCheck(this, Grid);
+	    /**
+	     * Constructor
+	     */
+	    function Grid(config) {
+	        _classCallCheck(this, Grid);
 
-	    return _possibleConstructorReturn(this, (Grid.__proto__ || Object.getPrototypeOf(Grid)).call(this, config));
-	  }
-
-	  /**
-	   * Defaults
-	   */
-
-
-	  _createClass(Grid, [{
-	    key: "defaults",
-	    value: function defaults() {
-	      _get(Grid.prototype.__proto__ || Object.getPrototypeOf(Grid.prototype), "defaults", this).call(this);
-
-	      this.tiles = [];
+	        return _possibleConstructorReturn(this, (Grid.__proto__ || Object.getPrototypeOf(Grid)).call(this, config));
 	    }
-	  }]);
 
-	  return Grid;
+	    /**
+	     * Defaults
+	     */
+
+
+	    _createClass(Grid, [{
+	        key: "defaults",
+	        value: function defaults() {
+	            _get(Grid.prototype.__proto__ || Object.getPrototypeOf(Grid.prototype), "defaults", this).call(this);
+
+	            this.tiles = [];
+	        }
+	    }]);
+
+	    return Grid;
 	}(Engine.Actors.Actor);
 
 /***/ }),
@@ -1630,6 +1630,7 @@
 	            var targetGrid = new Game.Actors.TargetGrid();
 	            var playerGrid = new Game.Actors.PlayerGrid();
 	            var queue = new Game.Actors.Queue();
+	            var fire = new Game.Actors.Fire();
 	        }
 	    }]);
 

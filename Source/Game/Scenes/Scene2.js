@@ -40,6 +40,7 @@ class Scene2 extends Engine.Scene {
         let targetGrid = new Game.Actors.TargetGrid();
         let playerGrid = new Game.Actors.PlayerGrid();
         let queue = new Game.Actors.Queue();
+		let fire = new Game.Actors.Fire();
     }
 }
 
