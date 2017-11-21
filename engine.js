@@ -120,6 +120,7 @@
 	            fsBtn.style.left = '0%';
 	            fsBtn.style.width = '100%';
 	            fsBtn.style.height = '100%';
+	            fsBtn.style.fontSize = '4vw';
 	            fsBtn.innerHTML = 'PRESS TO PLAY';
 
 	            document.body.appendChild(fsBtn);
@@ -1728,6 +1729,14 @@
 	        set: function set(value) {
 	            this.element.style.borderColor = value.toRGB();
 	        }
+	    }, {
+	        key: 'fillColor',
+	        get: function get() {
+	            return Engine.Math.Color.fromRGB(this.element.style.backgroundColor);
+	        },
+	        set: function set(value) {
+	            this.element.style.backgroundColor = value.toRGB();
+	        }
 
 	        /**
 	         * Constructor
@@ -1767,7 +1776,7 @@
 	            this.y = 0;
 	            this.width = 200;
 	            this.height = 40;
-	            this.text = 'My widget';
+	            this.text = '';
 	            this.font = 'Arial';
 	            this.textSize = 10;
 
@@ -1862,6 +1871,51 @@
 	    }]);
 
 	    return Button;
+	}(UI.Widget);
+
+	/**
+	 * An image
+	 */
+	UI.Image = function (_UI$Widget3) {
+	    _inherits(Image, _UI$Widget3);
+
+	    function Image() {
+	        _classCallCheck(this, Image);
+
+	        return _possibleConstructorReturn(this, (Image.__proto__ || Object.getPrototypeOf(Image)).apply(this, arguments));
+	    }
+
+	    _createClass(Image, [{
+	        key: 'defaults',
+
+
+	        /**
+	         * Defaults
+	         */
+	        value: function defaults() {
+	            _get(Image.prototype.__proto__ || Object.getPrototypeOf(Image.prototype), 'defaults', this).call(this);
+
+	            this.element.style.backgroundSize = 'contain';
+	            this.element.style.backgroundPosition = 'center';
+	        }
+	    }, {
+	        key: 'source',
+
+	        // Getters
+	        get: function get() {
+	            var url = this.element.style.backgroundImage;
+
+	            return url.replace('url(', '').replace(')', '');
+	        }
+
+	        // Setter
+	        ,
+	        set: function set(url) {
+	            this.element.style.backgroundImage = 'url(' + url + ')';
+	        }
+	    }]);
+
+	    return Image;
 	}(UI.Widget);
 
 	Engine.UI = UI;

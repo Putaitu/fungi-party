@@ -8,9 +8,11 @@ class Scene2 extends Engine.Scene {
             text: 'Color Guides: OFF',
             width: UNIT * 3,
             height: UNIT / 2,
-            x: Engine.Graphics.screenWidth - UNIT * 2,
-            y: UNIT,
+            x: Engine.Graphics.screenWidth - UNIT * 1.5,
+            y: UNIT / 4,
             textColor: new Engine.Math.Color(1, 1, 1),
+			strokeWidth: 0,
+			fillColor: new Engine.Math.Color(0, 0, 0),
             textSize: UNIT / 4,
             onClick: () => {
                 let isOn = colorBlindButton.text.indexOf('ON') < 0;

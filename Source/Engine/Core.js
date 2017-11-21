@@ -15,6 +15,7 @@ class Core {
         fsBtn.style.left = '0%';
         fsBtn.style.width = '100%';
         fsBtn.style.height = '100%';
+		fsBtn.style.fontSize = '4vw';
         fsBtn.innerHTML = 'PRESS TO PLAY';
 
         document.body.appendChild(fsBtn);

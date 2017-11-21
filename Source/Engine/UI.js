@@ -98,6 +98,7 @@ UI.Widget = class Widget extends Engine.Entity {
     get font() { return parseInt(this.element.style.fontFamily); }
     get strokeWidth() { return parseInt(this.element.style.borderWidth); }
     get strokeColor() { return Engine.Math.Color.fromRGB(this.element.style.borderColor); }
+	get fillColor() { return Engine.Math.Color.fromRGB(this.element.style.backgroundColor); }
 
     // Setters
     set width(value) { this.element.style.width = value + 'px'; }
@@ -112,6 +113,7 @@ UI.Widget = class Widget extends Engine.Entity {
     set font(value) { this.element.style.fontFamily = value; }
     set strokeWidth(value) { this.element.style.borderWidth = value + 'px'; }
     set strokeColor(value) { this.element.style.borderColor = value.toRGB(); }
+	set fillColor(value) { this.element.style.backgroundColor = value.toRGB(); }
     
     /**
      * Constructor
@@ -139,7 +141,7 @@ UI.Widget = class Widget extends Engine.Entity {
         this.y = 0;
         this.width = 200;
         this.height = 40;
-        this.text = 'My widget';
+        this.text = '';
         this.font = 'Arial';
         this.textSize = 10;
         
@@ -196,6 +198,33 @@ UI.Button = class Button extends UI.Widget {
         this.strokeColor = new Engine.Math.Color(1, 1, 1);
         this.textAlignX = 'center';
         this.textAlignY = 'center';
+    }
+}
+
+/**
+ * An image
+ */
+UI.Image = class Image extends UI.Widget {
+	// Getters
+	get source() {
+		let url = this.element.style.backgroundImage;
+		
+		return url.replace('url(', '').replace(')', '');
+	}
+	
+	// Setter
+	set source(url) {
+		this.element.style.backgroundImage = 'url(' + url + ')';
+	}
+	
+    /**
+     * Defaults
+     */
+    defaults() {
+        super.defaults();
+		
+		this.element.style.backgroundSize = 'contain';
+		this.element.style.backgroundPosition = 'center';
     }
 }
 

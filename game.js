@@ -1230,26 +1230,13 @@
 					width: Engine.Graphics.screenWidth * 0.7
 				});
 
-				/**let label2 = new Engine.UI.Label({
-	       text: '⬅ The floor\nDrag and drop mushrooms to add colour to this floor',
-	       textSize: UNIT / 4,
-	       textColor: new Engine.Math.Color(1, 1, 1),
-	       width: UNIT * 4,
-	       x: (Engine.Graphics.screenWidth / 2) + (UNIT * 2),
-	       y: Engine.Graphics.screenHeight / 2
-	   });
-	   */
-
-				/**
-	   let label3 = new Engine.UI.Label({
-	       text: '⬅ Mushrooms\nRed, green or blue. \nUse the "↺" to undo. \nDrag down to discard.',
-	       textSize: 16,
-	       textColor: new Engine.Math.Color(1, 1, 1),
-	       width: UNIT * 4,
-	       x: Engine.Graphics.screenWidth - (UNIT * 4),
-	       y: Engine.Graphics.screenHeight - UNIT * 4
-	   });
-	   */
+				var image1 = new Engine.UI.Image({
+					width: UNIT * 7,
+					height: UNIT * 7,
+					source: './Content/Textures/T_Tutorial1_D.png',
+					x: Engine.Graphics.screenWidth / 2,
+					y: Engine.Graphics.screenHeight / 2
+				});
 
 				var button = new Engine.UI.Button({
 					text: 'Next',
@@ -1287,6 +1274,14 @@
 					width: Engine.Graphics.screenWidth * 0.7
 				});
 
+				var image1 = new Engine.UI.Image({
+					width: UNIT * 7,
+					height: UNIT * 7,
+					source: './Content/Textures/T_Tutorial2_D.png',
+					x: Engine.Graphics.screenWidth / 2,
+					y: Engine.Graphics.screenHeight / 2
+				});
+
 				var button = new Engine.UI.Button({
 					text: 'Next',
 					x: Engine.Graphics.screenWidth / 2,
@@ -1321,6 +1316,14 @@
 					x: Engine.Graphics.screenWidth / 2,
 					y: UNIT * 2,
 					width: Engine.Graphics.screenWidth * 0.7
+				});
+
+				var image1 = new Engine.UI.Image({
+					width: UNIT * 7,
+					height: UNIT * 7,
+					source: './Content/Textures/T_Tutorial3_D.png',
+					x: Engine.Graphics.screenWidth / 2,
+					y: Engine.Graphics.screenHeight / 2
 				});
 
 				var button = new Engine.UI.Button({
@@ -1381,9 +1384,11 @@
 					text: 'Color Guides: ON',
 					width: UNIT * 3,
 					height: UNIT / 2,
-					x: Engine.Graphics.screenWidth - UNIT * 2,
-					y: UNIT,
+					x: Engine.Graphics.screenWidth - UNIT * 1.5,
+					y: UNIT / 4,
 					textColor: new Engine.Math.Color(1, 1, 1),
+					strokeWidth: 0,
+					fillColor: new Engine.Math.Color(0, 0, 0),
 					textSize: UNIT / 4,
 					onClick: function onClick() {
 						var isOn = colorBlindButton.text.indexOf('ON') < 0;
@@ -1490,9 +1495,11 @@
 	                text: 'Color Guides: OFF',
 	                width: UNIT * 3,
 	                height: UNIT / 2,
-	                x: Engine.Graphics.screenWidth - UNIT * 2,
-	                y: UNIT,
+	                x: Engine.Graphics.screenWidth - UNIT * 1.5,
+	                y: UNIT / 4,
 	                textColor: new Engine.Math.Color(1, 1, 1),
+	                strokeWidth: 0,
+	                fillColor: new Engine.Math.Color(0, 0, 0),
 	                textSize: UNIT / 4,
 	                onClick: function onClick() {
 	                    var isOn = colorBlindButton.text.indexOf('ON') < 0;
