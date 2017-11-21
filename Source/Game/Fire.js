@@ -3,6 +3,8 @@
 /**
  * A fire into which mushrooms can be discarded
  */
+const FIRE_READY_TIMEOUT = 2;
+
 class Fire extends Engine.Actors.Actor {
     /**
      * Constructor
@@ -49,6 +51,41 @@ class Fire extends Engine.Actors.Actor {
 
         this.transform.position.y = Engine.Graphics.screenHeight - UNIT;
         this.transform.position.x = Engine.Graphics.screenWidth / 2;
+    }
+    
+    /**
+     * Burns a tile
+     *
+     * @param {Tile} tile
+     */
+    burn(tile) {
+        if(!tile || !this.isReady) { return; }
+
+        tile.destroy();
+
+        this.isReady = false;
+
+        setTimeout(() => {
+            this.isReady = true;
+        }, FIRE_READY_TIMEOUT * 1000)
+    }
+
+    /**
+     * Gets ready state
+     *
+     * @returns {Boolean} Is ready
+     */
+    get isReady() {
+        return this.spriteRenderer.alpha === 1;
+    }
+    
+    /**
+     * Sets ready state
+     *
+     * @returns {Boolean} Is ready
+     */
+    set isReady(isReady) {
+        this.spriteRenderer.alpha = isReady ? 1 : 0.25;
     }
 }
 

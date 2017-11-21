@@ -12,8 +12,7 @@ Game.Actors.QueueTile = class QueueTile extends Game.Actors.ColorTile {
 
         this.addComponent('SpriteRenderer', {
             width: UNIT,
-            height: UNIT,
-            tint: new Engine.Math.Color(1, 1, 1)
+            height: UNIT
         });
     }
     
@@ -21,14 +20,14 @@ Game.Actors.QueueTile = class QueueTile extends Game.Actors.ColorTile {
      * Getter: Colour
      */
     get color() {
-        return this.spriteRenderer.tint;
+        return this._color;
     }
     
     /**
      * Setter: Colour
      */
     set color(value) {
-        this.spriteRenderer.tint = value;
+        this._color = value;
 
         if(value.r > 0) {
             this.spriteRenderer.texture = './Content/Textures/T_Mushroom_Red_D.png';
@@ -48,6 +47,6 @@ Game.Actors.QueueTile = class QueueTile extends Game.Actors.ColorTile {
      * @param {Boolean} isTransparent
      */
     setTransparent(isTransparent) {
-        
+        this.spriteRenderer.alpha = isTransparent ? 0.5 : 1; 
     }
 }

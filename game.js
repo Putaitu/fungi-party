@@ -378,8 +378,7 @@
 
 	            this.addComponent('SpriteRenderer', {
 	                width: UNIT,
-	                height: UNIT,
-	                tint: new Engine.Math.Color(1, 1, 1)
+	                height: UNIT
 	            });
 	        }
 
@@ -396,11 +395,13 @@
 	         *
 	         * @param {Boolean} isTransparent
 	         */
-	        value: function setTransparent(isTransparent) {}
+	        value: function setTransparent(isTransparent) {
+	            this.spriteRenderer.alpha = isTransparent ? 0.5 : 1;
+	        }
 	    }, {
 	        key: 'color',
 	        get: function get() {
-	            return this.spriteRenderer.tint;
+	            return this._color;
 	        }
 
 	        /**
@@ -408,7 +409,7 @@
 	         */
 	        ,
 	        set: function set(value) {
-	            this.spriteRenderer.tint = value;
+	            this._color = value;
 
 	            if (value.r > 0) {
 	                this.spriteRenderer.texture = './Content/Textures/T_Mushroom_Red_D.png';
@@ -548,162 +549,162 @@
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 	Game.Actors.Queue = function (_Engine$Actors$Actor) {
-	    _inherits(Queue, _Engine$Actors$Actor);
+	  _inherits(Queue, _Engine$Actors$Actor);
 
-	    /**
-	     * Constructor
-	     */
-	    function Queue(config) {
-	        _classCallCheck(this, Queue);
+	  /**
+	   * Constructor
+	   */
+	  function Queue(config) {
+	    _classCallCheck(this, Queue);
 
-	        // Position the queue
-	        var _this = _possibleConstructorReturn(this, (Queue.__proto__ || Object.getPrototypeOf(Queue)).call(this, config));
+	    // Position the queue
+	    var _this = _possibleConstructorReturn(this, (Queue.__proto__ || Object.getPrototypeOf(Queue)).call(this, config));
 
-	        _this.transform.position.x = Engine.Graphics.screenWidth / 2 - UNIT * 3;
-	        _this.transform.position.y = Engine.Graphics.screenHeight - UNIT * 2;
+	    _this.transform.position.x = Engine.Graphics.screenWidth / 2 - UNIT * 3;
+	    _this.transform.position.y = Engine.Graphics.screenHeight - UNIT * 2;
 
-	        _this.addComponent('GeometryRenderer', {
-	            type: 'rectangle',
-	            pivot: new Engine.Math.Vector2(0, 0.5),
-	            fillColor: new Engine.Math.Color(0.3, 0.3, 0.3),
-	            height: UNIT,
-	            width: UNIT * 6
-	        });
-	        return _this;
+	    _this.addComponent('GeometryRenderer', {
+	      type: 'rectangle',
+	      pivot: new Engine.Math.Vector2(0, 0.5),
+	      fillColor: new Engine.Math.Color(0.3, 0.3, 0.3),
+	      height: UNIT,
+	      width: UNIT * 6
+	    });
+	    return _this;
+	  }
+
+	  /**
+	   * Defaults
+	   */
+
+
+	  _createClass(Queue, [{
+	    key: 'defaults',
+	    value: function defaults() {
+	      _get(Queue.prototype.__proto__ || Object.getPrototypeOf(Queue.prototype), 'defaults', this).call(this);
+
+	      this.interval = 1;
+	      this.timer = 0;
+	      this.randomAmounts = [0, 0, 0];
 	    }
 
 	    /**
-	     * Defaults
+	     * Update
 	     */
 
+	  }, {
+	    key: 'update',
+	    value: function update() {
+	      if (this.timer <= 0) {
+	        this.spawnTile();
 
-	    _createClass(Queue, [{
-	        key: 'defaults',
-	        value: function defaults() {
-	            _get(Queue.prototype.__proto__ || Object.getPrototypeOf(Queue.prototype), 'defaults', this).call(this);
+	        this.timer = this.interval;
+	      }
 
-	            this.interval = 1;
-	            this.timer = 0;
-	            this.randomAmounts = [0, 0, 0];
+	      this.timer -= Engine.Time.deltaTime;
+	    }
+
+	    /**
+	     * Updates tiles
+	     */
+
+	  }, {
+	    key: 'updateTiles',
+	    value: function updateTiles() {
+	      var draggingTile = Engine.Stage.getActor(Game.Actors.PlayerGrid).draggingTile;
+
+	      for (var i = 0; i < this.children.length; i++) {
+	        // Don't auto position the dragged tile
+	        if (this.children[i] === draggingTile) {
+	          continue;
 	        }
 
-	        /**
-	         * Update
-	         */
+	        this.children[i].transform.position.x = (i + 0.5) * UNIT;
+	        this.children[i].transform.position.y = 0;
+	      }
+	    }
 
-	    }, {
-	        key: 'update',
-	        value: function update() {
-	            if (this.timer <= 0) {
-	                this.spawnTile();
+	    /**
+	     * Gets the next colour
+	     *
+	     * @returns {Color} The next color
+	     */
 
-	                this.timer = this.interval;
-	            }
+	  }, {
+	    key: 'getNextColor',
+	    value: function getNextColor() {
+	      // If a queue was specified, pick the next colour from that queue
+	      if (this.colors && this.colors.length > 0) {
+	        return this.colors.shift();
 
-	            this.timer -= Engine.Time.deltaTime;
+	        // If not, get a random colour
+	      } else {
+	        // Get random color
+	        var randomColors = [new Engine.Math.Color(0.5, 0, 0), new Engine.Math.Color(0, 0.5, 0), new Engine.Math.Color(0, 0, 0.5)];
+
+	        var randomColorIndex = Math.floor(Math.random() * 3);
+
+	        // Make sure it isn't too random by comparing to previous occurrences
+	        for (var i = 0; i < 3; i++) {
+	          if (this.randomAmounts[i] < this.randomAmounts[randomColorIndex]) {
+	            randomColorIndex = i;
+	            break;
+	          }
 	        }
 
-	        /**
-	         * Updates tiles
-	         */
+	        this.randomAmounts[randomColorIndex]++;
 
-	    }, {
-	        key: 'updateTiles',
-	        value: function updateTiles() {
-	            var draggingTile = Engine.Stage.getActor(Game.Actors.PlayerGrid).draggingTile;
+	        return randomColors[randomColorIndex];
+	      }
+	    }
 
-	            for (var i = 0; i < this.children.length; i++) {
-	                // Don't auto position the dragged tile
-	                if (this.children[i] === draggingTile) {
-	                    continue;
-	                }
+	    /**
+	     * Spawns a new tile
+	     */
 
-	                this.children[i].transform.position.x = (i + 0.5) * UNIT;
-	                this.children[i].transform.position.y = 0;
-	            }
-	        }
+	  }, {
+	    key: 'spawnTile',
+	    value: function spawnTile() {
+	      if (this.children.length > 5) {
+	        return;
+	      }
 
-	        /**
-	         * Gets the next colour
-	         *
-	         * @returns {Color} The next color
-	         */
+	      var tile = new Game.Actors.QueueTile({ color: this.getNextColor() });
 
-	    }, {
-	        key: 'getNextColor',
-	        value: function getNextColor() {
-	            // If a queue was specified, pick the next colour from that queue
-	            if (this.colors && this.colors.length > 0) {
-	                return this.colors.shift();
+	      // Set input events on tile
+	      tile.on('pointerdown', function (e) {
+	        Engine.Stage.getActor(Game.Actors.PlayerGrid).draggingTile = tile;
+	      });
 
-	                // If not, get a random colour
-	            } else {
-	                // Get random color
-	                var randomColors = [new Engine.Math.Color(0.5, 0, 0), new Engine.Math.Color(0, 0.5, 0), new Engine.Math.Color(0, 0, 0.5)];
+	      this.addChild(tile);
 
-	                var randomColorIndex = Math.floor(Math.random() * 3);
+	      this.updateTiles();
+	    }
 
-	                // Make sure it isn't too random by comparing to previous occurrences
-	                for (var i = 0; i < 3; i++) {
-	                    if (this.randomAmounts[i] < this.randomAmounts[randomColorIndex]) {
-	                        randomColorIndex = i;
-	                        break;
-	                    }
-	                }
+	    /**
+	     * Removes the oldest tile from the queue and returns it
+	     *
+	     * @returns {ColorTile} Result
+	     */
 
-	                this.randomAmounts[randomColorIndex]++;
+	  }, {
+	    key: 'popTile',
+	    value: function popTile() {
+	      if (this.children.length < 1) {
+	        return;
+	      }
 
-	                return randomColors[randomColorIndex];
-	            }
-	        }
+	      var colorTile = this.children.shift();
 
-	        /**
-	         * Spawns a new tile
-	         */
+	      this.updateTiles();
 
-	    }, {
-	        key: 'spawnTile',
-	        value: function spawnTile() {
-	            if (this.children.length > 5) {
-	                return;
-	            }
+	      colorTile.destroy();
 
-	            var tile = new Game.Actors.QueueTile({ color: this.getNextColor() });
+	      return colorTile;
+	    }
+	  }]);
 
-	            // Set input events on tile
-	            tile.on('pointerdown', function (e) {
-	                Engine.Stage.getActor(Game.Actors.PlayerGrid).draggingTile = tile;
-	            });
-
-	            this.addChild(tile);
-
-	            this.updateTiles();
-	        }
-
-	        /**
-	         * Removes the oldest tile from the queue and returns it
-	         *
-	         * @returns {ColorTile} Result
-	         */
-
-	    }, {
-	        key: 'popTile',
-	        value: function popTile() {
-	            if (this.children.length < 1) {
-	                return;
-	            }
-
-	            var colorTile = this.children.shift();
-
-	            this.updateTiles();
-
-	            colorTile.destroy();
-
-	            return colorTile;
-	        }
-	    }]);
-
-	    return Queue;
+	  return Queue;
 	}(Engine.Actors.Actor);
 
 /***/ }),
@@ -726,32 +727,32 @@
 	 * A grid
 	 */
 	Game.Actors.Grid = function (_Engine$Actors$Actor) {
-	    _inherits(Grid, _Engine$Actors$Actor);
+	  _inherits(Grid, _Engine$Actors$Actor);
 
-	    /**
-	     * Constructor
-	     */
-	    function Grid(config) {
-	        _classCallCheck(this, Grid);
+	  /**
+	   * Constructor
+	   */
+	  function Grid(config) {
+	    _classCallCheck(this, Grid);
 
-	        return _possibleConstructorReturn(this, (Grid.__proto__ || Object.getPrototypeOf(Grid)).call(this, config));
+	    return _possibleConstructorReturn(this, (Grid.__proto__ || Object.getPrototypeOf(Grid)).call(this, config));
+	  }
+
+	  /**
+	   * Defaults
+	   */
+
+
+	  _createClass(Grid, [{
+	    key: "defaults",
+	    value: function defaults() {
+	      _get(Grid.prototype.__proto__ || Object.getPrototypeOf(Grid.prototype), "defaults", this).call(this);
+
+	      this.tiles = [];
 	    }
+	  }]);
 
-	    /**
-	     * Defaults
-	     */
-
-
-	    _createClass(Grid, [{
-	        key: "defaults",
-	        value: function defaults() {
-	            _get(Grid.prototype.__proto__ || Object.getPrototypeOf(Grid.prototype), "defaults", this).call(this);
-
-	            this.tiles = [];
-	        }
-	    }]);
-
-	    return Grid;
+	  return Grid;
 	}(Engine.Actors.Actor);
 
 /***/ }),
@@ -773,6 +774,8 @@
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	var FIRE_READY_TIMEOUT = 2;
 
 	var Fire = function (_Engine$Actors$Actor) {
 	    _inherits(Fire, _Engine$Actors$Actor);
@@ -820,6 +823,52 @@
 
 	            this.transform.position.y = Engine.Graphics.screenHeight - UNIT;
 	            this.transform.position.x = Engine.Graphics.screenWidth / 2;
+	        }
+
+	        /**
+	         * Burns a tile
+	         *
+	         * @param {Tile} tile
+	         */
+
+	    }, {
+	        key: 'burn',
+	        value: function burn(tile) {
+	            var _this2 = this;
+
+	            if (!tile || !this.isReady) {
+	                return;
+	            }
+
+	            tile.destroy();
+
+	            this.isReady = false;
+
+	            setTimeout(function () {
+	                _this2.isReady = true;
+	            }, FIRE_READY_TIMEOUT * 1000);
+	        }
+
+	        /**
+	         * Gets ready state
+	         *
+	         * @returns {Boolean} Is ready
+	         */
+
+	    }, {
+	        key: 'isReady',
+	        get: function get() {
+	            return this.spriteRenderer.alpha === 1;
+	        }
+
+	        /**
+	         * Sets ready state
+	         *
+	         * @returns {Boolean} Is ready
+	         */
+	        ,
+	        set: function set(isReady) {
+	            this.spriteRenderer.alpha = isReady ? 1 : 0.25;
 	        }
 	    }]);
 
@@ -993,6 +1042,10 @@
 
 	            // Set input events on tile
 	            tile.on('pointerdown', function (e) {
+	                if (tile.isCorrect) {
+	                    return;
+	                }
+
 	                var lastColor = tile.popColor();
 
 	                if (!lastColor) {
@@ -1004,6 +1057,8 @@
 	                });
 
 	                tile.addChild(_this2.draggingTile);
+
+	                _this2.updateTiles();
 	            });
 
 	            this.addChild(tile);
@@ -1031,7 +1086,7 @@
 
 	            // Highlight hovered tile
 	            for (var i = 0; i < this.children.length; i++) {
-	                this.children[i].setHighlight(this.children[i].collider.getBounds().contains(x, y));
+	                this.children[i].setHighlight(!this.children[i].isCorrect && this.children[i].collider.getBounds().contains(x, y));
 	            }
 
 	            // Check if tile is hovering the fire
@@ -1057,23 +1112,39 @@
 	            }
 
 	            // Check if tile is hovering the fire
-	            if (Engine.Stage.getActor(Game.Actors.Fire).collider.getBounds().contains(x, y)) {
-	                this.draggingTile.destroy();
+	            var fire = Engine.Stage.getActor(Game.Actors.Fire);
 
-	                // If not, find parent or hovered tile, if any
+	            if (fire.collider.getBounds().contains(x, y)) {
+	                fire.burn(this.draggingTile);
+
+	                // If not...
 	            } else {
+	                // Find a hovered tile
+	                var foundHovered = false;
 	                for (var i = 0; i < this.children.length; i++) {
-	                    if (this.children[i].collider.getBounds().contains(x, y) || // The tile is hovered
-	                    this.children[i] == this.draggingTile.parent // The tile is the parent
-	                    ) {
-	                            this.onDropTile(this.draggingTile, i);
+	                    if (!this.children[i].isCorrect && this.children[i].collider.getBounds().contains(x, y)) {
+	                        this.onDropTile(this.draggingTile, i);
+	                        foundHovered = true;
+	                    }
+	                }
+
+	                // If no hovered tile, find a parent (meaning it's being dragged away from a tile)
+	                if (!foundHovered) {
+	                    for (var _i = 0; _i < this.children.length; _i++) {
+	                        if (this.children[_i] == this.draggingTile.parent) {
+	                            this.onDropTile(this.draggingTile, _i);
 	                        }
+	                    }
 	                }
 	            }
+
+	            this.draggingTile.setTransparent(false);
 
 	            this.draggingTile = null;
 
 	            Engine.Stage.getActor(Game.Actors.Queue).updateTiles();
+
+	            this.updateTiles();
 	        }
 
 	        /**
@@ -1091,30 +1162,42 @@
 	            // Apply the queue colour
 	            currentTile.pushColor(queueTile.color);
 
-	            // Compare to the target colour
-	            var targetGrid = Engine.Stage.getActor(Game.Actors.TargetGrid);
-
-	            var targetTile = targetGrid.children[tileIndex];
-
 	            currentTile.setHighlight(false);
 
-	            var isCorrect = currentTile.color.equals(targetTile.color);
-
-	            var isIncorrect = currentTile.color.r > targetTile.color.r || currentTile.color.g > targetTile.color.g || currentTile.color.b > targetTile.color.b;
-
-	            if (isIncorrect) {
-	                currentTile.setCorrect(false);
-	            } else if (isCorrect) {
-	                currentTile.setCorrect(true);
-	            } else {
-	                currentTile.setCorrect(undefined);
-	            }
+	            // Update tiles
+	            this.updateTiles();
 
 	            // Check if won
 	            this.checkIfWon();
 
 	            // Remove queue tile
 	            queueTile.destroy();
+	        }
+
+	        /**
+	         * Updates all tiles
+	         */
+
+	    }, {
+	        key: 'updateTiles',
+	        value: function updateTiles() {
+	            var targetGrid = Engine.Stage.getActor(Game.Actors.TargetGrid);
+
+	            for (var tileIndex in this.children) {
+	                var targetTile = targetGrid.children[tileIndex];
+	                var currentTile = this.children[tileIndex];
+	                var isCorrect = currentTile.color.equals(targetTile.color);
+
+	                var isIncorrect = currentTile.color.r > targetTile.color.r || currentTile.color.g > targetTile.color.g || currentTile.color.b > targetTile.color.b;
+
+	                if (isIncorrect) {
+	                    currentTile.setCorrect(false);
+	                } else if (isCorrect) {
+	                    currentTile.setCorrect(true);
+	                } else {
+	                    currentTile.setCorrect(undefined);
+	                }
+	            }
 	        }
 
 	        /**
