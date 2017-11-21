@@ -63,35 +63,48 @@ Game.Actors.Queue = class Queue extends Engine.Actors.Actor {
         }
     }
 
+	/**
+	 * Gets the next colour
+	 *
+	 * @returns {Color} The next color
+	 */
+	getNextColor() {
+		// If a queue was specified, pick the next colour from that queue
+		if(this.colors && this.colors.length > 0) {
+			return this.colors.shift();
+			
+		// If not, get a random colour
+		} else {
+			// Get random color
+			let randomColors = [
+				new Engine.Math.Color(0.5, 0, 0),
+				new Engine.Math.Color(0, 0.5, 0),
+				new Engine.Math.Color(0, 0, 0.5)
+			];
+
+			let randomColorIndex = Math.floor(Math.random() * 3);
+			
+			// Make sure it isn't too random by comparing to previous occurrences
+			for(let i = 0; i < 3; i++) {
+				if(this.randomAmounts[i] < this.randomAmounts[randomColorIndex]) {
+					randomColorIndex = i;
+					break;
+				}
+			}
+
+			this.randomAmounts[randomColorIndex]++;
+			
+			return randomColors[randomColorIndex];
+		}
+	}
+	
     /**
      * Spawns a new tile
      */
     spawnTile() {
         if(this.children.length > 5) { return; }
 
-        // Get random color
-        let randomColors = [
-            new Engine.Math.Color(0.5, 0, 0),
-            new Engine.Math.Color(0, 0.5, 0),
-            new Engine.Math.Color(0, 0, 0.5)
-        ];
-
-        let randomColorIndex = Math.floor(Math.random() * 3);
-        
-        // Make sure it isn't too random by comparing to previous occurrences
-        for(let i = 0; i < 3; i++) {
-            if(this.randomAmounts[i] < this.randomAmounts[randomColorIndex]) {
-                randomColorIndex = i;
-                break;
-            }
-        }
-
-        this.randomAmounts[randomColorIndex]++;
-
-        // Get random colour and assign it to a new tile
-        let randomColor = randomColors[randomColorIndex];
-
-        let tile = new Game.Actors.QueueTile({color: randomColor})
+        let tile = new Game.Actors.QueueTile({color: this.getNextColor()})
    
         // Set input events on tile
         tile.on('pointerdown', (e) => {

@@ -1,11 +1,24 @@
 'use strict';
 
+/**
+ * The tutorial level
+ */
 class Scene1 extends Engine.Scene {
     start() {
+		// Remove previous UI widgets
         Engine.UI.clearWidgets();
 
+		// By default, set colour guides to "ON"
+		setTimeout(() => {
+			for(let gridTile of Engine.Stage.getActors(Game.Actors.GridTile)) {
+				gridTile.lineRenderer1.isEnabled = true;
+				gridTile.lineRenderer2.isEnabled = true;
+			}
+		}, 10);
+		
+		// Toggle colour guides
         let colorBlindButton = new Engine.UI.Button({
-            text: 'Colour Blind: OFF',
+            text: 'Color Guides: ON',
             width: UNIT * 3,
             height: UNIT / 2,
             x: Engine.Graphics.screenWidth - UNIT * 2,
@@ -15,7 +28,7 @@ class Scene1 extends Engine.Scene {
             onClick: () => {
                 let isOn = colorBlindButton.text.indexOf('ON') < 0;
 
-                colorBlindButton.text = 'Colour Blind: ' + (isOn ? 'ON' : 'OFF');
+                colorBlindButton.text = 'Colour Guides: ' + (isOn ? 'ON' : 'OFF');
 
                 for(let gridTile of Engine.Stage.getActors(Game.Actors.GridTile)) {
                     gridTile.lineRenderer1.isEnabled = isOn;
@@ -34,9 +47,27 @@ class Scene1 extends Engine.Scene {
 
         backgroundSprite.texture = './Content/Textures/T_ForestFloor_D.png';
 
-        let targetGrid = new Game.Actors.TargetGrid({size: 2});
-        let playerGrid = new Game.Actors.PlayerGrid({size: 2});
-        let queue = new Game.Actors.Queue();
+        let targetGrid = new Game.Actors.TargetGrid({
+			size: 3,
+			colors: [
+				[new Engine.Math.Color(0.5, 0, 0),new Engine.Math.Color(0, 0.5, 0), new Engine.Math.Color(0, 0, 0.5)],
+				[new Engine.Math.Color(0.5, 0, 0),new Engine.Math.Color(0, 0.5, 0), new Engine.Math.Color(0, 0, 0.5)],
+				[new Engine.Math.Color(0.5, 0, 0),new Engine.Math.Color(0, 0.5, 0), new Engine.Math.Color(0, 0, 0.5)]
+			]
+		});
+        
+		let playerGrid = new Game.Actors.PlayerGrid({size: 3});
+        
+		let queue = new Game.Actors.Queue({
+			colors: [
+				new Engine.Math.Color(0.5, 0, 0),
+				new Engine.Math.Color(0, 0.5, 0),
+				new Engine.Math.Color(0, 0, 0.5),
+				new Engine.Math.Color(0.5, 0, 0),
+				new Engine.Math.Color(0, 0.5, 0),
+				new Engine.Math.Color(0, 0, 0.5)
+			]
+		});
         
         let label1 = new Engine.UI.Label({
             text: 'The blueprint ⮕\nTry to match the the floor tile colours to this blueprint',

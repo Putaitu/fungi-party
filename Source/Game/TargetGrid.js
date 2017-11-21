@@ -10,11 +10,19 @@ Game.Actors.TargetGrid = class TargetGrid extends Game.Actors.Grid {
     constructor(config) {
         super(config);
     
-        // Build random tiles
+        // Build tiles
         for(let y = 0; y < this.size; y++) {
             for(let x = 0; x < this.size; x++) {
+				// Start with a random colour
+				let color = Engine.Math.Color.getRandom(0.5, Engine.Math.Color.RULE.NO_GREYSCALE);
+				
+				// If a preset colour exists, use that instead
+				if(this.colors && this.colors[y] && this.colors[y][x]) {
+					color = this.colors[y][x];
+				}
+				
                 let tile = new Game.Actors.GridTile({
-                    color: Engine.Math.Color.getRandom(0.5, Engine.Math.Color.RULE.NO_GREYSCALE)
+                    color: color
                 });
                 
                 tile.transform.position.x = UNIT * x - UNIT;
