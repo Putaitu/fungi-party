@@ -294,46 +294,46 @@
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 	var Entity = function () {
-	    /**
-	     * Constructor
-	     */
-	    function Entity(config) {
-	        _classCallCheck(this, Entity);
+	  /**
+	   * Constructor
+	   */
+	  function Entity(config) {
+	    _classCallCheck(this, Entity);
 
-	        this.defaults();
+	    this.defaults();
 
-	        if (!config) {
-	            return;
-	        }
-
-	        for (var k in config) {
-	            this[k] = config[k];
-	        }
+	    if (!config) {
+	      return;
 	    }
 
+	    for (var k in config) {
+	      this[k] = config[k];
+	    }
+	  }
+
+	  /**
+	   * Defaults
+	   */
+
+
+	  _createClass(Entity, [{
+	    key: 'defaults',
+	    value: function defaults() {}
+
 	    /**
-	     * Defaults
+	     * Creates a clone of this Entity
+	     *
+	     * @returns {Entity} Clone
 	     */
 
+	  }, {
+	    key: 'clone',
+	    value: function clone() {
+	      return new this.constructor(Object.assign({}, this));
+	    }
+	  }]);
 
-	    _createClass(Entity, [{
-	        key: 'defaults',
-	        value: function defaults() {}
-
-	        /**
-	         * Creates a clone of this Entity
-	         *
-	         * @returns {Entity} Clone
-	         */
-
-	    }, {
-	        key: 'clone',
-	        value: function clone() {
-	            return new this.constructor(Object.assign({}, this));
-	        }
-	    }]);
-
-	    return Entity;
+	  return Entity;
 	}();
 
 	Engine.Entity = Entity;
@@ -1337,6 +1337,22 @@
 	        }
 
 	        /**
+	         * Reloads the current scene
+	         *
+	         * @returns {Scene} Scene
+	         */
+
+	    }, {
+	        key: 'reloadCurrentScene',
+	        value: function reloadCurrentScene() {
+	            if (!this.scene) {
+	                return;
+	            }
+
+	            return this.loadScene(this.scene.constructor.name);
+	        }
+
+	        /**
 	         * Loads a Scene
 	         *
 	         * @param {String} name
@@ -1350,6 +1366,8 @@
 	            if (!this.scenes[name]) {
 	                throw new Error('A scene by name "' + name + '" was not added');
 	            }
+
+	            Engine.UI.clearWidgets();
 
 	            this.scene = new this.scenes[name]();
 
@@ -1863,7 +1881,6 @@
 	            _get(Button.prototype.__proto__ || Object.getPrototypeOf(Button.prototype), 'defaults', this).call(this);
 
 	            this.text = 'My button';
-	            this.strokeWidth = 4;
 	            this.strokeColor = new Engine.Math.Color(1, 1, 1);
 	            this.textAlignX = 'center';
 	            this.textAlignY = 'center';
@@ -2227,67 +2244,67 @@
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 	var Rect = function () {
-	    _createClass(Rect, [{
-	        key: 'xMin',
+	  _createClass(Rect, [{
+	    key: 'xMin',
 
-	        // Getters
-	        get: function get() {
-	            return this.x;
-	        }
-	    }, {
-	        key: 'yMin',
-	        get: function get() {
-	            return this.y;
-	        }
-	    }, {
-	        key: 'xMax',
-	        get: function get() {
-	            return this.x + this.width;
-	        }
-	    }, {
-	        key: 'yMax',
-	        get: function get() {
-	            return this.y + this.height;
-	        }
-
-	        /**
-	         * Constructor
-	         *
-	         * @param {Number} x
-	         * @param {Number} y
-	         * @param {Number} width
-	         * @param {Number} height
-	         */
-
-	    }]);
-
-	    function Rect(x, y, width, height) {
-	        _classCallCheck(this, Rect);
-
-	        this.x = x;
-	        this.y = y;
-	        this.width = width;
-	        this.height = height;
+	    // Getters
+	    get: function get() {
+	      return this.x;
+	    }
+	  }, {
+	    key: 'yMin',
+	    get: function get() {
+	      return this.y;
+	    }
+	  }, {
+	    key: 'xMax',
+	    get: function get() {
+	      return this.x + this.width;
+	    }
+	  }, {
+	    key: 'yMax',
+	    get: function get() {
+	      return this.y + this.height;
 	    }
 
 	    /**
-	     * Check whether a point is inside this rect
+	     * Constructor
 	     *
 	     * @param {Number} x
 	     * @param {Number} y
-	     *
-	     * @returns {Boolean} Is inside
+	     * @param {Number} width
+	     * @param {Number} height
 	     */
 
+	  }]);
 
-	    _createClass(Rect, [{
-	        key: 'contains',
-	        value: function contains(x, y) {
-	            return x >= this.xMin && x <= this.xMax && y >= this.yMin && y <= this.yMax;
-	        }
-	    }]);
+	  function Rect(x, y, width, height) {
+	    _classCallCheck(this, Rect);
 
-	    return Rect;
+	    this.x = x;
+	    this.y = y;
+	    this.width = width;
+	    this.height = height;
+	  }
+
+	  /**
+	   * Check whether a point is inside this rect
+	   *
+	   * @param {Number} x
+	   * @param {Number} y
+	   *
+	   * @returns {Boolean} Is inside
+	   */
+
+
+	  _createClass(Rect, [{
+	    key: 'contains',
+	    value: function contains(x, y) {
+	      return x >= this.xMin && x <= this.xMax && y >= this.yMin && y <= this.yMax;
+	    }
+	  }]);
+
+	  return Rect;
 	}();
 
 	Engine.Math.Rect = Rect;
@@ -2614,42 +2631,42 @@
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 	var Pawn = function (_Engine$Actors$Actor) {
-	    _inherits(Pawn, _Engine$Actors$Actor);
+	  _inherits(Pawn, _Engine$Actors$Actor);
 
-	    function Pawn() {
-	        _classCallCheck(this, Pawn);
+	  function Pawn() {
+	    _classCallCheck(this, Pawn);
 
-	        return _possibleConstructorReturn(this, (Pawn.__proto__ || Object.getPrototypeOf(Pawn)).apply(this, arguments));
+	    return _possibleConstructorReturn(this, (Pawn.__proto__ || Object.getPrototypeOf(Pawn)).apply(this, arguments));
+	  }
+
+	  _createClass(Pawn, [{
+	    key: 'defaults',
+
+	    /**
+	     * Defaults
+	     */
+	    value: function defaults() {
+	      _get(Pawn.prototype.__proto__ || Object.getPrototypeOf(Pawn.prototype), 'defaults', this).call(this);
+
+	      this.movementSpeed = 10;
 	    }
 
-	    _createClass(Pawn, [{
-	        key: 'defaults',
+	    /**
+	     * Moves this pawn
+	     *
+	     * @param {Number} x
+	     * @param {Number} y
+	     */
 
-	        /**
-	         * Defaults
-	         */
-	        value: function defaults() {
-	            _get(Pawn.prototype.__proto__ || Object.getPrototypeOf(Pawn.prototype), 'defaults', this).call(this);
+	  }, {
+	    key: 'move',
+	    value: function move(x, y) {
+	      this.transform.position.x += x * Engine.Time.deltaTime * this.movementSpeed;
+	      this.transform.position.y += y * Engine.Time.deltaTime * this.movementSpeed;
+	    }
+	  }]);
 
-	            this.movementSpeed = 10;
-	        }
-
-	        /**
-	         * Moves this pawn
-	         *
-	         * @param {Number} x
-	         * @param {Number} y
-	         */
-
-	    }, {
-	        key: 'move',
-	        value: function move(x, y) {
-	            this.transform.position.x += x * Engine.Time.deltaTime * this.movementSpeed;
-	            this.transform.position.y += y * Engine.Time.deltaTime * this.movementSpeed;
-	        }
-	    }]);
-
-	    return Pawn;
+	  return Pawn;
 	}(Engine.Actors.Actor);
 
 	Engine.Actors.Pawn = Pawn;
@@ -2673,61 +2690,61 @@
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 	var Component = function (_Engine$Entity) {
-	    _inherits(Component, _Engine$Entity);
+	  _inherits(Component, _Engine$Entity);
 
-	    /**
-	     * Constructor
-	     */
-	    function Component(config) {
-	        _classCallCheck(this, Component);
+	  /**
+	   * Constructor
+	   */
+	  function Component(config) {
+	    _classCallCheck(this, Component);
 
-	        return _possibleConstructorReturn(this, (Component.__proto__ || Object.getPrototypeOf(Component)).call(this, config));
+	    return _possibleConstructorReturn(this, (Component.__proto__ || Object.getPrototypeOf(Component)).call(this, config));
+	  }
+
+	  /**
+	   * Defaults
+	   */
+
+
+	  _createClass(Component, [{
+	    key: 'defaults',
+	    value: function defaults() {
+	      this.canUpdate = true;
+	      this.canDraw = true;
+	      this.isEnabled = true;
+	      this.offset = new Engine.Math.Vector2(0, 0);
 	    }
 
 	    /**
-	     * Defaults
+	     * Toggle
+	     *
+	     * @param {Boolean} isActive
 	     */
 
+	  }, {
+	    key: 'toggle',
+	    value: function toggle(isActive) {
+	      this.isActive = isActive;
+	    }
 
-	    _createClass(Component, [{
-	        key: 'defaults',
-	        value: function defaults() {
-	            this.canUpdate = true;
-	            this.canDraw = true;
-	            this.isEnabled = true;
-	            this.offset = new Engine.Math.Vector2(0, 0);
-	        }
+	    /**
+	     * Update
+	     */
 
-	        /**
-	         * Toggle
-	         *
-	         * @param {Boolean} isActive
-	         */
+	  }, {
+	    key: 'update',
+	    value: function update() {}
 
-	    }, {
-	        key: 'toggle',
-	        value: function toggle(isActive) {
-	            this.isActive = isActive;
-	        }
+	    /**
+	     * Draw
+	     */
 
-	        /**
-	         * Update
-	         */
+	  }, {
+	    key: 'draw',
+	    value: function draw() {}
+	  }]);
 
-	    }, {
-	        key: 'update',
-	        value: function update() {}
-
-	        /**
-	         * Draw
-	         */
-
-	    }, {
-	        key: 'draw',
-	        value: function draw() {}
-	    }]);
-
-	    return Component;
+	  return Component;
 	}(Engine.Entity);
 
 	Engine.Components.Component = Component;

@@ -194,7 +194,6 @@ UI.Button = class Button extends UI.Widget {
         super.defaults();
         
         this.text = 'My button';
-        this.strokeWidth = 4;
         this.strokeColor = new Engine.Math.Color(1, 1, 1);
         this.textAlignX = 'center';
         this.textAlignY = 'center';

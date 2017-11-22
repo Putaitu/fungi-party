@@ -28,6 +28,17 @@ class Stage {
     }
 
     /**
+     * Reloads the current scene
+     *
+     * @returns {Scene} Scene
+     */
+    static reloadCurrentScene() {
+        if(!this.scene) { return; }
+
+        return this.loadScene(this.scene.constructor.name);
+    }
+
+    /**
      * Loads a Scene
      *
      * @param {String} name
@@ -38,6 +49,8 @@ class Stage {
         if(!this.scenes[name]) {
             throw new Error('A scene by name "' + name + '" was not added');
         }
+        
+        Engine.UI.clearWidgets();
         
         this.scene = new this.scenes[name](); 
 
