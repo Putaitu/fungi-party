@@ -19,7 +19,7 @@ Game.Actors.PlayerGrid = class PlayerGrid extends Game.Actors.Grid {
 
         // Place grid
         this.transform.position.x = Engine.Graphics.screenWidth / 2;
-        this.transform.position.y = Engine.Graphics.screenHeight - UNIT * 6.5;
+        this.transform.position.y = Engine.Graphics.screenHeight - UNIT * 6.25;
 
         // Pointer events 
         Engine.Input.on('pointerup', [0, 1], (e) => {

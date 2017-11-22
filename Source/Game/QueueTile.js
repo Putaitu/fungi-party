@@ -29,13 +29,22 @@ Game.Actors.QueueTile = class QueueTile extends Game.Actors.ColorTile {
     set color(value) {
         this._color = value;
 
-        if(value.r > 0) {
+        if(value.r === 1) {
+            this.spriteRenderer.texture = './Content/Textures/T_MushroomDouble_Red_D.png';
+        
+        } else if(value.r === 0.5) {
             this.spriteRenderer.texture = './Content/Textures/T_Mushroom_Red_D.png';
 
-        } else if(value.g > 0) {
+        } else if(value.g === 1) {
+            this.spriteRenderer.texture = './Content/Textures/T_MushroomDouble_Green_D.png';
+        
+        } else if(value.g === 0.5) {
             this.spriteRenderer.texture = './Content/Textures/T_Mushroom_Green_D.png';
 
-        } else if(value.b > 0) {
+        } else if(value.b === 1) {
+            this.spriteRenderer.texture = './Content/Textures/T_MushroomDouble_Blue_D.png';
+        
+        } else if(value.b === 0.5) {
             this.spriteRenderer.texture = './Content/Textures/T_Mushroom_Blue_D.png';
 
         }

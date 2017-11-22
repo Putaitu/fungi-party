@@ -63,41 +63,44 @@ Game.Actors.Queue = class Queue extends Engine.Actors.Actor {
         }
     }
 
-	/**
-	 * Gets the next colour
-	 *
-	 * @returns {Color} The next color
-	 */
-	getNextColor() {
-		// If a queue was specified, pick the next colour from that queue
-		if(this.colors && this.colors.length > 0) {
-			return this.colors.shift();
-			
-		// If not, get a random colour
-		} else {
-			// Get random color
-			let randomColors = [
-				new Engine.Math.Color(0.5, 0, 0),
-				new Engine.Math.Color(0, 0.5, 0),
-				new Engine.Math.Color(0, 0, 0.5)
-			];
+    /**
+     * Gets the next colour
+     *
+     * @returns {Color} The next color
+     */
+    getNextColor() {
+        // If a queue was specified, pick the next colour from that queue
+        if(this.colors && this.colors.length > 0) {
+            return this.colors.shift();
+            
+        // If not, get a random colour
+        } else {
+            // Get random color
+            let randomColors = [
+                new Engine.Math.Color(0.5, 0, 0),
+                new Engine.Math.Color(0, 0.5, 0),
+                new Engine.Math.Color(0, 0, 0.5),
+                new Engine.Math.Color(1, 0, 0),
+                new Engine.Math.Color(0, 1, 0),
+                new Engine.Math.Color(0, 0, 1)
+            ];
 
-			let randomColorIndex = Math.floor(Math.random() * 3);
-			
-			// Make sure it isn't too random by comparing to previous occurrences
-			for(let i = 0; i < 3; i++) {
-				if(this.randomAmounts[i] < this.randomAmounts[randomColorIndex]) {
-					randomColorIndex = i;
-					break;
-				}
-			}
+            let randomColorIndex = Math.floor(Math.random() * 3);
+            
+            // Make sure it isn't too random by comparing to previous occurrences
+            for(let i = 0; i < 3; i++) {
+                if(this.randomAmounts[i] < this.randomAmounts[randomColorIndex]) {
+                    randomColorIndex = i;
+                    break;
+                }
+            }
 
-			this.randomAmounts[randomColorIndex]++;
-			
-			return randomColors[randomColorIndex];
-		}
-	}
-	
+            this.randomAmounts[randomColorIndex]++;
+            
+            return randomColors[randomColorIndex];
+        }
+    }
+    
     /**
      * Spawns a new tile
      */

@@ -142,12 +142,31 @@ class Scene1 extends Engine.Scene {
             }
         });
 
-        // Toggle colour guides
-        let colorBlindButton = new Engine.UI.Button({
-            text: 'Guides: ON',
+        // Skip level
+        let skipButton = new Engine.UI.Button({
+            text: 'SKIP ↷',
             width: UNIT * 2,
             height: UNIT,
             x: Engine.Graphics.screenWidth - UNIT,
+            y: UNIT / 2,
+            textSize: UNIT / 3,
+            textColor: new Engine.Math.Color(1, 1, 1),
+            fillColor: new Engine.Math.Color(0, 0, 0),
+            onClick: () => {
+                let currentScene = parseInt(Engine.Stage.scene.name.match(/\d+/));
+            
+                currentScene++;
+
+                Engine.Stage.loadScene('Scene' + currentScene);
+            }
+        });
+
+        // Toggle colour guides
+        let colorBlindButton = new Engine.UI.Button({
+            text: 'Guides: ON',
+            width: UNIT * 2.5,
+            height: UNIT,
+            x: Engine.Graphics.screenWidth / 2,
             y: UNIT / 2,
             textColor: new Engine.Math.Color(1, 1, 1),
             fillColor: new Engine.Math.Color(0, 0, 0),
