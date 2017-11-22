@@ -94,7 +94,13 @@ Game.Actors.PlayerGrid = class PlayerGrid extends Game.Actors.Grid {
         
         // Highlight hovered tile
         for(let i = 0; i < this.children.length; i++) {
-            this.children[i].setHighlight(!this.children[i].isCorrect && this.children[i].collider.getBounds().contains(x, y));
+            this.children[i].setHighlight(
+                !this.children[i].isCorrect && // If it's not already correct
+                queueTile.color.r + this.children[i].color.r <= 1 && // Red is within bounds
+                queueTile.color.g + this.children[i].color.g <= 1 && // Green is within bounds
+                queueTile.color.b + this.children[i].color.b <= 1 && // Blue is within bounds
+                this.children[i].collider.getBounds().contains(x, y) // If the pointer is within the bounds
+            );
         }
         
         // Check if tile is hovering the fire
@@ -127,7 +133,14 @@ Game.Actors.PlayerGrid = class PlayerGrid extends Game.Actors.Grid {
             // Find a hovered tile
             let foundHovered = false;
             for(let i = 0; i < this.children.length; i++) {
-                if(!this.children[i].isCorrect && this.children[i].collider.getBounds().contains(x, y)) {
+                if(
+                    !this.children[i].isCorrect && // If it's not already correct
+                    queueTile.color.r + this.children[i].color.r <= 1 && // Red is within bounds
+                    queueTile.color.g + this.children[i].color.g <= 1 && // Green is within bounds
+                    queueTile.color.b + this.children[i].color.b <= 1 && // Blue is within bounds
+                    this.children[i].collider.getBounds().contains(x, y) // If the pointer is within the bounds
+
+                ) {
                     this.onDropTile(this.draggingTile, i);
                     Engine.Stage.scene.usedMoves++;
                     foundHovered = true;
