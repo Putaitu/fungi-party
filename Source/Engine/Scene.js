@@ -55,8 +55,11 @@ class Scene {
      * @param {Actor} actor
      */
     removeActor(actor) {
-        for(let i = this.actors.length - 1; i > 0; i--) {
-            if(this.actors[i] === actor) {
+        for(let i = this.actors.length - 1; i >= 0; i--) {
+            if(
+                this.actors[i] === actor || // The argument is an instance
+                (typeof actor === 'function' && this.actors[i] instanceof actor) // The argument is a class
+            ) {
                 // Update parent Actor
                 if(this.actors[i].parent) {
                     let childIndex = this.actors[i].parent.children.indexOf(this.actors[i]);
@@ -68,7 +71,14 @@ class Scene {
             }
         }
     }
-        
+
+    /**
+     * Clears all actors
+     */
+    clearActors() {
+        this.removeActor(Engine.Actors.Actor);
+    }
+
     /**
      * Gets a list of actors
      *

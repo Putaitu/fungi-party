@@ -65,6 +65,8 @@ class Fire extends Engine.Actors.Actor {
 
         this.isReady = false;
 
+        Engine.Stage.scene.usedMoves++;
+
         setTimeout(() => {
             this.isReady = true;
         }, FIRE_READY_TIMEOUT * 1000)

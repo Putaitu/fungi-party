@@ -14,7 +14,6 @@ Game.Actors.Queue = class Queue extends Engine.Actors.Actor {
         this.transform.position.x = Engine.Graphics.screenWidth / 2 - UNIT * 3;
         this.transform.position.y = Engine.Graphics.screenHeight - UNIT * 2;
 
-
         this.addComponent('GeometryRenderer', {
             type: 'rectangle',
             pivot: new Engine.Math.Vector2(0, 0.5),
@@ -33,6 +32,7 @@ Game.Actors.Queue = class Queue extends Engine.Actors.Actor {
         this.interval = 1;
         this.timer = 0;
         this.randomAmounts = [0, 0, 0];
+        this.isLooping = true;
     }
 
     /**
@@ -70,8 +70,20 @@ Game.Actors.Queue = class Queue extends Engine.Actors.Actor {
      */
     getNextColor() {
         // If a queue was specified, pick the next colour from that queue
-        if(this.colors && this.colors.length > 0) {
-            return this.colors.shift();
+        if(this.colors) {
+            this.currentQueueColorIndex = this.currentQueueColorIndex || 0;
+
+            let color = this.colors[this.currentQueueColorIndex];
+
+            if(this.currentQueueColorIndex >= this.colors.length - 1) {
+                if(this.isLooping) {
+                    this.currentQueueColorIndex = 0;
+                }
+            } else {
+                this.currentQueueColorIndex++;
+            }
+
+            return color;
             
         // If not, get a random colour
         } else {
@@ -85,7 +97,7 @@ Game.Actors.Queue = class Queue extends Engine.Actors.Actor {
                 new Engine.Math.Color(0, 0, 1)
             ];
 
-            let randomColorIndex = Math.floor(Math.random() * 3);
+            let randomColorIndex = Math.floor(Math.random() * randomColors.length);
             
             // Make sure it isn't too random by comparing to previous occurrences
             for(let i = 0; i < 3; i++) {

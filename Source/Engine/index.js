@@ -19,6 +19,7 @@ require('./Input');
 require('./Scene');
 require('./Settings');
 require('./Stage');
+require('./Storage');
 require('./Time');
 require('./UI');
 

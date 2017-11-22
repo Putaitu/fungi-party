@@ -13,6 +13,7 @@ require('./PowerupTile');
 require('./Queue');
 require('./Grid');
 require('./Fire');
+require('./UI');
 require('./TargetGrid');
 require('./PlayerGrid');
 

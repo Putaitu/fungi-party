@@ -69,21 +69,22 @@
 	__webpack_require__(8);
 	__webpack_require__(9);
 	__webpack_require__(10);
-
 	__webpack_require__(11);
+
 	__webpack_require__(12);
 	__webpack_require__(13);
-
 	__webpack_require__(14);
-	__webpack_require__(15);
 
+	__webpack_require__(15);
 	__webpack_require__(16);
+
 	__webpack_require__(17);
 	__webpack_require__(18);
 	__webpack_require__(19);
 	__webpack_require__(20);
 	__webpack_require__(21);
 	__webpack_require__(22);
+	__webpack_require__(23);
 
 /***/ }),
 /* 1 */
@@ -1238,18 +1239,30 @@
 	    }, {
 	        key: 'removeActor',
 	        value: function removeActor(actor) {
-	            for (var i = this.actors.length - 1; i > 0; i--) {
-	                if (this.actors[i] === actor) {
-	                    // Update parent Actor
-	                    if (this.actors[i].parent) {
-	                        var childIndex = this.actors[i].parent.children.indexOf(this.actors[i]);
+	            for (var i = this.actors.length - 1; i >= 0; i--) {
+	                if (this.actors[i] === actor || // The argument is an instance
+	                typeof actor === 'function' && this.actors[i] instanceof actor // The argument is a class
+	                ) {
+	                        // Update parent Actor
+	                        if (this.actors[i].parent) {
+	                            var childIndex = this.actors[i].parent.children.indexOf(this.actors[i]);
 
-	                        this.actors[i].parent.children.splice(childIndex, 1);
+	                            this.actors[i].parent.children.splice(childIndex, 1);
+	                        }
+
+	                        this.actors.splice(i, 1);
 	                    }
-
-	                    this.actors.splice(i, 1);
-	                }
 	            }
+	        }
+
+	        /**
+	         * Clears all actors
+	         */
+
+	    }, {
+	        key: 'clearActors',
+	        value: function clearActors() {
+	            this.removeActor(Engine.Actors.Actor);
 	        }
 
 	        /**
@@ -1313,7 +1326,19 @@
 	         */
 	        value: function init() {
 	            this.scene = null;
-	            this.scenes = {};
+	            this.scenes = [];
+	        }
+
+	        /**
+	         * Clears all actors
+	         */
+
+	    }, {
+	        key: 'clearActors',
+	        value: function clearActors() {
+	            this.checkScene();
+
+	            this.scene.clearActors();
 	        }
 
 	        /**
@@ -1329,11 +1354,11 @@
 	                return;
 	            }
 
-	            if (this.scenes[scene.name]) {
+	            if (this.scenes.indexOf(scene) > -1) {
 	                throw new Error('A scene by name "' + scene.name + '" was already added');
 	            }
 
-	            this.scenes[scene.name] = scene;
+	            this.scenes.push(scene);
 	        }
 
 	        /**
@@ -1345,9 +1370,7 @@
 	    }, {
 	        key: 'reloadCurrentScene',
 	        value: function reloadCurrentScene() {
-	            if (!this.scene) {
-	                return;
-	            }
+	            this.checkScene();
 
 	            return this.loadScene(this.scene.constructor.name);
 	        }
@@ -1363,15 +1386,66 @@
 	    }, {
 	        key: 'loadScene',
 	        value: function loadScene(name) {
-	            if (!this.scenes[name]) {
-	                throw new Error('A scene by name "' + name + '" was not added');
+	            var _iteratorNormalCompletion = true;
+	            var _didIteratorError = false;
+	            var _iteratorError = undefined;
+
+	            try {
+	                for (var _iterator = this.scenes[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	                    var scene = _step.value;
+
+	                    if (scene.name === name) {
+	                        Engine.UI.clearWidgets();
+
+	                        this.scene = new scene();
+
+	                        this.scene.start();
+
+	                        return this.scene;
+	                    }
+	                }
+	            } catch (err) {
+	                _didIteratorError = true;
+	                _iteratorError = err;
+	            } finally {
+	                try {
+	                    if (!_iteratorNormalCompletion && _iterator.return) {
+	                        _iterator.return();
+	                    }
+	                } finally {
+	                    if (_didIteratorError) {
+	                        throw _iteratorError;
+	                    }
+	                }
 	            }
 
-	            Engine.UI.clearWidgets();
+	            throw new Error('A scene by name "' + name + '" was not added');
+	        }
 
-	            this.scene = new this.scenes[name]();
+	        /**
+	         * Loads the next Scene in the list
+	         *
+	         * @returns {Scene} Scene
+	         */
 
-	            this.scene.start();
+	    }, {
+	        key: 'loadNextScene',
+	        value: function loadNextScene() {
+	            for (var i = 0; i < this.scenes.length; i++) {
+	                var scene = this.scenes[i];
+
+	                if (scene === this.scene.constructor && i < this.scenes.length - 1) {
+	                    Engine.UI.clearWidgets();
+
+	                    this.scene = new this.scenes[i + 1]();
+
+	                    this.scene.start();
+
+	                    return this.scene;
+	                }
+	            }
+
+	            throw new Error('No next scene was found');
 	        }
 
 	        /**
@@ -1451,6 +1525,62 @@
 	'use strict';
 
 	/**
+	 * Storage
+	 */
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var Storage = function () {
+	    function Storage() {
+	        _classCallCheck(this, Storage);
+	    }
+
+	    _createClass(Storage, null, [{
+	        key: 'set',
+
+	        /**
+	         * Set data
+	         *
+	         * @param {String} key
+	         * @param {Object} value
+	         */
+	        value: function set(key, value) {
+	            localStorage.setItem(key, JSON.stringify(value));
+	        }
+
+	        /**
+	         * Get data
+	         *
+	         * @param {String} key
+	         *
+	         * @returns {Object} Value
+	         */
+
+	    }, {
+	        key: 'get',
+	        value: function get(key) {
+	            try {
+	                return JSON.parse(localStorage.getItem(key));
+	            } catch (e) {
+	                return null;
+	            }
+	        }
+	    }]);
+
+	    return Storage;
+	}();
+
+	Engine.Storage = Storage;
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports) {
+
+	'use strict';
+
+	/**
 	 * The time subsystem
 	 */
 
@@ -1516,7 +1646,7 @@
 	Engine.Time = Time;
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -1938,7 +2068,7 @@
 	Engine.UI = UI;
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -2230,7 +2360,7 @@
 	Engine.Math.Color = Color;
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -2310,7 +2440,7 @@
 	Engine.Math.Rect = Rect;
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -2335,7 +2465,7 @@
 	Engine.Math.Vector2 = Vector2;
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -2611,7 +2741,7 @@
 	Engine.Actors.Actor = Actor;
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -2672,7 +2802,7 @@
 	Engine.Actors.Pawn = Pawn;
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -2750,7 +2880,7 @@
 	Engine.Components.Component = Component;
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -2828,7 +2958,7 @@
 	Engine.Components.Collider = Collider;
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -2908,7 +3038,7 @@
 	Engine.Components.GeometryRenderer = GeometryRenderer;
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -3022,7 +3152,7 @@
 	Engine.Components.SpriteRenderer = SpriteRenderer;
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -3145,7 +3275,7 @@
 	Engine.Components.SpriteAnimator = SpriteAnimator;
 
 /***/ }),
-/* 21 */
+/* 22 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -3217,7 +3347,7 @@
 	Engine.Components.TextRenderer = TextRenderer;
 
 /***/ }),
-/* 22 */
+/* 23 */
 /***/ (function(module, exports) {
 
 	'use strict';

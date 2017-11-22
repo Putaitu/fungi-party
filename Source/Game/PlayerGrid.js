@@ -129,6 +129,7 @@ Game.Actors.PlayerGrid = class PlayerGrid extends Game.Actors.Grid {
             for(let i = 0; i < this.children.length; i++) {
                 if(!this.children[i].isCorrect && this.children[i].collider.getBounds().contains(x, y)) {
                     this.onDropTile(this.draggingTile, i);
+                    Engine.Stage.scene.usedMoves++;
                     foundHovered = true;
                 }
             }
@@ -219,11 +220,7 @@ Game.Actors.PlayerGrid = class PlayerGrid extends Game.Actors.Grid {
         }
 
         if(correctTiles >= this.children.length) {
-            let currentScene = parseInt(Engine.Stage.scene.name.match(/\d+/));
-        
-            currentScene++;
-
-            Engine.Stage.loadScene('Scene' + currentScene);
+            Game.Game.showEndLevelScreen();
         }
     }
 

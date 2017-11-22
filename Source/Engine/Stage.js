@@ -9,9 +9,18 @@ class Stage {
      */
     static init() {
         this.scene = null;
-        this.scenes = {};
+        this.scenes = [];
     }
-  
+ 
+    /**
+     * Clears all actors
+     */
+    static clearActors() {
+        this.checkScene();
+
+        this.scene.clearActors();
+    }
+
     /**
      * Adds a scene to the list
      *
@@ -20,11 +29,11 @@ class Stage {
     static addScene(scene) {
         if(!scene) { return; }
 
-        if(this.scenes[scene.name]) {
+        if(this.scenes.indexOf(scene) > -1) {
             throw new Error('A scene by name "' + scene.name + '" was already added');
         }
 
-        this.scenes[scene.name] = scene;
+        this.scenes.push(scene);
     }
 
     /**
@@ -33,7 +42,7 @@ class Stage {
      * @returns {Scene} Scene
      */
     static reloadCurrentScene() {
-        if(!this.scene) { return; }
+        this.checkScene();
 
         return this.loadScene(this.scene.constructor.name);
     }
@@ -46,15 +55,42 @@ class Stage {
      * @returns {Scene} Scene
      */
     static loadScene(name) {
-        if(!this.scenes[name]) {
-            throw new Error('A scene by name "' + name + '" was not added');
-        }
-        
-        Engine.UI.clearWidgets();
-        
-        this.scene = new this.scenes[name](); 
+        for(let scene of this.scenes) {
+            if(scene.name === name) {
+                Engine.UI.clearWidgets();
+                
+                this.scene = new scene(); 
 
-        this.scene.start();
+                this.scene.start();
+
+                return this.scene;
+            }
+        }
+       
+        throw new Error('A scene by name "' + name + '" was not added');
+    }
+    
+    /**
+     * Loads the next Scene in the list
+     *
+     * @returns {Scene} Scene
+     */
+    static loadNextScene() {
+        for(let i = 0; i < this.scenes.length; i++) {
+            let scene = this.scenes[i];
+
+            if(scene === this.scene.constructor && i < this.scenes.length - 1) {
+                Engine.UI.clearWidgets();
+               
+                this.scene = new this.scenes[i + 1](); 
+
+                this.scene.start();
+
+                return this.scene;
+            }
+        }
+       
+        throw new Error('No next scene was found');
     }
 
     /**

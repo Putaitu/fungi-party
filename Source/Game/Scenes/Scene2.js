@@ -2,6 +2,8 @@
 
 class Scene2 extends Engine.Scene {
     start() {
+        this.usedMoves = 0;
+
         // Retry level
         let retryButton = new Engine.UI.Button({
             text: '↺ RETRY',
@@ -38,7 +40,7 @@ class Scene2 extends Engine.Scene {
 
         // Toggle colour guides
         let colorBlindButton = new Engine.UI.Button({
-            text: 'Guides: OFF',
+            text: 'Guides: ✕',
             width: UNIT * 2.5,
             height: UNIT,
             x: Engine.Graphics.screenWidth / 2,
@@ -47,9 +49,9 @@ class Scene2 extends Engine.Scene {
             fillColor: new Engine.Math.Color(0, 0, 0),
             textSize: UNIT / 3,
             onClick: () => {
-                let isOn = colorBlindButton.text.indexOf('ON') < 0;
+                let isOn = colorBlindButton.text.indexOf('✓') < 0;
 
-                colorBlindButton.text = 'Guides: ' + (isOn ? 'ON' : 'OFF');
+                colorBlindButton.text = 'Guides: ' + (isOn ? '✓' : '✕');
 
                 for(let gridTile of Engine.Stage.getActors(Game.Actors.GridTile)) {
                     gridTile.lineRenderer1.isEnabled = isOn;

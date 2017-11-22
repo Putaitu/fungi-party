@@ -54,7 +54,6 @@
 	};
 
 	// Load modules
-	__webpack_require__(23);
 	__webpack_require__(24);
 	__webpack_require__(25);
 	__webpack_require__(26);
@@ -63,8 +62,10 @@
 	__webpack_require__(29);
 	__webpack_require__(30);
 	__webpack_require__(31);
-
 	__webpack_require__(32);
+	__webpack_require__(33);
+
+	__webpack_require__(34);
 
 /***/ }),
 /* 1 */,
@@ -89,7 +90,8 @@
 /* 20 */,
 /* 21 */,
 /* 22 */,
-/* 23 */
+/* 23 */,
+/* 24 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -157,7 +159,7 @@
 	}(Engine.Actors.Actor);
 
 /***/ }),
-/* 24 */
+/* 25 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -339,7 +341,7 @@
 	}(Game.Actors.ColorTile);
 
 /***/ }),
-/* 25 */
+/* 26 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -431,7 +433,7 @@
 	}(Game.Actors.ColorTile);
 
 /***/ }),
-/* 26 */
+/* 27 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -535,7 +537,7 @@
 	}(Game.Actors.ColorTile);
 
 /***/ }),
-/* 27 */
+/* 28 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -592,6 +594,7 @@
 	            this.interval = 1;
 	            this.timer = 0;
 	            this.randomAmounts = [0, 0, 0];
+	            this.isLooping = true;
 	        }
 
 	        /**
@@ -640,15 +643,27 @@
 	        key: 'getNextColor',
 	        value: function getNextColor() {
 	            // If a queue was specified, pick the next colour from that queue
-	            if (this.colors && this.colors.length > 0) {
-	                return this.colors.shift();
+	            if (this.colors) {
+	                this.currentQueueColorIndex = this.currentQueueColorIndex || 0;
+
+	                var color = this.colors[this.currentQueueColorIndex];
+
+	                if (this.currentQueueColorIndex >= this.colors.length - 1) {
+	                    if (this.isLooping) {
+	                        this.currentQueueColorIndex = 0;
+	                    }
+	                } else {
+	                    this.currentQueueColorIndex++;
+	                }
+
+	                return color;
 
 	                // If not, get a random colour
 	            } else {
 	                // Get random color
 	                var randomColors = [new Engine.Math.Color(0.5, 0, 0), new Engine.Math.Color(0, 0.5, 0), new Engine.Math.Color(0, 0, 0.5), new Engine.Math.Color(1, 0, 0), new Engine.Math.Color(0, 1, 0), new Engine.Math.Color(0, 0, 1)];
 
-	                var randomColorIndex = Math.floor(Math.random() * 3);
+	                var randomColorIndex = Math.floor(Math.random() * randomColors.length);
 
 	                // Make sure it isn't too random by comparing to previous occurrences
 	                for (var i = 0; i < 3; i++) {
@@ -714,7 +729,7 @@
 	}(Engine.Actors.Actor);
 
 /***/ }),
-/* 28 */
+/* 29 */
 /***/ (function(module, exports) {
 
 	"use strict";
@@ -762,7 +777,7 @@
 	}(Engine.Actors.Actor);
 
 /***/ }),
-/* 29 */
+/* 30 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -850,6 +865,8 @@
 
 	            this.isReady = false;
 
+	            Engine.Stage.scene.usedMoves++;
+
 	            setTimeout(function () {
 	                _this2.isReady = true;
 	            }, FIRE_READY_TIMEOUT * 1000);
@@ -884,7 +901,25 @@
 	Game.Actors.Fire = Fire;
 
 /***/ }),
-/* 30 */
+/* 31 */
+/***/ (function(module, exports) {
+
+	'use strict';
+
+	/**
+	 * The UI helper class
+	 */
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var UI = function UI() {
+	  _classCallCheck(this, UI);
+	};
+
+	Game.UI = UI;
+
+/***/ }),
+/* 32 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -960,7 +995,7 @@
 	}(Game.Actors.Grid);
 
 /***/ }),
-/* 31 */
+/* 33 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -1130,6 +1165,7 @@
 	                for (var i = 0; i < this.children.length; i++) {
 	                    if (!this.children[i].isCorrect && this.children[i].collider.getBounds().contains(x, y)) {
 	                        this.onDropTile(this.draggingTile, i);
+	                        Engine.Stage.scene.usedMoves++;
 	                        foundHovered = true;
 	                    }
 	                }
@@ -1226,11 +1262,7 @@
 	            }
 
 	            if (correctTiles >= this.children.length) {
-	                var currentScene = parseInt(Engine.Stage.scene.name.match(/\d+/));
-
-	                currentScene++;
-
-	                Engine.Stage.loadScene('Scene' + currentScene);
+	                Game.Game.showEndLevelScreen();
 	            }
 	        }
 
@@ -1251,22 +1283,66 @@
 	}(Game.Actors.Grid);
 
 /***/ }),
-/* 32 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
-	// Init everything
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	Game.Game = function () {
+	    function Game() {
+	        _classCallCheck(this, Game);
+	    }
+
+	    _createClass(Game, null, [{
+	        key: 'showEndLevelScreen',
+	        value: function showEndLevelScreen() {
+	            Engine.Stage.clearActors();
+	            Engine.UI.clearWidgets();
+
+	            new Engine.UI.Label({
+	                text: 'You used ' + Engine.Stage.scene.usedMoves + ' moves',
+	                textAlignX: 'center',
+	                textAlignY: 'center',
+	                textSize: UNIT / 2,
+	                x: Engine.Graphics.screenWidth / 2,
+	                y: UNIT * 4,
+	                width: UNIT * 8,
+	                height: UNIT
+	            });
+
+	            new Engine.UI.Button({
+	                text: 'NEXT →',
+	                width: UNIT * 2,
+	                height: UNIT,
+	                x: Engine.Graphics.screenWidth / 2,
+	                y: Engine.Graphics.screenHeight - UNIT * 4,
+	                textSize: UNIT / 3,
+	                textColor: new Engine.Math.Color(1, 1, 1),
+	                fillColor: new Engine.Math.Color(0, 0, 0),
+	                onClick: function onClick() {
+	                    Engine.Stage.loadNextScene();
+	                }
+	            });
+	        }
+	    }]);
+
+	    return Game;
+	}();
+
+	// Init everything
 	Engine.Core.on('init', function () {
 	    // A standard unit for the game
 	    window.UNIT = Engine.Graphics.screenHeight / 14;
 
 	    // Init scenes
-	    __webpack_require__(33);
+	    __webpack_require__(35);
 	    Engine.Stage.addScene(Game.Scenes.Scene1);
 
-	    __webpack_require__(34);
+	    __webpack_require__(36);
 	    Engine.Stage.addScene(Game.Scenes.Scene2);
 
 	    // Load first scene
@@ -1274,7 +1350,7 @@
 	});
 
 /***/ }),
-/* 33 */
+/* 35 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -1436,6 +1512,8 @@
 	    }, {
 	        key: 'startLevel',
 	        value: function startLevel() {
+	            this.usedMoves = 0;
+
 	            // Remove previous UI widgets
 	            Engine.UI.clearWidgets();
 
@@ -1494,17 +1572,13 @@
 	                textColor: new Engine.Math.Color(1, 1, 1),
 	                fillColor: new Engine.Math.Color(0, 0, 0),
 	                onClick: function onClick() {
-	                    var currentScene = parseInt(Engine.Stage.scene.name.match(/\d+/));
-
-	                    currentScene++;
-
-	                    Engine.Stage.loadScene('Scene' + currentScene);
+	                    Game.Game.showEndLevelScreen();
 	                }
 	            });
 
 	            // Toggle colour guides
 	            var colorBlindButton = new Engine.UI.Button({
-	                text: 'Guides: ON',
+	                text: 'Guides: ✓',
 	                width: UNIT * 2.5,
 	                height: UNIT,
 	                x: Engine.Graphics.screenWidth / 2,
@@ -1513,9 +1587,9 @@
 	                fillColor: new Engine.Math.Color(0, 0, 0),
 	                textSize: UNIT / 3,
 	                onClick: function onClick() {
-	                    var isOn = colorBlindButton.text.indexOf('ON') < 0;
+	                    var isOn = colorBlindButton.text.indexOf('✓') < 0;
 
-	                    colorBlindButton.text = 'Guides: ' + (isOn ? 'ON' : 'OFF');
+	                    colorBlindButton.text = 'Guides: ' + (isOn ? '✓' : '✕');
 
 	                    var _iteratorNormalCompletion2 = true;
 	                    var _didIteratorError2 = false;
@@ -1563,6 +1637,7 @@
 	            var playerGrid = new Game.Actors.PlayerGrid({ size: 3 });
 
 	            var queue = new Game.Actors.Queue({
+	                isLooping: false,
 	                colors: [new Engine.Math.Color(0.5, 0, 0), new Engine.Math.Color(0.5, 0, 0), new Engine.Math.Color(0.5, 0, 0), new Engine.Math.Color(0, 0.5, 0), new Engine.Math.Color(0, 0.5, 0), new Engine.Math.Color(0, 0.5, 0), new Engine.Math.Color(0, 0, 0.5), new Engine.Math.Color(0, 0, 0.5), new Engine.Math.Color(0, 0, 0.5), new Engine.Math.Color(0.5, 0, 0), new Engine.Math.Color(0, 0.5, 0), new Engine.Math.Color(0.5, 0, 0), new Engine.Math.Color(0, 0, 0.5), new Engine.Math.Color(0, 0.5, 0), new Engine.Math.Color(0, 0, 0.5)]
 	            });
 
@@ -1586,7 +1661,7 @@
 	Game.Scenes.Scene1 = Scene1;
 
 /***/ }),
-/* 34 */
+/* 36 */
 /***/ (function(module, exports) {
 
 	'use strict';
@@ -1611,6 +1686,8 @@
 	    _createClass(Scene2, [{
 	        key: 'start',
 	        value: function start() {
+	            this.usedMoves = 0;
+
 	            // Retry level
 	            var retryButton = new Engine.UI.Button({
 	                text: '↺ RETRY',
@@ -1647,7 +1724,7 @@
 
 	            // Toggle colour guides
 	            var colorBlindButton = new Engine.UI.Button({
-	                text: 'Guides: OFF',
+	                text: 'Guides: ✕',
 	                width: UNIT * 2.5,
 	                height: UNIT,
 	                x: Engine.Graphics.screenWidth / 2,
@@ -1656,9 +1733,9 @@
 	                fillColor: new Engine.Math.Color(0, 0, 0),
 	                textSize: UNIT / 3,
 	                onClick: function onClick() {
-	                    var isOn = colorBlindButton.text.indexOf('ON') < 0;
+	                    var isOn = colorBlindButton.text.indexOf('✓') < 0;
 
-	                    colorBlindButton.text = 'Guides: ' + (isOn ? 'ON' : 'OFF');
+	                    colorBlindButton.text = 'Guides: ' + (isOn ? '✓' : '✕');
 
 	                    var _iteratorNormalCompletion = true;
 	                    var _didIteratorError = false;
