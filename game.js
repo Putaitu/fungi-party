@@ -411,11 +411,17 @@
 	        set: function set(value) {
 	            this._color = value;
 
-	            if (value.r > 0) {
+	            if (value.r === 1) {
+	                this.spriteRenderer.texture = './Content/Textures/T_MushroomDouble_Red_D.png';
+	            } else if (value.r === 0.5) {
 	                this.spriteRenderer.texture = './Content/Textures/T_Mushroom_Red_D.png';
-	            } else if (value.g > 0) {
+	            } else if (value.g === 1) {
+	                this.spriteRenderer.texture = './Content/Textures/T_MushroomDouble_Green_D.png';
+	            } else if (value.g === 0.5) {
 	                this.spriteRenderer.texture = './Content/Textures/T_Mushroom_Green_D.png';
-	            } else if (value.b > 0) {
+	            } else if (value.b === 1) {
+	                this.spriteRenderer.texture = './Content/Textures/T_MushroomDouble_Blue_D.png';
+	            } else if (value.b === 0.5) {
 	                this.spriteRenderer.texture = './Content/Textures/T_Mushroom_Blue_D.png';
 	            }
 	        }
@@ -640,7 +646,7 @@
 	                // If not, get a random colour
 	            } else {
 	                // Get random color
-	                var randomColors = [new Engine.Math.Color(0.5, 0, 0), new Engine.Math.Color(0, 0.5, 0), new Engine.Math.Color(0, 0, 0.5)];
+	                var randomColors = [new Engine.Math.Color(0.5, 0, 0), new Engine.Math.Color(0, 0.5, 0), new Engine.Math.Color(0, 0, 0.5), new Engine.Math.Color(1, 0, 0), new Engine.Math.Color(0, 1, 0), new Engine.Math.Color(0, 0, 1)];
 
 	                var randomColorIndex = Math.floor(Math.random() * 3);
 
@@ -727,32 +733,32 @@
 	 * A grid
 	 */
 	Game.Actors.Grid = function (_Engine$Actors$Actor) {
-	    _inherits(Grid, _Engine$Actors$Actor);
+	  _inherits(Grid, _Engine$Actors$Actor);
 
-	    /**
-	     * Constructor
-	     */
-	    function Grid(config) {
-	        _classCallCheck(this, Grid);
+	  /**
+	   * Constructor
+	   */
+	  function Grid(config) {
+	    _classCallCheck(this, Grid);
 
-	        return _possibleConstructorReturn(this, (Grid.__proto__ || Object.getPrototypeOf(Grid)).call(this, config));
+	    return _possibleConstructorReturn(this, (Grid.__proto__ || Object.getPrototypeOf(Grid)).call(this, config));
+	  }
+
+	  /**
+	   * Defaults
+	   */
+
+
+	  _createClass(Grid, [{
+	    key: "defaults",
+	    value: function defaults() {
+	      _get(Grid.prototype.__proto__ || Object.getPrototypeOf(Grid.prototype), "defaults", this).call(this);
+
+	      this.tiles = [];
 	    }
+	  }]);
 
-	    /**
-	     * Defaults
-	     */
-
-
-	    _createClass(Grid, [{
-	        key: "defaults",
-	        value: function defaults() {
-	            _get(Grid.prototype.__proto__ || Object.getPrototypeOf(Grid.prototype), "defaults", this).call(this);
-
-	            this.tiles = [];
-	        }
-	    }]);
-
-	    return Grid;
+	  return Grid;
 	}(Engine.Actors.Actor);
 
 /***/ }),
@@ -932,7 +938,7 @@
 
 	        // Place grid
 	        _this.transform.position.x = Engine.Graphics.screenWidth / 2;
-	        _this.transform.position.y = UNIT * 2;
+	        _this.transform.position.y = UNIT * 2.75;
 	        return _this;
 	    }
 
@@ -993,7 +999,7 @@
 
 	        // Place grid
 	        _this.transform.position.x = Engine.Graphics.screenWidth / 2;
-	        _this.transform.position.y = Engine.Graphics.screenHeight - UNIT * 6.5;
+	        _this.transform.position.y = Engine.Graphics.screenHeight - UNIT * 6.25;
 
 	        // Pointer events 
 	        Engine.Input.on('pointerup', [0, 1], function (e) {
@@ -1286,262 +1292,295 @@
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 	var Scene1 = function (_Engine$Scene) {
-		_inherits(Scene1, _Engine$Scene);
+	    _inherits(Scene1, _Engine$Scene);
 
-		function Scene1() {
-			_classCallCheck(this, Scene1);
+	    function Scene1() {
+	        _classCallCheck(this, Scene1);
 
-			return _possibleConstructorReturn(this, (Scene1.__proto__ || Object.getPrototypeOf(Scene1)).apply(this, arguments));
-		}
+	        return _possibleConstructorReturn(this, (Scene1.__proto__ || Object.getPrototypeOf(Scene1)).apply(this, arguments));
+	    }
 
-		_createClass(Scene1, [{
-			key: 'startTutorial1',
+	    _createClass(Scene1, [{
+	        key: 'startTutorial1',
 
-			/**
-	   * Starts the tutorial step 1
-	   */
-			value: function startTutorial1() {
-				var _this2 = this;
+	        /**
+	         * Starts the tutorial step 1
+	         */
+	        value: function startTutorial1() {
+	            var _this2 = this;
 
-				var label1 = new Engine.UI.Label({
-					text: 'Drag and drop the glowing mushrooms to the floor tile to add color, mix color so it matches with the guide',
-					textSize: UNIT * 0.4,
-					//textAlignX: 'end',
-					textColor: new Engine.Math.Color(1, 1, 1),
-					x: Engine.Graphics.screenWidth / 2,
-					y: UNIT * 2,
-					width: Engine.Graphics.screenWidth * 0.7
-				});
+	            var label1 = new Engine.UI.Label({
+	                text: 'Drag and drop the glowing mushrooms to the floor tile to add color, mix color so it matches with the guide',
+	                textSize: UNIT * 0.4,
+	                //textAlignX: 'end',
+	                textColor: new Engine.Math.Color(1, 1, 1),
+	                x: Engine.Graphics.screenWidth / 2,
+	                y: UNIT * 2,
+	                width: Engine.Graphics.screenWidth * 0.7
+	            });
 
-				var image1 = new Engine.UI.Image({
-					width: UNIT * 7,
-					height: UNIT * 7,
-					source: './Content/Textures/T_Tutorial1_D.png',
-					x: Engine.Graphics.screenWidth / 2,
-					y: Engine.Graphics.screenHeight / 2
-				});
+	            var image1 = new Engine.UI.Image({
+	                width: UNIT * 7,
+	                height: UNIT * 7,
+	                source: './Content/Textures/T_Tutorial1_D.png',
+	                x: Engine.Graphics.screenWidth / 2,
+	                y: Engine.Graphics.screenHeight / 2
+	            });
 
-				var button = new Engine.UI.Button({
-					text: 'Next',
-					x: Engine.Graphics.screenWidth / 2,
-					y: UNIT * 12,
-					textSize: UNIT * 0.6,
-					textColor: new Engine.Math.Color(1, 1, 1),
-					width: UNIT * 4,
-					height: UNIT,
-					onClick: function onClick() {
-						_this2.startTutorial2();
-					}
-				});
-			}
+	            var button = new Engine.UI.Button({
+	                text: 'Next',
+	                x: Engine.Graphics.screenWidth / 2,
+	                y: UNIT * 12,
+	                textSize: UNIT * 0.6,
+	                textColor: new Engine.Math.Color(1, 1, 1),
+	                width: UNIT * 4,
+	                height: UNIT,
+	                onClick: function onClick() {
+	                    _this2.startTutorial2();
+	                }
+	            });
+	        }
 
-			/**
-	   * Starts tutorial step 2
-	   */
+	        /**
+	         * Starts tutorial step 2
+	         */
 
-		}, {
-			key: 'startTutorial2',
-			value: function startTutorial2() {
-				var _this3 = this;
+	    }, {
+	        key: 'startTutorial2',
+	        value: function startTutorial2() {
+	            var _this3 = this;
 
-				// Remove previous UI widgets
-				Engine.UI.clearWidgets();
+	            // Remove previous UI widgets
+	            Engine.UI.clearWidgets();
 
-				var label1 = new Engine.UI.Label({
-					text: 'Drag mushrooms from the tray to the fire to discard, hold and drag to remove a mushroom from the floor tile  ',
-					textSize: UNIT * 0.4,
-					//textAlignX: 'end',
-					textColor: new Engine.Math.Color(1, 1, 1),
-					x: Engine.Graphics.screenWidth / 2,
-					y: UNIT * 2,
-					width: Engine.Graphics.screenWidth * 0.7
-				});
+	            var label1 = new Engine.UI.Label({
+	                text: 'Drag mushrooms from the tray to the fire to discard, hold and drag to remove a mushroom from the floor tile  ',
+	                textSize: UNIT * 0.4,
+	                //textAlignX: 'end',
+	                textColor: new Engine.Math.Color(1, 1, 1),
+	                x: Engine.Graphics.screenWidth / 2,
+	                y: UNIT * 2,
+	                width: Engine.Graphics.screenWidth * 0.7
+	            });
 
-				var image1 = new Engine.UI.Image({
-					width: UNIT * 7,
-					height: UNIT * 7,
-					source: './Content/Textures/T_Tutorial2_D.png',
-					x: Engine.Graphics.screenWidth / 2,
-					y: Engine.Graphics.screenHeight / 2
-				});
+	            var image1 = new Engine.UI.Image({
+	                width: UNIT * 7,
+	                height: UNIT * 7,
+	                source: './Content/Textures/T_Tutorial2_D.png',
+	                x: Engine.Graphics.screenWidth / 2,
+	                y: Engine.Graphics.screenHeight / 2
+	            });
 
-				var button = new Engine.UI.Button({
-					text: 'Next',
-					x: Engine.Graphics.screenWidth / 2,
-					y: UNIT * 12,
-					textSize: UNIT * 0.6,
-					textColor: new Engine.Math.Color(1, 1, 1),
-					width: UNIT * 4,
-					height: UNIT,
-					onClick: function onClick() {
-						_this3.startTutorial3();
-					}
-				});
-			}
+	            var button = new Engine.UI.Button({
+	                text: 'Next',
+	                x: Engine.Graphics.screenWidth / 2,
+	                y: UNIT * 12,
+	                textSize: UNIT * 0.6,
+	                textColor: new Engine.Math.Color(1, 1, 1),
+	                width: UNIT * 4,
+	                height: UNIT,
+	                onClick: function onClick() {
+	                    _this3.startTutorial3();
+	                }
+	            });
+	        }
 
-			/**
-	  * Starts tutorial step 3
-	  */
+	        /**
+	        * Starts tutorial step 3
+	        */
 
-		}, {
-			key: 'startTutorial3',
-			value: function startTutorial3() {
-				var _this4 = this;
+	    }, {
+	        key: 'startTutorial3',
+	        value: function startTutorial3() {
+	            var _this4 = this;
 
-				// Remove previous UI widgets
-				Engine.UI.clearWidgets();
+	            // Remove previous UI widgets
+	            Engine.UI.clearWidgets();
 
-				var label1 = new Engine.UI.Label({
-					text: 'The "Color guide mode" helps to get you familiar to RGB color mixing, it is also a color blind mode',
-					textSize: UNIT * 0.4,
-					//textAlignX: 'end',
-					textColor: new Engine.Math.Color(1, 1, 1),
-					x: Engine.Graphics.screenWidth / 2,
-					y: UNIT * 2,
-					width: Engine.Graphics.screenWidth * 0.7
-				});
+	            var label1 = new Engine.UI.Label({
+	                text: 'The "Color guide mode" helps to get you familiar to RGB color mixing, it is also a color blind mode',
+	                textSize: UNIT * 0.4,
+	                //textAlignX: 'end',
+	                textColor: new Engine.Math.Color(1, 1, 1),
+	                x: Engine.Graphics.screenWidth / 2,
+	                y: UNIT * 2,
+	                width: Engine.Graphics.screenWidth * 0.7
+	            });
 
-				var image1 = new Engine.UI.Image({
-					width: UNIT * 7,
-					height: UNIT * 7,
-					source: './Content/Textures/T_Tutorial3_D.png',
-					x: Engine.Graphics.screenWidth / 2,
-					y: Engine.Graphics.screenHeight / 2
-				});
+	            var image1 = new Engine.UI.Image({
+	                width: UNIT * 7,
+	                height: UNIT * 7,
+	                source: './Content/Textures/T_Tutorial3_D.png',
+	                x: Engine.Graphics.screenWidth / 2,
+	                y: Engine.Graphics.screenHeight / 2
+	            });
 
-				var button = new Engine.UI.Button({
-					text: 'Start',
-					x: Engine.Graphics.screenWidth / 2,
-					y: UNIT * 12,
-					textSize: UNIT * 0.6,
-					textColor: new Engine.Math.Color(1, 1, 1),
-					width: UNIT * 4,
-					height: UNIT,
-					onClick: function onClick() {
-						_this4.startLevel();
-					}
-				});
-			}
+	            var button = new Engine.UI.Button({
+	                text: 'Start',
+	                x: Engine.Graphics.screenWidth / 2,
+	                y: UNIT * 12,
+	                textSize: UNIT * 0.6,
+	                textColor: new Engine.Math.Color(1, 1, 1),
+	                width: UNIT * 4,
+	                height: UNIT,
+	                onClick: function onClick() {
+	                    _this4.startLevel();
+	                }
+	            });
+	        }
 
-			/**
-	   * Start level
-	   */
+	        /**
+	         * Start level
+	         */
 
-		}, {
-			key: 'startLevel',
-			value: function startLevel() {
-				// Remove previous UI widgets
-				Engine.UI.clearWidgets();
+	    }, {
+	        key: 'startLevel',
+	        value: function startLevel() {
+	            // Remove previous UI widgets
+	            Engine.UI.clearWidgets();
 
-				// By default, set colour guides to "ON"
-				setTimeout(function () {
-					var _iteratorNormalCompletion = true;
-					var _didIteratorError = false;
-					var _iteratorError = undefined;
+	            // By default, set colour guides to "ON"
+	            setTimeout(function () {
+	                var _iteratorNormalCompletion = true;
+	                var _didIteratorError = false;
+	                var _iteratorError = undefined;
 
-					try {
-						for (var _iterator = Engine.Stage.getActors(Game.Actors.GridTile)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-							var gridTile = _step.value;
+	                try {
+	                    for (var _iterator = Engine.Stage.getActors(Game.Actors.GridTile)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	                        var gridTile = _step.value;
 
-							gridTile.lineRenderer1.isEnabled = true;
-							gridTile.lineRenderer2.isEnabled = true;
-						}
-					} catch (err) {
-						_didIteratorError = true;
-						_iteratorError = err;
-					} finally {
-						try {
-							if (!_iteratorNormalCompletion && _iterator.return) {
-								_iterator.return();
-							}
-						} finally {
-							if (_didIteratorError) {
-								throw _iteratorError;
-							}
-						}
-					}
-				}, 10);
+	                        gridTile.lineRenderer1.isEnabled = true;
+	                        gridTile.lineRenderer2.isEnabled = true;
+	                    }
+	                } catch (err) {
+	                    _didIteratorError = true;
+	                    _iteratorError = err;
+	                } finally {
+	                    try {
+	                        if (!_iteratorNormalCompletion && _iterator.return) {
+	                            _iterator.return();
+	                        }
+	                    } finally {
+	                        if (_didIteratorError) {
+	                            throw _iteratorError;
+	                        }
+	                    }
+	                }
+	            }, 10);
 
-				// Toggle colour guides
-				var colorBlindButton = new Engine.UI.Button({
-					text: 'Color Guides: ON',
-					width: UNIT * 3,
-					height: UNIT / 2,
-					x: Engine.Graphics.screenWidth - UNIT * 1.5,
-					y: UNIT / 4,
-					textColor: new Engine.Math.Color(1, 1, 1),
-					strokeWidth: 0,
-					fillColor: new Engine.Math.Color(0, 0, 0),
-					textSize: UNIT / 4,
-					onClick: function onClick() {
-						var isOn = colorBlindButton.text.indexOf('ON') < 0;
+	            // Retry level
+	            var retryButton = new Engine.UI.Button({
+	                text: '↺ RETRY',
+	                width: UNIT * 2,
+	                height: UNIT,
+	                x: UNIT,
+	                y: UNIT / 2,
+	                textSize: UNIT / 3,
+	                textColor: new Engine.Math.Color(1, 1, 1),
+	                fillColor: new Engine.Math.Color(0, 0, 0),
+	                onClick: function onClick() {
+	                    Engine.Stage.reloadCurrentScene();
+	                }
+	            });
 
-						colorBlindButton.text = 'Colour Guides: ' + (isOn ? 'ON' : 'OFF');
+	            // Skip level
+	            var skipButton = new Engine.UI.Button({
+	                text: 'SKIP ↷',
+	                width: UNIT * 2,
+	                height: UNIT,
+	                x: Engine.Graphics.screenWidth - UNIT,
+	                y: UNIT / 2,
+	                textSize: UNIT / 3,
+	                textColor: new Engine.Math.Color(1, 1, 1),
+	                fillColor: new Engine.Math.Color(0, 0, 0),
+	                onClick: function onClick() {
+	                    var currentScene = parseInt(Engine.Stage.scene.name.match(/\d+/));
 
-						var _iteratorNormalCompletion2 = true;
-						var _didIteratorError2 = false;
-						var _iteratorError2 = undefined;
+	                    currentScene++;
 
-						try {
-							for (var _iterator2 = Engine.Stage.getActors(Game.Actors.GridTile)[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-								var gridTile = _step2.value;
+	                    Engine.Stage.loadScene('Scene' + currentScene);
+	                }
+	            });
 
-								gridTile.lineRenderer1.isEnabled = isOn;
-								gridTile.lineRenderer2.isEnabled = isOn;
-							}
-						} catch (err) {
-							_didIteratorError2 = true;
-							_iteratorError2 = err;
-						} finally {
-							try {
-								if (!_iteratorNormalCompletion2 && _iterator2.return) {
-									_iterator2.return();
-								}
-							} finally {
-								if (_didIteratorError2) {
-									throw _iteratorError2;
-								}
-							}
-						}
-					}
-				});
+	            // Toggle colour guides
+	            var colorBlindButton = new Engine.UI.Button({
+	                text: 'Guides: ON',
+	                width: UNIT * 2.5,
+	                height: UNIT,
+	                x: Engine.Graphics.screenWidth / 2,
+	                y: UNIT / 2,
+	                textColor: new Engine.Math.Color(1, 1, 1),
+	                fillColor: new Engine.Math.Color(0, 0, 0),
+	                textSize: UNIT / 3,
+	                onClick: function onClick() {
+	                    var isOn = colorBlindButton.text.indexOf('ON') < 0;
 
-				var background = new Engine.Actors.Actor();
-				var backgroundSprite = background.addComponent('SpriteRenderer', {
-					offset: new Engine.Math.Vector2(0, 0),
-					width: Engine.Graphics.screenWidth,
-					height: Engine.Graphics.screenHeight,
-					useTiling: true
-				});
+	                    colorBlindButton.text = 'Guides: ' + (isOn ? 'ON' : 'OFF');
 
-				backgroundSprite.texture = './Content/Textures/T_ForestFloor_D.png';
+	                    var _iteratorNormalCompletion2 = true;
+	                    var _didIteratorError2 = false;
+	                    var _iteratorError2 = undefined;
 
-				var targetGrid = new Game.Actors.TargetGrid({
-					size: 3,
-					colors: [[new Engine.Math.Color(0.5, 0, 0), new Engine.Math.Color(1, 0, 0), new Engine.Math.Color(0, 0.5, 0)], [new Engine.Math.Color(0, 1, 0), new Engine.Math.Color(0, 0, 0.5), new Engine.Math.Color(0, 0, 1)], [new Engine.Math.Color(0.5, 0.5, 0), new Engine.Math.Color(0.5, 0, 0.5), new Engine.Math.Color(0, 0.5, 0.5)]]
-				});
+	                    try {
+	                        for (var _iterator2 = Engine.Stage.getActors(Game.Actors.GridTile)[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+	                            var gridTile = _step2.value;
 
-				var playerGrid = new Game.Actors.PlayerGrid({ size: 3 });
+	                            gridTile.lineRenderer1.isEnabled = isOn;
+	                            gridTile.lineRenderer2.isEnabled = isOn;
+	                        }
+	                    } catch (err) {
+	                        _didIteratorError2 = true;
+	                        _iteratorError2 = err;
+	                    } finally {
+	                        try {
+	                            if (!_iteratorNormalCompletion2 && _iterator2.return) {
+	                                _iterator2.return();
+	                            }
+	                        } finally {
+	                            if (_didIteratorError2) {
+	                                throw _iteratorError2;
+	                            }
+	                        }
+	                    }
+	                }
+	            });
 
-				var queue = new Game.Actors.Queue({
-					colors: [new Engine.Math.Color(0.5, 0, 0), new Engine.Math.Color(0.5, 0, 0), new Engine.Math.Color(0.5, 0, 0), new Engine.Math.Color(0, 0.5, 0), new Engine.Math.Color(0, 0.5, 0), new Engine.Math.Color(0, 0.5, 0), new Engine.Math.Color(0, 0, 0.5), new Engine.Math.Color(0, 0, 0.5), new Engine.Math.Color(0, 0, 0.5), new Engine.Math.Color(0.5, 0, 0), new Engine.Math.Color(0, 0.5, 0), new Engine.Math.Color(0.5, 0, 0), new Engine.Math.Color(0, 0, 0.5), new Engine.Math.Color(0, 0.5, 0), new Engine.Math.Color(0, 0, 0.5)]
-				});
+	            var background = new Engine.Actors.Actor();
+	            var backgroundSprite = background.addComponent('SpriteRenderer', {
+	                offset: new Engine.Math.Vector2(0, 0),
+	                width: Engine.Graphics.screenWidth,
+	                height: Engine.Graphics.screenHeight,
+	                useTiling: true
+	            });
 
-				var fire = new Game.Actors.Fire();
-			}
+	            backgroundSprite.texture = './Content/Textures/T_ForestFloor_D.png';
 
-			/**
-	   * Start
-	   */
+	            var targetGrid = new Game.Actors.TargetGrid({
+	                size: 3,
+	                colors: [[new Engine.Math.Color(0.5, 0, 0), new Engine.Math.Color(1, 0, 0), new Engine.Math.Color(0, 0.5, 0)], [new Engine.Math.Color(0, 1, 0), new Engine.Math.Color(0, 0, 0.5), new Engine.Math.Color(0, 0, 1)], [new Engine.Math.Color(0.5, 0.5, 0), new Engine.Math.Color(0.5, 0, 0.5), new Engine.Math.Color(0, 0.5, 0.5)]]
+	            });
 
-		}, {
-			key: 'start',
-			value: function start() {
-				this.startTutorial1();
-			}
-		}]);
+	            var playerGrid = new Game.Actors.PlayerGrid({ size: 3 });
 
-		return Scene1;
+	            var queue = new Game.Actors.Queue({
+	                colors: [new Engine.Math.Color(0.5, 0, 0), new Engine.Math.Color(0.5, 0, 0), new Engine.Math.Color(0.5, 0, 0), new Engine.Math.Color(0, 0.5, 0), new Engine.Math.Color(0, 0.5, 0), new Engine.Math.Color(0, 0.5, 0), new Engine.Math.Color(0, 0, 0.5), new Engine.Math.Color(0, 0, 0.5), new Engine.Math.Color(0, 0, 0.5), new Engine.Math.Color(0.5, 0, 0), new Engine.Math.Color(0, 0.5, 0), new Engine.Math.Color(0.5, 0, 0), new Engine.Math.Color(0, 0, 0.5), new Engine.Math.Color(0, 0.5, 0), new Engine.Math.Color(0, 0, 0.5)]
+	            });
+
+	            var fire = new Game.Actors.Fire();
+	        }
+
+	        /**
+	         * Start
+	         */
+
+	    }, {
+	        key: 'start',
+	        value: function start() {
+	            this.startTutorial1();
+	        }
+	    }]);
+
+	    return Scene1;
 	}(Engine.Scene);
 
 	Game.Scenes.Scene1 = Scene1;
@@ -1572,22 +1611,54 @@
 	    _createClass(Scene2, [{
 	        key: 'start',
 	        value: function start() {
-	            Engine.UI.clearWidgets();
-
-	            var colorBlindButton = new Engine.UI.Button({
-	                text: 'Color Guides: OFF',
-	                width: UNIT * 3,
-	                height: UNIT / 2,
-	                x: Engine.Graphics.screenWidth - UNIT * 1.5,
-	                y: UNIT / 4,
+	            // Retry level
+	            var retryButton = new Engine.UI.Button({
+	                text: '↺ RETRY',
+	                width: UNIT * 2,
+	                height: UNIT,
+	                x: UNIT,
+	                y: UNIT / 2,
+	                textSize: UNIT / 3,
 	                textColor: new Engine.Math.Color(1, 1, 1),
-	                strokeWidth: 0,
 	                fillColor: new Engine.Math.Color(0, 0, 0),
-	                textSize: UNIT / 4,
+	                onClick: function onClick() {
+	                    Engine.Stage.reloadCurrentScene();
+	                }
+	            });
+
+	            // Skip level
+	            var skipButton = new Engine.UI.Button({
+	                text: 'SKIP ↷',
+	                width: UNIT * 2,
+	                height: UNIT,
+	                x: Engine.Graphics.screenWidth - UNIT,
+	                y: UNIT / 2,
+	                textSize: UNIT / 3,
+	                textColor: new Engine.Math.Color(1, 1, 1),
+	                fillColor: new Engine.Math.Color(0, 0, 0),
+	                onClick: function onClick() {
+	                    var currentScene = parseInt(Engine.Stage.scene.name.match(/\d+/));
+
+	                    currentScene++;
+
+	                    Engine.Stage.loadScene('Scene' + currentScene);
+	                }
+	            });
+
+	            // Toggle colour guides
+	            var colorBlindButton = new Engine.UI.Button({
+	                text: 'Guides: OFF',
+	                width: UNIT * 2.5,
+	                height: UNIT,
+	                x: Engine.Graphics.screenWidth / 2,
+	                y: UNIT / 2,
+	                textColor: new Engine.Math.Color(1, 1, 1),
+	                fillColor: new Engine.Math.Color(0, 0, 0),
+	                textSize: UNIT / 3,
 	                onClick: function onClick() {
 	                    var isOn = colorBlindButton.text.indexOf('ON') < 0;
 
-	                    colorBlindButton.text = 'Colour Guides: ' + (isOn ? 'ON' : 'OFF');
+	                    colorBlindButton.text = 'Guides: ' + (isOn ? 'ON' : 'OFF');
 
 	                    var _iteratorNormalCompletion = true;
 	                    var _didIteratorError = false;

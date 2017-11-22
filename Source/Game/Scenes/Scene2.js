@@ -2,22 +2,54 @@
 
 class Scene2 extends Engine.Scene {
     start() {
-        Engine.UI.clearWidgets();
-        
-        let colorBlindButton = new Engine.UI.Button({
-            text: 'Color Guides: OFF',
-            width: UNIT * 3,
-            height: UNIT / 2,
-            x: Engine.Graphics.screenWidth - UNIT * 1.5,
-            y: UNIT / 4,
+        // Retry level
+        let retryButton = new Engine.UI.Button({
+            text: '↺ RETRY',
+            width: UNIT * 2,
+            height: UNIT,
+            x: UNIT,
+            y: UNIT / 2,
+            textSize: UNIT / 3,
             textColor: new Engine.Math.Color(1, 1, 1),
-			strokeWidth: 0,
-			fillColor: new Engine.Math.Color(0, 0, 0),
-            textSize: UNIT / 4,
+            fillColor: new Engine.Math.Color(0, 0, 0),
+            onClick: () => {
+                Engine.Stage.reloadCurrentScene(); 
+            }
+        });
+
+        // Skip level
+        let skipButton = new Engine.UI.Button({
+            text: 'SKIP ↷',
+            width: UNIT * 2,
+            height: UNIT,
+            x: Engine.Graphics.screenWidth - UNIT,
+            y: UNIT / 2,
+            textSize: UNIT / 3,
+            textColor: new Engine.Math.Color(1, 1, 1),
+            fillColor: new Engine.Math.Color(0, 0, 0),
+            onClick: () => {
+                let currentScene = parseInt(Engine.Stage.scene.name.match(/\d+/));
+            
+                currentScene++;
+
+                Engine.Stage.loadScene('Scene' + currentScene);
+            }
+        });
+
+        // Toggle colour guides
+        let colorBlindButton = new Engine.UI.Button({
+            text: 'Guides: OFF',
+            width: UNIT * 2.5,
+            height: UNIT,
+            x: Engine.Graphics.screenWidth / 2,
+            y: UNIT / 2,
+            textColor: new Engine.Math.Color(1, 1, 1),
+            fillColor: new Engine.Math.Color(0, 0, 0),
+            textSize: UNIT / 3,
             onClick: () => {
                 let isOn = colorBlindButton.text.indexOf('ON') < 0;
 
-                colorBlindButton.text = 'Colour Guides: ' + (isOn ? 'ON' : 'OFF');
+                colorBlindButton.text = 'Guides: ' + (isOn ? 'ON' : 'OFF');
 
                 for(let gridTile of Engine.Stage.getActors(Game.Actors.GridTile)) {
                     gridTile.lineRenderer1.isEnabled = isOn;
