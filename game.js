@@ -636,7 +636,7 @@
 	        /**
 	         * Gets the next colour
 	         *
-	         * @returns {Color} The next color
+	         * @returns {Color} The next colour
 	         */
 
 	    }, {
@@ -648,9 +648,12 @@
 
 	                var color = this.colors[this.currentQueueColorIndex];
 
+	                // Loop colours if specified
 	                if (this.currentQueueColorIndex >= this.colors.length - 1) {
 	                    if (this.isLooping) {
 	                        this.currentQueueColorIndex = 0;
+	                    } else {
+	                        return null;
 	                    }
 	                } else {
 	                    this.currentQueueColorIndex++;

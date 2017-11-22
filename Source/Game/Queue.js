@@ -66,7 +66,7 @@ Game.Actors.Queue = class Queue extends Engine.Actors.Actor {
     /**
      * Gets the next colour
      *
-     * @returns {Color} The next color
+     * @returns {Color} The next colour
      */
     getNextColor() {
         // If a queue was specified, pick the next colour from that queue
@@ -75,9 +75,12 @@ Game.Actors.Queue = class Queue extends Engine.Actors.Actor {
 
             let color = this.colors[this.currentQueueColorIndex];
 
+            // Loop colours if specified
             if(this.currentQueueColorIndex >= this.colors.length - 1) {
                 if(this.isLooping) {
                     this.currentQueueColorIndex = 0;
+                } else {
+                    return null;
                 }
             } else {
                 this.currentQueueColorIndex++;
