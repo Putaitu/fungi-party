@@ -107,7 +107,7 @@ UI.Widget = class Widget extends Engine.Entity {
     set y(value) { this.element.style.top = value + 'px'; }
     set text(value) { this.element.innerHTML = value.replace(/\n/g, '<br>'); }
     set textSize(value) { this.element.style.fontSize = value + 'px'; }
-    set textAlignX(value) { this.element.style.justifyContent = Engine.UI.toCss(value); }
+    set textAlignX(value) { this.element.style.justifyContent = Engine.UI.toCss(value); this.element.style.textAlign = value; }
     set textAlignY(value) { this.element.style.alignItems = Engine.UI.toCss(value); }
     set textColor(value) { this.element.style.color = value.toRGB(); }
     set font(value) { this.element.style.fontFamily = value; }

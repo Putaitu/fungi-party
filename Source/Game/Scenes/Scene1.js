@@ -4,6 +4,39 @@
  * The tutorial level
  */
 class Scene1 extends Engine.Scene {
+	/**
+	 * Shows the end level screen
+	 */
+	showEndLevelScreen() {
+        Engine.Stage.clearActors();
+        Engine.UI.clearWidgets();
+
+        new Engine.UI.Label({
+            text: 'Level 1 completed with ' + Engine.Stage.scene.usedMoves + ' moves',
+            textAlignX: 'center',
+            textAlignY: 'center',
+            textSize: UNIT / 2,
+            x: Engine.Graphics.screenWidth / 2,
+            y: UNIT * 4,
+            width: UNIT * 8,
+            height: UNIT
+        });
+
+        new Engine.UI.Button({
+            text: 'NEXT →',
+            width: UNIT * 2,
+            height: UNIT,
+            x: Engine.Graphics.screenWidth / 2,
+            y: Engine.Graphics.screenHeight - UNIT * 4,
+            textSize: UNIT / 3,
+            textColor: new Engine.Math.Color(1, 1, 1),
+            fillColor: new Engine.Math.Color(0, 0, 0),
+            onClick: () => {
+                Engine.Stage.loadNextScene();
+            }
+        });
+    }
+	
     /**
      * Starts the tutorial step 1
      */
@@ -155,7 +188,7 @@ class Scene1 extends Engine.Scene {
             textColor: new Engine.Math.Color(1, 1, 1),
             fillColor: new Engine.Math.Color(0, 0, 0),
             onClick: () => {
-                Game.Game.showEndLevelScreen();
+                this.showEndLevelScreen();
             }
         });
 
@@ -203,7 +236,7 @@ class Scene1 extends Engine.Scene {
         let playerGrid = new Game.Actors.PlayerGrid({size: 3});
         
         let queue = new Game.Actors.Queue({
-            isLooping: false,
+            isLooping: true,
             colors: [
                 new Engine.Math.Color(0.5, 0, 0),
                 new Engine.Math.Color(0.5, 0, 0),

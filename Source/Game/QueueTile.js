@@ -27,6 +27,8 @@ Game.Actors.QueueTile = class QueueTile extends Game.Actors.ColorTile {
      * Setter: Colour
      */
     set color(value) {
+		value = value || new Engine.Math.Color(0, 0, 0);
+		
         this._color = value;
 
         if(value.r === 1) {

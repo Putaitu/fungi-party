@@ -76,7 +76,7 @@ Game.Actors.Queue = class Queue extends Engine.Actors.Actor {
             let color = this.colors[this.currentQueueColorIndex];
 
             // Loop colours if specified
-            if(this.currentQueueColorIndex >= this.colors.length - 1) {
+            if(this.currentQueueColorIndex >= this.colors.length) {
                 if(this.isLooping) {
                     this.currentQueueColorIndex = 0;
                 } else {

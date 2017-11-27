@@ -1,7 +1,9 @@
 'use strict';
 
-class Scene2 extends Engine.Scene {
-	
+/**
+ * The tutorial level
+ */
+class Scene4 extends Engine.Scene {
 	/**
 	 * Shows the end level screen
 	 */
@@ -10,7 +12,7 @@ class Scene2 extends Engine.Scene {
         Engine.UI.clearWidgets();
 
         new Engine.UI.Label({
-            text: 'Level 2 completed with ' + Engine.Stage.scene.usedMoves + ' moves',
+            text: 'Level 4 completed with ' + Engine.Stage.scene.usedMoves + ' moves',
             textAlignX: 'center',
             textAlignY: 'center',
             textSize: UNIT / 2,
@@ -20,6 +22,17 @@ class Scene2 extends Engine.Scene {
             height: UNIT
         });
 
+        new Engine.UI.Label({
+            text: ' / 3 mushrooms left',
+            textAlignX: 'center',
+            textAlignY: 'center',
+            textSize: UNIT / 2,
+            x: Engine.Graphics.screenWidth / 2,
+            y: UNIT * 5,
+            width: UNIT * 8,
+            height: UNIT
+        });
+		
         new Engine.UI.Button({
             text: 'NEXT →',
             width: UNIT * 2,
@@ -38,10 +51,9 @@ class Scene2 extends Engine.Scene {
     /**
      * Starts the tutorial step 1
      */
-	 
     startTutorial1() {
         let label1 = new Engine.UI.Label({
-            text: 'Level 2',
+            text: 'Level 4',
             textSize: UNIT * 0.4,
             //textAlignX: 'end',
             textColor: new Engine.Math.Color(1, 1, 1),
@@ -51,7 +63,7 @@ class Scene2 extends Engine.Scene {
         });
 		
         let label2 = new Engine.UI.Label({
-            text: 'Mix up those mushrooms! Turn on the guides if you need help.',
+            text: 'In this level, there will be limited amount of mushrooms to discourage food waste',
             textSize: UNIT * 0.4,
             //textAlignX: 'end',
             textColor: new Engine.Math.Color(1, 1, 1),
@@ -59,8 +71,8 @@ class Scene2 extends Engine.Scene {
             y: UNIT * 4,
             width: Engine.Graphics.screenWidth * 0.7
         });
-		
-		let button = new Engine.UI.Button({
+        
+        let button = new Engine.UI.Button({
             text: 'Next',
             x: Engine.Graphics.screenWidth / 2,
             y: UNIT * 12,
@@ -71,16 +83,24 @@ class Scene2 extends Engine.Scene {
             onClick: () => { this.startLevel(); }
         });
     }
-	
-	/**
-	 * Init
-	 */
+    
+    /**
+     * Start level
+     */
     startLevel() {
         this.usedMoves = 0;
-		
-        // Remove previous UI widgets
-        Engine.UI.clearWidgets();    
 
+        // Remove previous UI widgets
+        Engine.UI.clearWidgets();       
+
+        // By default, set colour guides to "OFF"
+        setTimeout(() => {
+            for(let gridTile of Engine.Stage.getActors(Game.Actors.GridTile)) {
+                gridTile.lineRenderer1.isEnabled = false;
+                gridTile.lineRenderer2.isEnabled = false;
+            }
+        }, 10);
+       
         // Retry level
         let retryButton = new Engine.UI.Button({
             text: '↺ RETRY',
@@ -143,38 +163,46 @@ class Scene2 extends Engine.Scene {
 
         backgroundSprite.texture = './Content/Textures/T_ForestFloor_D.png';
 
-
-        let targetGrid = new Game.Actors.TargetGrid();
-        let playerGrid = new Game.Actors.PlayerGrid();
-
-        let queue = new Game.Actors.Queue({
-            isLooping: true,
+        let targetGrid = new Game.Actors.TargetGrid({
+            size: 3,
             colors: [
-                new Engine.Math.Color(0.5, 0, 0),
-                new Engine.Math.Color(0, 0.5, 0),
-                new Engine.Math.Color(0, 0, 0.5),
-                new Engine.Math.Color(0.5, 0, 0),
-                new Engine.Math.Color(0, 0.5, 0),
-                new Engine.Math.Color(0, 0, 0.5),
-                new Engine.Math.Color(0, 0, 0.5),
-                new Engine.Math.Color(0.5, 0, 0),
-                new Engine.Math.Color(0, 0.5, 0),
-                new Engine.Math.Color(0.5, 0, 0),
-                new Engine.Math.Color(0, 0.5, 0),
-                new Engine.Math.Color(0.5, 0, 0),
-                new Engine.Math.Color(0, 0, 0.5),
-                new Engine.Math.Color(0, 0.5, 0),
-                new Engine.Math.Color(0, 0, 0.5),
-				new Engine.Math.Color(0, 0, 0.5),
-				new Engine.Math.Color(0.5, 0, 0),
-				new Engine.Math.Color(0, 0.5, 0)
+                [new Engine.Math.Color(1, 0, 1),new Engine.Math.Color(0.5, 0, 1), new Engine.Math.Color(0, 1, 0.5)],
+                [new Engine.Math.Color(0.5, 1, 0),new Engine.Math.Color(0, 0.5, 1), new Engine.Math.Color(0, 1, 1)],
+                [new Engine.Math.Color(0, 0, 1),new Engine.Math.Color(1, 0, 0), new Engine.Math.Color(1, 1, 0)]
             ]
         });
-		
-		let fire = new Game.Actors.Fire();
+        
+        let playerGrid = new Game.Actors.PlayerGrid({size: 3});
+        
+        let queue = new Game.Actors.Queue({
+            isLooping: false,
+            colors: [
+                new Engine.Math.Color(1, 0, 0),
+                new Engine.Math.Color(0.5, 0, 0),
+                new Engine.Math.Color(0, 1, 0),
+                new Engine.Math.Color(1, 0, 0),
+                new Engine.Math.Color(0, 0, 1),
+                new Engine.Math.Color(0.5, 0, 0),
+                new Engine.Math.Color(0, 0, 1),
+                new Engine.Math.Color(0, 1, 0),
+                new Engine.Math.Color(0, 0, 0.5),
+                new Engine.Math.Color(0, 1, 0),
+                new Engine.Math.Color(1, 0, 0),
+                new Engine.Math.Color(0, 0.5, 0),
+                new Engine.Math.Color(0, 0, 1),
+                new Engine.Math.Color(0, 0, 1),
+                new Engine.Math.Color(0, 1, 0),
+                new Engine.Math.Color(0, 0, 1),
+				new Engine.Math.Color(0, 0, 0.5),
+				new Engine.Math.Color(0, 0.5, 0),
+				new Engine.Math.Color(0.5, 0, 0),
+            ]
+        });
+
+        let fire = new Game.Actors.Fire();
     }
-	
-	    /**
+    
+    /**
      * Start
      */
     start() {
@@ -182,4 +210,4 @@ class Scene2 extends Engine.Scene {
     }
 }
 
-Game.Scenes.Scene2 = Scene2;
+Game.Scenes.Scene4 = Scene4;

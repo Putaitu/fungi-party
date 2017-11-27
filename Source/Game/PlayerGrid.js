@@ -161,7 +161,11 @@ Game.Actors.PlayerGrid = class PlayerGrid extends Game.Actors.Grid {
 
         this.draggingTile = null;
 
-        Engine.Stage.getActor(Game.Actors.Queue).updateTiles();
+		let queue = Engine.Stage.getActor(Game.Actors.Queue);
+		
+		if(queue) {
+			queue.updateTiles();
+		}
 
         this.updateTiles();
     }
@@ -233,7 +237,7 @@ Game.Actors.PlayerGrid = class PlayerGrid extends Game.Actors.Grid {
         }
 
         if(correctTiles >= this.children.length) {
-            Game.Game.showEndLevelScreen();
+            Engine.Stage.scene.showEndLevelScreen();
         }
     }
 
