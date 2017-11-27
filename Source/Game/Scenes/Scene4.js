@@ -1,4 +1,4 @@
-'use strict';
+﻿'use strict';
 
 /**
  * The tutorial level
@@ -18,17 +18,6 @@ class Scene4 extends Engine.Scene {
             textSize: UNIT / 2,
             x: Engine.Graphics.screenWidth / 2,
             y: UNIT * 4,
-            width: UNIT * 8,
-            height: UNIT
-        });
-
-        new Engine.UI.Label({
-            text: ' / 3 mushrooms left',
-            textAlignX: 'center',
-            textAlignY: 'center',
-            textSize: UNIT / 2,
-            x: Engine.Graphics.screenWidth / 2,
-            y: UNIT * 5,
             width: UNIT * 8,
             height: UNIT
         });
