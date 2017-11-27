@@ -122,7 +122,7 @@
 	            fsBtn.style.width = '100%';
 	            fsBtn.style.height = '100%';
 	            fsBtn.style.fontSize = '4vw';
-	            fsBtn.innerHTML = 'PRESS TO PLAY';
+	            fsBtn.innerHTML = 'PRESS TO PLAY<br><br>' + Engine.Settings.Game.title;
 
 	            document.body.appendChild(fsBtn);
 
@@ -1297,7 +1297,11 @@
 
 	'use strict';
 
-	Engine.Settings = {};
+	Engine.Settings = {
+		Game: {
+			title: 'My game'
+		}
+	};
 
 /***/ }),
 /* 8 */

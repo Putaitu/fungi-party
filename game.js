@@ -1308,8 +1308,9 @@
 
 	'use strict';
 
-	// Init everything
+	Engine.Settings.Game.title = 'Fungi Party';
 
+	// Init everything
 	Engine.Core.on('init', function () {
 	   // A standard unit for the game
 	   window.UNIT = Engine.Graphics.screenHeight / 14;

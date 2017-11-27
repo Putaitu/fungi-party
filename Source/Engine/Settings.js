@@ -1,3 +1,7 @@
 'use strict';
 
-Engine.Settings = {};
+Engine.Settings = {
+	Game: {
+		title: 'My game'
+	}	
+};

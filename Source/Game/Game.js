@@ -1,5 +1,7 @@
 'use strict';
 
+Engine.Settings.Game.title = 'Fungi Party';
+
 // Init everything
 Engine.Core.on('init', () => {
     // A standard unit for the game
