@@ -2,7 +2,7 @@
 
 ## Instructions
 
-The game is hosted on http://putaitu.com/printergame
+The game is hosted on http://putaitu.com/fungi-party
 You can also run the game locally by opening the index.html file
 
 ## Controls for desktop
